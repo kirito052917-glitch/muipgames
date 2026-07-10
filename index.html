@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>むいぴー | muiPGames Official</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue-main: #4a90d9;                       /* メインブルー */
+    --blue-deep: #1d3a5f;                       /* 濃紺（カード内テキスト） */
+    --blue-bright: #a8d4ff;                     /* 夜空の上で光る明るいブルー */
+    --blue-border: rgba(120, 180, 240, 0.5);    /* カードのボーダー */
+    --panel-light: rgba(255, 255, 255, 0.88);   /* 明るいガラスカード */
+    --accent: #ffb85c;                          /* 焚き火オレンジ（アクセント） */
+    --text-on-dark: #cfe3f7;                    /* 夜空の上のテキスト */
+    --text-soft: #7f9db8;                       /* 補足テキスト */
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    color: var(--blue-deep);
+    font-family: 'DotGothic16', sans-serif;
+    font-size: 18px;
+    line-height: 1.8;
+    /* 夜の森の空：上は深い夜空、下にいくほど地平線の青 */
+    background: linear-gradient(180deg,
+      #0a1226 0%,
+      #0e1c3a 35%,
+      #16294e 65%,
+      #1b3055 100%);
+    background-attachment: fixed;
+    overflow-x: hidden;
+  }
+
+  /* ============================================
+     夜の森キャンプ背景レイヤー
+     1. .bg-stars    : 瞬く星
+     2. .bg-moon     : 月
+     3. .bg-forest   : 森のシルエット（画面下に固定）
+     4. .bg-campglow : 焚き火のあかり
+     5. .firefly     : ふわふわ飛ぶ蛍
+     ============================================ */
+
+  .bg-stars {
+    position: fixed;
+    inset: 0;
+    z-index: -3;
+    pointer-events: none;
+  }
+  .star {
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+    animation: twinkle 3s ease-in-out infinite;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.9; transform: scale(1); }
+    50%      { opacity: 0.2; transform: scale(0.7); }
+  }
+
+  .bg-moon {
+    position: fixed;
+    top: 7%;
+    right: 10%;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 35%, #fdf6e3, #e8ddb8 70%);
+    box-shadow: 0 0 50px rgba(253, 246, 227, 0.4), 0 0 120px rgba(253, 246, 227, 0.15);
+    z-index: -3;
+    pointer-events: none;
+  }
+  /* 月のクレーター */
+  .bg-moon::before, .bg-moon::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(190, 178, 140, 0.5);
+  }
+  .bg-moon::before { width: 18px; height: 18px; top: 28%; left: 22%; }
+  .bg-moon::after  { width: 12px; height: 12px; top: 58%; left: 55%; }
+
+  /* 森のシルエット（SVGで描画・画面下に固定） */
+  .bg-forest {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -2;
+    pointer-events: none;
+    line-height: 0;
+  }
+  .bg-forest svg { width: 100%; height: auto; display: block; }
+
+  /* 焚き火のあかり：森の中央下からふんわり暖色の光 */
+  .bg-campglow {
+    position: fixed;
+    bottom: -8%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70vw;
+    height: 40vh;
+    background: radial-gradient(ellipse at center bottom,
+      rgba(255, 160, 70, 0.35) 0%,
+      rgba(255, 130, 50, 0.15) 40%,
+      transparent 70%);
+    z-index: -2;
+    pointer-events: none;
+    animation: fireflicker 4s ease-in-out infinite;
+  }
+  @keyframes fireflicker {
+    0%, 100% { opacity: 1; }
+    30%      { opacity: 0.85; }
+    60%      { opacity: 0.95; }
+    80%      { opacity: 0.8; }
+  }
+
+  /* 蛍 */
+  .firefly {
+    position: fixed;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #ffe9a0;
+    box-shadow: 0 0 10px 3px rgba(255, 233, 160, 0.6);
+    z-index: -1;
+    pointer-events: none;
+    animation: flyabout 18s ease-in-out infinite alternate, glow 3s ease-in-out infinite;
+  }
+  .firefly.f1 { bottom: 18%; left: 12%; }
+  .firefly.f2 { bottom: 25%; left: 75%; animation-delay: -6s, -1s; animation-duration: 22s, 2.5s; }
+  .firefly.f3 { bottom: 10%; left: 45%; animation-delay: -12s, -2s; animation-duration: 16s, 3.5s; }
+  .firefly.f4 { bottom: 32%; left: 30%; animation-delay: -3s, -0.5s; animation-duration: 20s, 2.8s; }
+  .firefly.f5 { bottom: 15%; left: 88%; animation-delay: -9s, -1.5s; animation-duration: 24s, 3.2s; }
+
+  @keyframes flyabout {
+    0%   { translate: 0 0; }
+    25%  { translate: 4vw -6vh; }
+    50%  { translate: -3vw -2vh; }
+    75%  { translate: 5vw -8vh; }
+    100% { translate: -2vw -4vh; }
+  }
+  @keyframes glow {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.15; }
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+
+  /* ===== Header / Nav ===== */
+  header {
+    text-align: center;
+    padding: 32px 16px 16px;
+  }
+
+  .site-title {
+    font-family: 'Press Start 2P', 'DotGothic16', monospace;
+    font-size: clamp(18px, 4vw, 32px);
+    color: var(--blue-bright);
+    text-shadow: 0 0 16px rgba(140, 190, 255, 0.5);
+    letter-spacing: 2px;
+  }
+
+  .site-title .blink {
+    animation: blink 1s steps(1) infinite;
+    color: var(--accent);
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  header > p { color: var(--text-on-dark); margin-top: 8px; }
+
+  nav {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+
+  .pixel-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--blue-deep);
+    text-decoration: none;
+    border: 2px solid var(--blue-border);
+    border-radius: 9999px;               /* まんまるボタン */
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    transition: transform 0.15s, box-shadow 0.15s, background 0.2s, color 0.2s;
+    font-size: 16px;
+    font-family: 'DotGothic16', sans-serif;
+    cursor: pointer;
+  }
+  .pixel-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74, 144, 217, 0.45);
+    background: var(--blue-main);
+    color: #fff;
+  }
+
+  /* ===== Panel（明るいガラスカード） ===== */
+  .panel {
+    background: var(--panel-light);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 2px solid var(--blue-border);
+    border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    margin: 32px 0;
+    overflow: hidden;
+  }
+
+  .panel-titlebar {
+    background: linear-gradient(90deg, #4a90d9, #6fb0e8);
+    padding: 10px 18px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 12px;
+    color: #fff;
+    text-shadow: 1px 1px 0 rgba(20, 50, 90, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .panel-titlebar .dots span {
+    display: inline-block;
+    width: 12px; height: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    border-radius: 50%;
+    margin-left: 6px;
+  }
+
+  .panel-body { padding: 24px; }
+
+  .panel-body h2 { color: #2264a5; }
+  .panel-body h3 { color: #2264a5; }
+
+  /* ===== Profile ===== */
+  .profile {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .avatar {
+    width: 160px;
+    height: 160px;
+    flex-shrink: 0;
+    border: 4px solid var(--blue-main);
+    border-radius: 50%;
+    box-shadow: 0 0 24px rgba(74, 144, 217, 0.35);
+    image-rendering: pixelated;
+    /* ▼ 実際のアバター画像に差し替え:
+       <img src="images/avatar/muipy.png" alt="むいぴー" class="avatar">
+       （border-radius:50% で自動的に丸く切り抜かれます） */
+    background: radial-gradient(circle at 35% 35%, #9ecdf5, #4a90d9 75%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    margin: 0 auto;
+    object-fit: cover;
+  }
+
+  .profile-text { flex: 1; min-width: 260px; }
+  .profile-text h2 { margin-bottom: 12px; }
+  .highlight { color: #e07b28; font-weight: bold; }
+
+  .sub-note {
+    margin-top: 16px;
+    padding: 14px 18px;
+    border: 2px dashed var(--blue-border);
+    border-radius: 16px;
+    background: rgba(74, 144, 217, 0.08);
+    font-size: 16px;
+  }
+
+  /* ===== Slider ===== */
+  .slider {
+    position: relative;
+    overflow: hidden;
+    border: 2px solid var(--blue-border);
+    border-radius: 20px;
+    background: rgba(74, 144, 217, 0.06);
+  }
+
+  .slider-track {
+    display: flex;
+    transition: transform 0.5s ease;
+  }
+
+  .slide {
+    min-width: 100%;
+    height: 340px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    color: #fff;
+    font-family: 'Press Start 2P', 'DotGothic16', monospace;
+    font-size: 16px;
+    text-shadow: 2px 2px 0 rgba(20, 50, 90, 0.5);
+    /* ▼ 実際のゲーム画像に差し替え:
+       <div class="slide" style="background-image:url('images/games/game1/thumb.jpg'); background-size:cover; background-position:center;"> */
+  }
+  .slide small { margin-top: 12px; font-family: 'DotGothic16'; font-size: 15px; }
+
+  /* 7枚分のプレースホルダー背景（画像を入れたら不要） */
+  .slide:nth-child(1) { background: linear-gradient(135deg, #3a7bc4, #6fb0e8); }
+  .slide:nth-child(2) { background: linear-gradient(135deg, #2e6cb0, #5da3e0); }
+  .slide:nth-child(3) { background: linear-gradient(135deg, #4585cc, #7cbaf0); }
+  .slide:nth-child(4) { background: linear-gradient(135deg, #2a63a6, #549bd9); }
+  .slide:nth-child(5) { background: linear-gradient(135deg, #3f80c8, #6cabe5); }
+  .slide:nth-child(6) { background: linear-gradient(135deg, #3572ba, #62a6e2); }
+  .slide:nth-child(7) { background: linear-gradient(135deg, #4889d0, #82c0f2); }
+
+  .slider-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.85);
+    border: 2px solid var(--blue-border);
+    border-radius: 50%;
+    color: var(--blue-main);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 13px;
+    cursor: pointer;
+    z-index: 5;
+    transition: background 0.2s, transform 0.15s, color 0.2s;
+  }
+  .slider-btn:hover { background: var(--blue-main); color: #fff; transform: translateY(-50%) scale(1.1); }
+  .slider-btn.prev { left: 10px; }
+  .slider-btn.next { right: 10px; }
+
+  .slider-dots {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 0 4px;
+    flex-wrap: wrap;
+  }
+  .dot {
+    width: 13px; height: 13px;
+    border: 2px solid var(--blue-border);
+    border-radius: 50%;
+    background: rgba(74, 144, 217, 0.15);
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .dot:hover { transform: scale(1.2); }
+  .dot.active { background: var(--blue-main); }
+
+  /* ===== Discord list ===== */
+  .discord-list { list-style: none; margin: 16px 0; }
+  .discord-list li {
+    padding: 10px 0 10px 8px;
+    border-bottom: 1px dashed rgba(74, 144, 217, 0.3);
+  }
+
+  .perk-note {
+    margin-top: 16px;
+    padding: 16px 18px;
+    border: 2px solid rgba(255, 184, 92, 0.7);
+    border-radius: 16px;
+    background: rgba(255, 184, 92, 0.12);
+    font-size: 16px;
+  }
+  .perk-note .perk-title {
+    color: #d97b1f;
+    font-weight: bold;
+  }
+
+  .cta-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+
+  footer {
+    text-align: center;
+    padding: 32px 16px 48px;
+    font-size: 14px;
+    color: var(--text-soft);
+  }
+  footer .press-start {
+    font-family: 'Press Start 2P', monospace;
+    color: var(--blue-bright);
+    font-size: 11px;
+    margin-bottom: 8px;
+    animation: blink 1.4s steps(1) infinite;
+  }
+
+  @media (max-width: 600px) {
+    .panel-body { padding: 16px; }
+    .panel { border-radius: 18px; }
+    .slide { height: 220px; font-size: 12px; }
+    body { font-size: 16px; }
+    .bg-moon { width: 60px; height: 60px; top: 5%; right: 6%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== 夜の森キャンプ背景 ===== -->
+<div class="bg-stars" id="starField"></div>
+<div class="bg-moon"></div>
+<div class="bg-campglow"></div>
+<div class="bg-forest">
+  <!-- 奥の森（薄め） -->
+  <svg viewBox="0 0 1200 220" preserveAspectRatio="none" aria-hidden="true">
+    <g fill="#0c1830">
+      <polygon points="0,220 0,150 40,90 80,150 80,220"/>
+      <polygon points="60,220 60,160 110,80 160,160 160,220"/>
+      <polygon points="150,220 150,155 190,100 230,155 230,220"/>
+      <polygon points="220,220 220,165 275,75 330,165 330,220"/>
+      <polygon points="320,220 320,150 365,95 410,150 410,220"/>
+      <polygon points="400,220 400,160 455,70 510,160 510,220"/>
+      <polygon points="500,220 500,155 545,105 590,155 590,220"/>
+      <polygon points="580,220 580,165 635,80 690,165 690,220"/>
+      <polygon points="680,220 680,150 725,90 770,150 770,220"/>
+      <polygon points="760,220 760,160 815,75 870,160 870,220"/>
+      <polygon points="860,220 860,155 905,100 950,155 950,220"/>
+      <polygon points="940,220 940,165 995,70 1050,165 1050,220"/>
+      <polygon points="1040,220 1040,150 1085,95 1130,150 1130,220"/>
+      <polygon points="1110,220 1110,160 1160,85 1200,150 1200,220"/>
+      <rect x="0" y="200" width="1200" height="20"/>
+    </g>
+    <!-- 手前の森（濃いめ） -->
+    <g fill="#060e1f">
+      <polygon points="0,220 0,175 55,110 110,175 110,220"/>
+      <polygon points="130,220 130,185 200,95 270,185 270,220"/>
+      <polygon points="300,220 300,180 350,125 400,180 400,220"/>
+      <polygon points="430,220 430,190 500,100 570,190 570,220"/>
+      <polygon points="620,220 620,180 675,120 730,180 730,220"/>
+      <polygon points="760,220 760,190 830,95 900,190 900,220"/>
+      <polygon points="930,220 930,180 985,125 1040,180 1040,220"/>
+      <polygon points="1070,220 1070,190 1140,100 1200,180 1200,220"/>
+      <rect x="0" y="205" width="1200" height="15"/>
+    </g>
+    <!-- 焚き火（森の真ん中あたり） -->
+    <g>
+      <ellipse cx="600" cy="210" rx="26" ry="6" fill="#3a2410"/>
+      <rect x="586" y="203" width="30" height="6" rx="3" fill="#5c3a1a" transform="rotate(-12 600 206)"/>
+      <rect x="586" y="203" width="30" height="6" rx="3" fill="#4d2f13" transform="rotate(14 600 206)"/>
+      <path d="M600,170 C590,185 588,195 594,203 L606,203 C614,193 610,183 600,170 Z" fill="#ff9d3c">
+        <animate attributeName="d"
+          values="M600,170 C590,185 588,195 594,203 L606,203 C614,193 610,183 600,170 Z;
+                  M600,166 C588,183 590,196 594,203 L606,203 C616,191 612,180 600,166 Z;
+                  M600,170 C590,185 588,195 594,203 L606,203 C614,193 610,183 600,170 Z"
+          dur="1.2s" repeatCount="indefinite"/>
+      </path>
+      <path d="M600,182 C595,190 594,197 597,202 L603,202 C607,196 605,189 600,182 Z" fill="#ffd25e">
+        <animate attributeName="d"
+          values="M600,182 C595,190 594,197 597,202 L603,202 C607,196 605,189 600,182 Z;
+                  M600,178 C594,188 595,198 597,202 L603,202 C608,194 606,186 600,178 Z;
+                  M600,182 C595,190 594,197 597,202 L603,202 C607,196 605,189 600,182 Z"
+          dur="0.9s" repeatCount="indefinite"/>
+      </path>
+    </g>
+  </svg>
+</div>
+<div class="firefly f1"></div>
+<div class="firefly f2"></div>
+<div class="firefly f3"></div>
+<div class="firefly f4"></div>
+<div class="firefly f5"></div>
+
+<header>
+  <h1 class="site-title">muiPGames<span class="blink">_</span></h1>
+  <p>ゲーム配信者のむいぴー公式ホームページへようこそ！</p>
+  <nav>
+    <a class="pixel-btn" href="index.html">🏠 ホーム</a>
+    <a class="pixel-btn" href="schedule.html">📅 配信スケジュール</a>
+    <a class="pixel-btn" href="https://www.youtube.com/@MuiPGames/featured" target="_blank" rel="noopener">▶️ YouTube</a>
+  </nav>
+</header>
+
+<main class="container">
+
+  <!-- ===== プロフィール ===== -->
+  <section class="panel">
+    <div class="panel-titlebar">
+      <span>PROFILE.EXE</span>
+      <span class="dots"><span></span><span></span></span>
+    </div>
+    <div class="panel-body">
+      <div class="profile">
+        <!-- ▼ 画像に差し替える場合:
+             <img src="images/avatar/muipy.png" alt="むいぴー" class="avatar"> -->
+        <div class="avatar">🎮</div>
+        <div class="profile-text">
+          <h2>むいぴーとは？</h2>
+          <p>アメリカからゲーム生配信中心に活動しているVtuber、<span class="highlight">むいぴー</span>です🅿️✌️</p>
+          <p>みなさん、出会ってくれてありがとう！</p>
+          <p>様々なジャンルのゲームを基本初見プレイで生配信を中心に活動中！</p>
+          <p>コメントはなるべく全拾い、視聴者さん達とわいわいアットホームな楽しい雰囲気の配信を目指しています🫶</p>
+          <div class="sub-note">
+            📢 配信逃さないために<br>
+            チャンネル登録＆🔔通知ONお願いします！
+          </div>
+          <div class="cta-row">
+            <a class="pixel-btn" href="https://www.youtube.com/@MuiPGames/featured" target="_blank" rel="noopener">▶️ Youtube</a>
+            <a class="pixel-btn" href="https://marshmallow-qa.com/4cwh7dd2wp99dgj?t=5LW6hp&utm_medium=url_text&utm_source=promotion" target="_blank" rel="noopener">📮 投票箱はこちら</a>
+          </div>
+          <p style="font-size:15px; margin-top:10px; color:#5a7a99;">投票箱：ゲームリクエストや素朴な質問、相談などなんでもウェルカム！</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 現在配信中のゲーム（スライダー） ===== -->
+  <section class="panel">
+    <div class="panel-titlebar">
+      <span>NOW STREAMING</span>
+      <span class="dots"><span></span><span></span></span>
+    </div>
+    <div class="panel-body">
+      <div class="slider" id="gameSlider">
+        <div class="slider-track" id="sliderTrack">
+          <!-- ▼ 各スライドの背景をゲーム画像に差し替え:
+               <div class="slide" style="background-image:url('images/games/game1/thumb.jpg'); background-size:cover; background-position:center;"></div> -->
+          <div class="slide">GAME 01<small>ここにゲーム画像 (images/games/game1/)</small></div>
+          <div class="slide">GAME 02<small>ここにゲーム画像 (images/games/game2/)</small></div>
+          <div class="slide">GAME 03<small>ここにゲーム画像 (images/games/game3/)</small></div>
+          <div class="slide">GAME 04<small>ここにゲーム画像 (images/games/game4/)</small></div>
+          <div class="slide">GAME 05<small>ここにゲーム画像 (images/games/game5/)</small></div>
+          <div class="slide">GAME 06<small>ここにゲーム画像 (images/games/game6/)</small></div>
+          <div class="slide">GAME 07<small>ここにゲーム画像 (images/games/game7/)</small></div>
+        </div>
+        <button class="slider-btn prev" id="prevBtn" aria-label="前へ">◀</button>
+        <button class="slider-btn next" id="nextBtn" aria-label="次へ">▶</button>
+      </div>
+      <div class="slider-dots" id="sliderDots"></div>
+    </div>
+  </section>
+
+  <!-- ===== Discord ===== -->
+  <section class="panel">
+    <div class="panel-titlebar">
+      <span>DISCORD - ムイピー軍団</span>
+      <span class="dots"><span></span><span></span></span>
+    </div>
+    <div class="panel-body">
+      <p>視聴者さんの参加をお待ちしております。</p>
+      <h3 style="margin-top:16px;">むいぴーのディスコードサーバーって何？</h3>
+      <ul class="discord-list">
+        <li>1⃣ むいぴーの配信日程や告知などの確認。</li>
+        <li>2⃣ 配信している各ゲームのチャンネル - むいぴーに知ってほしい攻略情報や自慢のスクショのシェア、ゲームに対する熱い思いなどなんでも待っています！</li>
+        <li>3⃣ 今後配信してほしいゲームリクエスト。</li>
+        <li>4⃣ その他の雑談など</li>
+      </ul>
+      <div class="perk-note">
+        <span class="perk-title">🔥 サーバー参加の特権</span><br>
+        今後参加型配信で一時的VCの解放、メンバーシップの交流なども予定！
+      </div>
+      <p style="margin-top:16px;">誰でも参加オーケーです🥰<br>
+      基本チャットだけのサーバーなので気軽に参加してください！</p>
+      <p style="margin-top:8px;">好きなゲームが同じ友達を探すのにも使っていただいて結構です☺️</p>
+      <div class="cta-row">
+        <a class="pixel-btn" href="https://discord.com/invite/faehhEMqG6" target="_blank" rel="noopener">💬 ムイピー軍団に参加する</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="press-start">- PRESS START -</div>
+  © 2026 むいぴー / muiPGames
+</footer>
+
+<script>
+  // ===== 星をランダムに散りばめる =====
+  (function () {
+    const field = document.getElementById('starField');
+    const STAR_COUNT = 80;
+    for (let i = 0; i < STAR_COUNT; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      const size = Math.random() * 2.5 + 1;          // 1〜3.5px
+      star.style.width = size + 'px';
+      star.style.height = size + 'px';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.top = Math.random() * 65 + '%';     // 空の上のほうに配置
+      star.style.animationDelay = (Math.random() * 3) + 's';
+      star.style.animationDuration = (2 + Math.random() * 3) + 's';
+      field.appendChild(star);
+    }
+  })();
+
+  // ===== シンプルなスライダー（スライド枚数は自動検出） =====
+  (function () {
+    const track = document.getElementById('sliderTrack');
+    const slides = track.children;
+    const dotsContainer = document.getElementById('sliderDots');
+    let current = 0;
+    let timer;
+
+    // ドット生成（スライドの枚数に合わせて自動生成されるので、
+    // スライドを増減してもJSの変更は不要です）
+    for (let i = 0; i < slides.length; i++) {
+      const dot = document.createElement('button');
+      dot.className = 'dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', 'スライド ' + (i + 1));
+      dot.addEventListener('click', () => goTo(i));
+      dotsContainer.appendChild(dot);
+    }
+
+    function goTo(index) {
+      current = (index + slides.length) % slides.length;
+      track.style.transform = 'translateX(-' + current * 100 + '%)';
+      document.querySelectorAll('.dot').forEach((d, i) => {
+        d.classList.toggle('active', i === current);
+      });
+      resetTimer();
+    }
+
+    function resetTimer() {
+      clearInterval(timer);
+      timer = setInterval(() => goTo(current + 1), 5000); // 5秒ごとに自動切替
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', () => goTo(current - 1));
+    document.getElementById('nextBtn').addEventListener('click', () => goTo(current + 1));
+
+    resetTimer();
+  })();
+</script>
+
+</body>
+</html>
