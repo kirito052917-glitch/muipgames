@@ -73,6 +73,7 @@
     box-shadow: 0 0 50px rgba(253, 246, 227, 0.4), 0 0 120px rgba(253, 246, 227, 0.15);
     z-index: -3;
     pointer-events: none;
+    transition: opacity 0.3s;   /* ★変更: opacityの切り替えをなめらかに */
   }
   /* 月のクレーター */
   .bg-moon::before, .bg-moon::after {
@@ -159,13 +160,19 @@
   header {
     text-align: center;
     padding: 32px 16px 16px;
+    position: relative;   /* ★変更: テキストを月より前面に */
+    z-index: 1;           /* ★変更 */
   }
 
   .site-title {
     font-family: 'Press Start 2P', 'DotGothic16', monospace;
     font-size: clamp(18px, 4vw, 32px);
     color: var(--blue-bright);
-    text-shadow: 0 0 16px rgba(140, 190, 255, 0.5);
+    /* ★変更: 暗い縁取りを追加して月と重なっても読めるように */
+    text-shadow:
+      0 0 16px rgba(140, 190, 255, 0.5),
+      2px 2px 4px rgba(10, 18, 38, 0.9),
+      -1px -1px 4px rgba(10, 18, 38, 0.9);
     letter-spacing: 2px;
   }
 
@@ -175,7 +182,11 @@
   }
   @keyframes blink { 50% { opacity: 0; } }
 
-  header > p { color: var(--text-on-dark); margin-top: 8px; }
+  header > p {
+    color: var(--text-on-dark);
+    margin-top: 8px;
+    text-shadow: 1px 1px 3px rgba(10, 18, 38, 0.9);   /* ★変更: 読みやすさ確保 */
+  }
 
   nav {
     display: flex;
@@ -216,6 +227,8 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
     margin: 32px 0;
     overflow: hidden;
+    position: relative;   /* ★変更: パネルも月より前面に */
+    z-index: 1;           /* ★変更 */
   }
 
   .panel-titlebar {
@@ -396,6 +409,8 @@
     padding: 32px 16px 48px;
     font-size: 14px;
     color: var(--text-soft);
+    position: relative;   /* ★変更 */
+    z-index: 1;           /* ★変更 */
   }
   footer .press-start {
     font-family: 'Press Start 2P', monospace;
@@ -410,7 +425,15 @@
     .panel { border-radius: 18px; }
     .slide { height: 220px; font-size: 12px; }
     body { font-size: 16px; }
-    .bg-moon { width: 60px; height: 60px; top: 5%; right: 6%; }
+    /* ★変更: モバイルでは月を薄い背景装飾にする（パターン3） */
+    .bg-moon {
+      width: 60px;
+      height: 60px;
+      top: 4%;
+      right: 5%;
+      opacity: 0.35;
+      box-shadow: 0 0 30px rgba(253, 246, 227, 0.2);
+    }
   }
 </style>
 </head>
