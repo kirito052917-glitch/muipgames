@@ -311,19 +311,18 @@
   }
 
   .slide {
-    min-width: 100%;
-    height: 340px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    color: #fff;
-    font-family: 'Press Start 2P', 'DotGothic16', monospace;
-    font-size: 16px;
-    text-shadow: 2px 2px 0 rgba(20, 50, 90, 0.5);
-    /* ▼ 実際のゲーム画像に差し替え:
-       <div class="slide" style="background-image:url('images/games/game1/thumb.jpg'); background-size:cover; background-position:center;"> */
-  }
+  min-width: 100%;
+  aspect-ratio: 16 / 9;   /* ★変更: YouTubeサムネと同じ比率に */
+  height: auto;           /* ★変更: 固定の高さを削除 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: #fff;
+  font-family: 'Press Start 2P', 'DotGothic16', monospace;
+  font-size: 16px;
+  text-shadow: 2px 2px 0 rgba(20, 50, 90, 0.5);
+}
   .slide small { margin-top: 12px; font-family: 'DotGothic16'; font-size: 15px; }
 
   /* 7枚分のプレースホルダー背景（画像を入れたら不要） */
@@ -560,7 +559,7 @@
   <div class="slide" style="background-image:url('Images/games/game3.png'); background-size:cover; background-position:center;"></div>
   <div class="slide" style="background-image:url('Images/games/game4.png'); background-size:cover; background-position:center;"></div>
   <div class="slide" style="background-image:url('Images/games/game5.png'); background-size:cover; background-position:center;"></div>
-  <div class="slide" style="background-image:url('Images/games/game6.png'); background-size:cover; background-position:center;"></div>
+  <div class="slide" style="background-image:url('Images/games/game6.jpg'); background-size:cover; background-position:center;"></div>
   <div class="slide" style="background-image:url('Images/games/game7.png'); background-size:cover; background-position:center;"></div>
 </div>
         <button class="slider-btn prev" id="prevBtn" aria-label="前へ">◀</button>
