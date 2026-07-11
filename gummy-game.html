@@ -66,8 +66,9 @@
 
   #game-wrap {
   position: relative;
-  width: min(94vw, calc((100vh - 220px) * 26/27), 780px) /* ★画面の高さの62%か540pxの小さい方 */
-  aspect-ratio: 26 / 27; 
+  width: 100%;
+  max-width: 520px;
+  height: min(62vh, 540px);
   flex: none;                 /* ★勝手に伸びるのをやめる */
   display: flex;
   padding: 0 8px;
