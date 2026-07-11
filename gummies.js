@@ -84,7 +84,7 @@
   // ===== スタイル(グミのアニメーションのみ — 背景はサイトのまま) =====
   const style = document.createElement("style");
   style.textContent = `
-    .gummy-layer { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 3; }
+    .gummy-layer { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
     .gummy {
       position: absolute;
       opacity: 0.85;
