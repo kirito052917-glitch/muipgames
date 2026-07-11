@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>グミキャッチ ⭐</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Hiragino Maru Gothic ProN', 'ヒラギノ丸ゴ ProN', 'Rounded Mplus 1c', sans-serif;
+    background: linear-gradient(180deg, #0b1035 0%, #1a1f4d 45%, #2d2a6e 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #fff;
+    overflow: hidden;
+    touch-action: none;
+  }
+
+  header {
+    padding: 14px 16px 6px;
+    text-align: center;
+    width: 100%;
+  }
+
+  header h1 {
+    font-size: 1.4rem;
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 12px rgba(255, 200, 255, 0.6);
+  }
+
+  .back-link {
+    position: absolute;
+    left: 12px;
+    top: 14px;
+    color: #cfd3ff;
+    text-decoration: none;
+    font-size: 0.85rem;
+    background: rgba(255,255,255,0.08);
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(255,255,255,0.2);
+    z-index: 20;
+  }
+  .back-link:hover { background: rgba(255,255,255,0.18); }
+
+  #hud {
+    display: flex;
+    gap: 10px;
+    padding: 6px 0 8px;
+    font-size: 0.88rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .hud-item {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 999px;
+    padding: 5px 14px;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .hud-item.best { color: #ffe08a; border-color: rgba(255,224,138,0.4); }
+
+  #game-wrap {
+    position: relative;
+    width: 100%;
+    max-width: 560px;
+    flex: 1;
+    display: flex;
+    padding: 0 8px 12px;
+  }
+
+  canvas#game {
+    width: 100%;
+    height: 100%;
+    border-radius: 18px;
+    background: transparent;
+    display: block;
+  }
+
+  .overlay {
+    position: absolute;
+    inset: 0 8px 12px;
+    background: rgba(10, 12, 40, 0.85);
+    backdrop-filter: blur(4px);
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    z-index: 10;
+    overflow-y: auto;
+  }
+  .overlay.hidden { display: none; }
+
+  .overlay h2 {
+    font-size: 1.6rem;
+    margin-bottom: 14px;
+    text-shadow: 0 0 14px rgba(255, 180, 255, 0.7);
+  }
+  .overlay p {
+    font-size: 0.92rem;
+    line-height: 1.9;
+    color: #d8dbff;
+    margin-bottom: 16px;
+  }
+
+  .btn {
+    font-family: inherit;
+    font-size: 1rem;
+    padding: 11px 30px;
+    border: none;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #ff9ecf, #b48cff);
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(255, 158, 207, 0.45);
+    transition: transform 0.15s;
+    letter-spacing: 0.06em;
+  }
+  .btn:hover { transform: scale(1.06); }
+  .btn:active { transform: scale(0.95); }
+
+  .btn.sub {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.35);
+    box-shadow: none;
+    font-size: 0.92rem;
+    padding: 10px 22px;
+  }
+  .btn.x-btn {
+    background: #000;
+    border: 1px solid rgba(255,255,255,0.3);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+    font-size: 0.92rem;
+    padding: 10px 22px;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+
+  #result-score {
+    font-size: 2.4rem;
+    color: #ffe08a;
+    text-shadow: 0 0 16px rgba(255, 224, 138, 0.6);
+    margin-bottom: 2px;
+  }
+  #new-record {
+    color: #ff9ecf;
+    font-size: 1rem;
+    font-weight: bold;
+    margin-bottom: 6px;
+    text-shadow: 0 0 10px rgba(255,158,207,0.8);
+    animation: pulse 0.8s ease-in-out infinite alternate;
+  }
+  #new-record.hidden { display: none; }
+  @keyframes pulse {
+    from { transform: scale(1); }
+    to { transform: scale(1.08); }
+  }
+  #result-best {
+    font-size: 0.85rem;
+    color: #cfd3ff;
+    margin-bottom: 10px;
+  }
+  #result-msg { margin-bottom: 14px; }
+
+  .legend {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-size: 0.85rem;
+    flex-wrap: wrap;
+  }
+  .legend span {
+    background: rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 6px 12px;
+  }
+
+  /* スコアカードプレビュー用モーダル */
+  #card-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 16px;
+  }
+  #card-modal.hidden { display: none; }
+  #card-modal img {
+    max-width: 100%;
+    max-height: 60vh;
+    border-radius: 14px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+    margin-bottom: 14px;
+  }
+  #card-modal .hint {
+    font-size: 0.8rem;
+    color: #cfd3ff;
+    margin-bottom: 12px;
+    text-align: center;
+    line-height: 1.7;
+  }
+</style>
+</head>
+<body>
+
+<a class="back-link" href="index.html">← もどる</a>
+
+<header><h1>⭐ グミキャッチ ⭐</h1></header>
+
+<div id="hud">
+  <div class="hud-item">スコア <span id="score">0</span></div>
+  <div class="hud-item">のこり <span id="time">30</span>s</div>
+  <div class="hud-item best">👑 ハイスコア <span id="best">0</span></div>
+</div>
+
+<div id="game-wrap">
+  <canvas id="game"></canvas>
+
+  <div class="overlay" id="start-overlay">
+    <h2>グミキャッチ</h2>
+    <p>夜空から降ってくるグミを<br>カゴでキャッチしよう!<br>指かマウスで左右に動かせるよ</p>
+    <div class="legend">
+      <span>🍬 グミ +10</span>
+      <span>🍙 レア +50</span>
+      <span>🪨 石 -15</span>
+    </div>
+    <button class="btn" id="start-btn">スタート!</button>
+  </div>
+
+  <div class="overlay hidden" id="end-overlay">
+    <h2>おわり!</h2>
+    <div id="new-record" class="hidden">✨ ハイスコア更新!! ✨</div>
+    <div id="result-score">0</div>
+    <div id="result-best">👑 ハイスコア: 0てん</div>
+    <p id="result-msg"></p>
+    <div class="btn-row">
+      <button class="btn x-btn" id="share-x-btn">𝕏 でシェア</button>
+      <button class="btn sub" id="save-img-btn">📷 スコアカード保存</button>
+    </div>
+    <button class="btn" id="retry-btn">もういっかい!</button>
+  </div>
+</div>
+
+<!-- スコアカードプレビュー -->
+<div id="card-modal" class="hidden">
+  <img id="card-img" alt="スコアカード">
+  <div class="hint">画像を長押し(スマホ)または右クリック(PC)でも保存できるよ</div>
+  <div class="btn-row">
+    <button class="btn" id="download-btn">💾 ダウンロード</button>
+    <button class="btn sub" id="close-card-btn">とじる</button>
+  </div>
+</div>
+
+<script>
+(() => {
+  // ▼▼ ここを自分のサイトのURLに書き換えてね ▼▼
+  const SITE_URL = 'https://example.com';
+  const HASHTAG = 'グミキャッチ';
+  // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+  const scoreEl = document.getElementById('score');
+  const timeEl = document.getElementById('time');
+  const bestEl = document.getElementById('best');
+  const startOverlay = document.getElementById('start-overlay');
+  const endOverlay = document.getElementById('end-overlay');
+  const resultScore = document.getElementById('result-score');
+  const resultBest = document.getElementById('result-best');
+  const resultMsg = document.getElementById('result-msg');
+  const newRecordEl = document.getElementById('new-record');
+  const cardModal = document.getElementById('card-modal');
+  const cardImg = document.getElementById('card-img');
+
+  let W = 0, H = 0, dpr = 1;
+  function resize() {
+    dpr = window.devicePixelRatio || 1;
+    const rect = canvas.getBoundingClientRect();
+    W = rect.width;
+    H = rect.height;
+    canvas.width = W * dpr;
+    canvas.height = H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  // ===== ハイスコア =====
+  let highScore = 0;
+  try {
+    highScore = parseInt(localStorage.getItem('gummy-catch-best') || '0', 10);
+  } catch (e) { /* localStorageが使えない環境では今回のセッションのみ */ }
+  bestEl.textContent = highScore;
+
+  function saveHighScore(v) {
+    highScore = v;
+    bestEl.textContent = v;
+    try { localStorage.setItem('gummy-catch-best', String(v)); } catch (e) {}
+  }
+
+  // ===== サウンド(Web Audio) =====
+  let audioCtx = null;
+  function initAudio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  }
+  function puniSound(base = 520) {
+    if (!audioCtx) return;
+    const t = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(base, t);
+    osc.frequency.exponentialRampToValueAtTime(base * 1.8, t + 0.06);
+    osc.frequency.exponentialRampToValueAtTime(base * 0.9, t + 0.14);
+    gain.gain.setValueAtTime(0.25, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(t); osc.stop(t + 0.2);
+  }
+  function rareSound() {
+    if (!audioCtx) return;
+    [660, 880, 1100].forEach((f, i) => {
+      const t = audioCtx.currentTime + i * 0.08;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.value = f;
+      gain.gain.setValueAtTime(0.2, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(t); osc.stop(t + 0.3);
+    });
+  }
+  function badSound() {
+    if (!audioCtx) return;
+    const t = audioCtx.currentTime;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(220, t);
+    osc.frequency.exponentialRampToValueAtTime(90, t + 0.25);
+    gain.gain.setValueAtTime(0.15, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.3);
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start(t); osc.stop(t + 0.32);
+  }
+  function fanfare() {
+    if (!audioCtx) return;
+    [523, 659, 784, 1047].forEach((f, i) => {
+      const t = audioCtx.currentTime + i * 0.12;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.value = f;
+      gain.gain.setValueAtTime(0.22, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(t); osc.stop(t + 0.4);
+    });
+  }
+
+  // ===== 背景の星 =====
+  const stars = [];
+  for (let i = 0; i < 60; i++) {
+    stars.push({
+      x: Math.random(), y: Math.random() * 0.85,
+      r: Math.random() * 1.6 + 0.4,
+      tw: Math.random() * Math.PI * 2,
+      sp: 0.5 + Math.random() * 2
+    });
+  }
+
+  // ===== ゲーム状態 =====
+  const GUMMY_COLORS = [
+    { fill: 'rgba(255,120,170,0.85)', hi: '#ffd6e8' },
+    { fill: 'rgba(140,200,255,0.85)', hi: '#e0f2ff' },
+    { fill: 'rgba(180,140,255,0.85)', hi: '#eaddff' },
+    { fill: 'rgba(140,235,180,0.85)', hi: '#dcffe8' },
+    { fill: 'rgba(255,220,120,0.85)', hi: '#fff3d0' },
+  ];
+  const SHAPES = ['star', 'heart', 'round'];
+
+  let items = [], particles = [], floaters = [];
+  let score = 0, timeLeft = 30, combo = 0;
+  let playing = false;
+  let playerX = 0.5;
+  let spawnTimer = 0, lastTime = 0, elapsed = 0;
+  let lastResultMsg = '';
+  const BASKET_W = 92, BASKET_H = 46;
+
+  function reset() {
+    items = []; particles = []; floaters = [];
+    score = 0; timeLeft = 30; combo = 0;
+    spawnTimer = 0; elapsed = 0;
+    playerX = 0.5;
+    scoreEl.textContent = '0';
+    timeEl.textContent = '30';
+  }
+
+  function spawnItem() {
+    const r = Math.random();
+    let type = 'gummy';
+    if (r < 0.06) type = 'rare';
+    else if (r < 0.20) type = 'rock';
+    items.push({
+      type,
+      shape: SHAPES[Math.floor(Math.random() * SHAPES.length)],
+      color: GUMMY_COLORS[Math.floor(Math.random() * GUMMY_COLORS.length)],
+      x: 0.08 + Math.random() * 0.84,
+      y: -40,
+      vy: 90 + Math.random() * 60 + elapsed * 3,
+      size: type === 'rare' ? 30 : 26,
+      rot: Math.random() * Math.PI * 2,
+      vr: (Math.random() - 0.5) * 2,
+      wobble: Math.random() * Math.PI * 2
+    });
+  }
+
+  function addParticles(x, y, color, n = 10) {
+    for (let i = 0; i < n; i++) {
+      const a = Math.random() * Math.PI * 2;
+      const sp = 60 + Math.random() * 120;
+      particles.push({
+        x, y,
+        vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 60,
+        life: 0.6 + Math.random() * 0.3,
+        maxLife: 0.9,
+        r: 2 + Math.random() * 3,
+        color
+      });
+    }
+  }
+
+  function addFloater(x, y, text, color) {
+    floaters.push({ x, y, text, color, life: 0.9 });
+  }
+
+  // ===== 図形描画 =====
+  function drawStarPath(c, r) {
+    c.beginPath();
+    for (let i = 0; i < 10; i++) {
+      const rad = i % 2 === 0 ? r : r * 0.5;
+      const a = (Math.PI / 5) * i - Math.PI / 2;
+      i === 0 ? c.moveTo(Math.cos(a) * rad, Math.sin(a) * rad)
+              : c.lineTo(Math.cos(a) * rad, Math.sin(a) * rad);
+    }
+    c.closePath();
+  }
+  function drawHeartPath(c, r) {
+    c.beginPath();
+    c.moveTo(0, r * 0.35);
+    c.bezierCurveTo(-r * 1.1, -r * 0.5, -r * 0.5, -r * 1.1, 0, -r * 0.4);
+    c.bezierCurveTo(r * 0.5, -r * 1.1, r * 1.1, -r * 0.5, 0, r * 0.35);
+    c.closePath();
+  }
+
+  function drawGummyShape(c, shape, size, color, rot) {
+    c.fillStyle = color.fill;
+    c.shadowColor = color.fill;
+    c.shadowBlur = 12;
+    if (shape === 'star') drawStarPath(c, size * 0.7);
+    else if (shape === 'heart') drawHeartPath(c, size * 0.65);
+    else { c.beginPath(); c.arc(0, 0, size * 0.6, 0, Math.PI * 2); }
+    c.fill();
+    c.shadowBlur = 0;
+    c.fillStyle = 'rgba(255,255,255,0.55)';
+    c.beginPath();
+    c.ellipse(-size * 0.18, -size * 0.22, size * 0.16, size * 0.1, -0.5, 0, Math.PI * 2);
+    c.fill();
+    c.fillStyle = 'rgba(255,255,255,0.7)';
+    for (let i = 0; i < 5; i++) {
+      const a = (i / 5) * Math.PI * 2 + rot;
+      c.beginPath();
+      c.arc(Math.cos(a) * size * 0.4, Math.sin(a) * size * 0.4, 1.2, 0, Math.PI * 2);
+      c.fill();
+    }
+  }
+
+  function drawGummy(it) {
+    const px = it.x * W + Math.sin(it.wobble) * 8;
+    const py = it.y;
+    ctx.save();
+    ctx.translate(px, py);
+    ctx.rotate(it.rot * 0.3);
+
+    if (it.type === 'rare') {
+      ctx.font = '34px serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.shadowColor = 'rgba(255,255,200,0.9)';
+      ctx.shadowBlur = 16;
+      ctx.fillText('🍙', 0, 0);
+    } else if (it.type === 'rock') {
+      ctx.font = '30px serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('🪨', 0, 0);
+    } else {
+      drawGummyShape(ctx, it.shape, it.size, it.color, it.rot);
+    }
+    ctx.restore();
+  }
+
+  function drawBasket() {
+    const bx = playerX * W;
+    const by = H - 34;
+    ctx.save();
+    ctx.translate(bx, by);
+    const grad = ctx.createLinearGradient(0, -BASKET_H / 2, 0, BASKET_H / 2);
+    grad.addColorStop(0, '#ffd9ec');
+    grad.addColorStop(1, '#ff9ecf');
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.moveTo(-BASKET_W / 2, -BASKET_H / 2);
+    ctx.lineTo(BASKET_W / 2, -BASKET_H / 2);
+    ctx.lineTo(BASKET_W / 2 - 12, BASKET_H / 2);
+    ctx.quadraticCurveTo(0, BASKET_H / 2 + 8, -BASKET_W / 2 + 12, BASKET_H / 2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = '#b48cff';
+    ctx.beginPath();
+    ctx.roundRect(-BASKET_W / 2 - 4, -BASKET_H / 2 - 5, BASKET_W + 8, 10, 5);
+    ctx.fill();
+    ctx.fillStyle = '#5a3b6e';
+    ctx.beginPath(); ctx.arc(-13, 4, 2.6, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(13, 4, 2.6, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#5a3b6e';
+    ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(0, 7, 5, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,120,160,0.5)';
+    ctx.beginPath(); ctx.arc(-22, 9, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.beginPath(); ctx.arc(22, 9, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  function draw(dt) {
+    ctx.clearRect(0, 0, W, H);
+
+    for (const s of stars) {
+      s.tw += dt * s.sp;
+      const alpha = 0.3 + Math.abs(Math.sin(s.tw)) * 0.7;
+      ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+      ctx.beginPath();
+      ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.fillStyle = 'rgba(255,240,190,0.9)';
+    ctx.shadowColor = 'rgba(255,240,190,0.8)';
+    ctx.shadowBlur = 20;
+    ctx.beginPath();
+    ctx.arc(W - 50, 55, 22, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#1a1f4d';
+    ctx.beginPath();
+    ctx.arc(W - 42, 50, 19, 0, Math.PI * 2);
+    ctx.fill();
+
+    for (const it of items) drawGummy(it);
+    drawBasket();
+
+    for (const p of particles) {
+      ctx.globalAlpha = Math.max(p.life / p.maxLife, 0);
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    ctx.textAlign = 'center';
+    ctx.font = 'bold 18px sans-serif';
+    for (const f of floaters) {
+      ctx.globalAlpha = Math.max(f.life, 0);
+      ctx.fillStyle = f.color;
+      ctx.fillText(f.text, f.x, f.y);
+    }
+    ctx.globalAlpha = 1;
+
+    if (combo >= 3) {
+      ctx.font = 'bold 15px sans-serif';
+      ctx.fillStyle = 'rgba(255,224,138,0.9)';
+      ctx.fillText(`${combo} コンボ! ✨`, W / 2, 28);
+    }
+  }
+
+  // ===== 更新 =====
+  function update(dt) {
+    elapsed += dt;
+    timeLeft -= dt;
+    if (timeLeft <= 0) { timeLeft = 0; endGame(); }
+    timeEl.textContent = Math.ceil(timeLeft);
+
+    spawnTimer -= dt;
+    const interval = Math.max(0.75 - elapsed * 0.012, 0.35);
+    if (spawnTimer <= 0) { spawnItem(); spawnTimer = interval; }
+
+    const basketTop = H - 34 - BASKET_H / 2;
+    const bx = playerX * W;
+
+    for (let i = items.length - 1; i >= 0; i--) {
+      const it = items[i];
+      it.y += it.vy * dt;
+      it.rot += it.vr * dt;
+      it.wobble += dt * 3;
+      const px = it.x * W + Math.sin(it.wobble) * 8;
+
+      if (it.y > basketTop - 6 && it.y < basketTop + 26 &&
+          Math.abs(px - bx) < BASKET_W / 2 + it.size * 0.4) {
+        if (it.type === 'rare') {
+          score += 50; combo++;
+          rareSound();
+          addParticles(px, it.y, '#ffe08a', 18);
+          addFloater(px, it.y - 20, '+50 🍙', '#ffe08a');
+        } else if (it.type === 'rock') {
+          score = Math.max(0, score - 15); combo = 0;
+          badSound();
+          addParticles(px, it.y, '#999', 8);
+          addFloater(px, it.y - 20, '-15 いてっ', '#ff8a8a');
+        } else {
+          const bonus = combo >= 3 ? 5 : 0;
+          score += 10 + bonus; combo++;
+          puniSound(440 + Math.min(combo * 40, 400));
+          addParticles(px, it.y, it.color.hi, 12);
+          addFloater(px, it.y - 20, `+${10 + bonus}`, '#fff');
+        }
+        scoreEl.textContent = score;
+        items.splice(i, 1);
+        continue;
+      }
+      if (it.y > H + 40) {
+        if (it.type !== 'rock') combo = 0;
+        items.splice(i, 1);
+      }
+    }
+
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.life -= dt;
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      p.vy += 300 * dt;
+      if (p.life <= 0) particles.splice(i, 1);
+    }
+    for (let i = floaters.length - 1; i >= 0; i--) {
+      const f = floaters[i];
+      f.life -= dt;
+      f.y -= 40 * dt;
+      if (f.life <= 0) floaters.splice(i, 1);
+    }
+  }
+
+  function loop(t) {
+    if (!playing) return;
+    const dt = Math.min((t - lastTime) / 1000, 0.05);
+    lastTime = t;
+    update(dt);
+    draw(dt);
+    requestAnimationFrame(loop);
+  }
+
+  // ===== 操作 =====
+  function movePlayer(clientX) {
+    const rect = canvas.getBoundingClientRect();
+    playerX = Math.min(Math.max((clientX - rect.left) / rect.width, 0.08), 0.92);
+  }
+  canvas.addEventListener('pointermove', e => movePlayer(e.clientX));
+  canvas.addEventListener('pointerdown', e => movePlayer(e.clientX));
+  canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    movePlayer(e.touches[0].clientX);
+  }, { passive: false });
+
+  const keys = {};
+  window.addEventListener('keydown', e => keys[e.key] = true);
+  window.addEventListener('keyup', e => keys[e.key] = false);
+  setInterval(() => {
+    if (!playing) return;
+    if (keys['ArrowLeft']) playerX = Math.max(playerX - 0.02, 0.08);
+    if (keys['ArrowRight']) playerX = Math.min(playerX + 0.02, 0.92);
+  }, 16);
+
+  // ===== 開始・終了 =====
+  function startGame() {
+    initAudio();
+    reset();
+    resize();
+    startOverlay.classList.add('hidden');
+    endOverlay.classList.add('hidden');
+    playing = true;
+    lastTime = performance.now();
+    requestAnimationFrame(loop);
+  }
+
+  function endGame() {
+    playing = false;
+    resultScore.textContent = score + ' てん';
+
+    const isNewRecord = score > highScore;
+    if (isNewRecord) {
+      saveHighScore(score);
+      newRecordEl.classList.remove('hidden');
+      fanfare();
+    } else {
+      newRecordEl.classList.add('hidden');
+    }
+    resultBest.textContent = `👑 ハイスコア: ${highScore}てん`;
+
+    let msg;
+    if (score >= 400) msg = 'グミマスター爆誕!!すごすぎる🍬👑';
+    else if (score >= 250) msg = 'めっちゃ上手!グミたちも大よろこび✨';
+    else if (score >= 120) msg = 'いいかんじ!その調子だよ〜🌙';
+    else msg = 'グミは逃げない。また挑戦してね🍬';
+    lastResultMsg = msg;
+    resultMsg.textContent = msg;
+    endOverlay.classList.remove('hidden');
+  }
+
+  // ===== Xシェア =====
+  document.getElementById('share-x-btn').addEventListener('click', () => {
+    const text = `グミキャッチで ${score}てん とったよ!🍬✨\n(ハイスコア: ${highScore}てん 👑)\n${lastResultMsg}`;
+    const url = 'https://twitter.com/intent/tweet'
+      + '?text=' + encodeURIComponent(text)
+      + '&url=' + encodeURIComponent(SITE_URL)
+      + '&hashtags=' + encodeURIComponent(HASHTAG);
+    window.open(url, '_blank', 'noopener');
+  });
+
+  // ===== スコアカード画像生成 =====
+  function makeScoreCard() {
+    const cw = 800, ch = 450;
+    const c = document.createElement('canvas');
+    c.width = cw; c.height = ch;
+    const g = c.getContext('2d');
+
+    // 背景
+    const bg = g.createLinearGradient(0, 0, 0, ch);
+    bg.addColorStop(0, '#0b1035');
+    bg.addColorStop(0.5, '#1a1f4d');
+    bg.addColorStop(1, '#2d2a6e');
+    g.fillStyle = bg;
+    g.fillRect(0, 0, cw, ch);
+
+    // 星
+    for (let i = 0; i < 70; i++) {
+      g.fillStyle = `rgba(255,255,255,${0.3 + Math.random() * 0.7})`;
+      g.beginPath();
+      g.arc(Math.random() * cw, Math.random() * ch * 0.8, Math.random() * 1.8 + 0.5, 0, Math.PI * 2);
+      g.fill();
+    }
+
+    // 月
+    g.fillStyle = 'rgba(255,240,190,0.95)';
+    g.shadowColor = 'rgba(255,240,190,0.8)';
+    g.shadowBlur = 30;
+    g.beginPath(); g.arc(cw - 80, 75, 34, 0, Math.PI * 2); g.fill();
+    g.shadowBlur = 0;
+    g.fillStyle = '#141a45';
+    g.beginPath(); g.arc(cw - 67, 67, 29, 0, Math.PI * 2); g.fill();
+
+    // 飾りのグミたち
+    const deco = [
+      { x: 70, y: 90, shape: 'star', color: GUMMY_COLORS[4], size: 34, rot: 0.3 },
+      { x: 130, y: 350, shape: 'heart', color: GUMMY_COLORS[0], size: 38, rot: -0.2 },
+      { x: 680, y: 330, shape: 'round', color: GUMMY_COLORS[1], size: 34, rot: 0.5 },
+      { x: 620, y: 390, shape: 'star', color: GUMMY_COLORS[2], size: 28, rot: 1.1 },
+      { x: 60, y: 230, shape: 'round', color: GUMMY_COLORS[3], size: 26, rot: 2.0 },
+      { x: 730, y: 200, shape: 'heart', color: GUMMY_COLORS[2], size: 30, rot: -0.6 },
+    ];
+    for (const d of deco) {
+      g.save();
+      g.translate(d.x, d.y);
+      g.rotate(d.rot);
+      drawGummyShape(g, d.shape, d.size, d.color, d.rot);
+      g.restore();
+    }
+
+    // 枠
+    g.strokeStyle = 'rgba(255,255,255,0.25)';
+    g.lineWidth = 3;
+    g.beginPath();
+    g.roundRect(18, 18, cw - 36, ch - 36, 22);
+    g.stroke();
+
+    // テキスト
+    g.textAlign = 'center';
+    g.fillStyle = '#fff';
+    g.shadowColor = 'rgba(255,180,255,0.7)';
+    g.shadowBlur = 18;
+    g.font = 'bold 40px "Hiragino Maru Gothic ProN", sans-serif';
+    g.fillText('⭐ グミキャッチ ⭐', cw / 2, 95);
+    g.shadowBlur = 0;
+
+    g.font = '22px sans-serif';
+    g.fillStyle = '#cfd3ff';
+    g.fillText('SCORE', cw / 2, 160);
+
+    g.font = 'bold 92px sans-serif';
+    g.fillStyle = '#ffe08a';
+    g.shadowColor = 'rgba(255,224,138,0.7)';
+    g.shadowBlur = 26;
+    g.fillText(`${score}`, cw / 2, 258);
+    g.shadowBlur = 0;
+
+    g.font = '24px sans-serif';
+    g.fillStyle = '#fff';
+    g.fillText(lastResultMsg, cw / 2, 315);
+
+    g.font = '20px sans-serif';
+    g.fillStyle = '#ffd9ec';
+    g.fillText(`👑 ハイスコア: ${highScore}てん`, cw / 2, 360);
+
+    const d = new Date();
+    g.font = '15px sans-serif';
+    g.fillStyle = 'rgba(255,255,255,0.5)';
+    g.fillText(`${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`, cw / 2, 405);
+
+    return c;
+  }
+
+  let cardDataUrl = '';
+  document.getElementById('save-img-btn').addEventListener('click', () => {
+    const card = makeScoreCard();
+    cardDataUrl = card.toDataURL('image/png');
+    cardImg.src = cardDataUrl;
+    cardModal.classList.remove('hidden');
+  });
+
+  document.getElementById('download-btn').addEventListener('click', () => {
+    const a = document.createElement('a');
+    a.href = cardDataUrl;
+    a.download = `gummy-catch-${score}pts.png`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  });
+
+  document.getElementById('close-card-btn').addEventListener('click', () => {
+    cardModal.classList.add('hidden');
+  });
+
+  document.getElementById('start-btn').addEventListener('click', startGame);
+  document.getElementById('retry-btn').addEventListener('click', startGame);
+
+  draw(0);
+})();
+</script>
+</body>
+</html>
