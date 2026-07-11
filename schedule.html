@@ -1,7 +1,292 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>スケジュール | むいぴー</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue-main: #4a90d9;
+    --blue-deep: #1d3a5f;
+    --blue-bright: #a8d4ff;
+    --blue-border: rgba(120, 180, 240, 0.5);
+    --panel-light: rgba(255, 255, 255, 0.88);
+    --accent: #ffb85c;
+    --text-on-dark: #cfe3f7;
+    --text-soft: #7f9db8;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-<div class="cta">
-    <a class="btn" href="https://www.youtube.com/@MuiPGames/featured" target="_blank" rel="noopener">▶ YOUTUBE</a>
-    <a class="btn secondary" href="https://discord.com/invite/faehhEMqG6" target="_blank" rel="noopener">💬 DISCORD</a>
+  body {
+    color: var(--blue-deep);
+    font-family: 'DotGothic16', sans-serif;
+    font-size: 18px;
+    line-height: 1.8;
+    background: linear-gradient(180deg,
+      #0a1226 0%,
+      #0e1c3a 35%,
+      #16294e 65%,
+      #1b3055 100%);
+    background-attachment: fixed;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* ===== 夜空の背景(index.htmlとおそろい) ===== */
+  .bg-stars { position: fixed; inset: 0; z-index: -3; pointer-events: none; }
+  .star {
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+    animation: twinkle 3s ease-in-out infinite;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.9; transform: scale(1); }
+    50%      { opacity: 0.2; transform: scale(0.7); }
+  }
+
+  .bg-moon {
+    position: fixed;
+    top: 7%;
+    right: 10%;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 38% 35%, #fdf6e3, #e8ddb8 70%);
+    box-shadow: 0 0 50px rgba(253, 246, 227, 0.4), 0 0 120px rgba(253, 246, 227, 0.15);
+    z-index: -3;
+    pointer-events: none;
+  }
+  .bg-moon::before, .bg-moon::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(190, 178, 140, 0.5);
+  }
+  .bg-moon::before { width: 18px; height: 18px; top: 28%; left: 22%; }
+  .bg-moon::after  { width: 12px; height: 12px; top: 58%; left: 55%; }
+
+  .bg-forest {
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    z-index: -2;
+    pointer-events: none;
+    line-height: 0;
+  }
+  .bg-forest svg { width: 100%; height: auto; display: block; }
+
+  /* コンテンツはグミ(z-index:0)より手前に */
+  header, main, footer { position: relative; z-index: 1; }
+
+  /* ===== ヘッダー ===== */
+  header { text-align: center; padding: 32px 16px 16px; }
+  .site-title {
+    font-family: 'Press Start 2P', 'DotGothic16', monospace;
+    font-size: clamp(16px, 3.5vw, 26px);
+    color: var(--blue-bright);
+    text-shadow:
+      0 0 16px rgba(140, 190, 255, 0.5),
+      2px 2px 4px rgba(10, 18, 38, 0.9);
+    letter-spacing: 2px;
+  }
+  header > p {
+    color: var(--text-on-dark);
+    margin-top: 8px;
+    text-shadow: 1px 1px 3px rgba(10, 18, 38, 0.9);
+  }
+  nav {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+  .pixel-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--blue-deep);
+    text-decoration: none;
+    border: 2px solid var(--blue-border);
+    border-radius: 9999px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+    transition: transform 0.15s, box-shadow 0.15s, background 0.2s, color 0.2s;
+    font-size: 16px;
+    font-family: 'DotGothic16', sans-serif;
+    cursor: pointer;
+  }
+  .pixel-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(74, 144, 217, 0.45);
+    background: var(--blue-main);
+    color: #fff;
+  }
+  .pixel-btn.active { background: var(--blue-main); color: #fff; }
+
+  /* ===== メイン ===== */
+  main { max-width: 900px; margin: 0 auto; padding: 20px 16px 60px; }
+
+  .week-range {
+    text-align: center;
+    color: var(--text-on-dark);
+    text-shadow: 1px 1px 3px rgba(10, 18, 38, 0.9);
+    font-size: 18px;
+    margin-bottom: 26px;
+  }
+
+  /* ===== 曜日カード(ガラスパネル) ===== */
+  .schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .day-card {
+    background: var(--panel-light);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 2px solid var(--blue-border);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    transition: transform .15s;
+  }
+  .day-card:hover { transform: translateY(-3px); }
+
+  .day-header {
+    background: linear-gradient(90deg, #4a90d9, #6fb0e8);
+    color: #fff;
+    padding: 8px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    text-shadow: 1px 1px 0 rgba(20, 50, 90, 0.4);
+  }
+  .day-header .dow { font-family: 'Press Start 2P', monospace; font-size: 12px; }
+
+  .day-body { padding: 16px 14px; }
+  .day-body .time {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 13px;
+    color: #2264a5;
+    margin-bottom: 8px;
+  }
+  .day-body .title { font-size: 17px; }
+
+  /* お休みの日 */
+  .day-card.off { opacity: 0.5; }
+  .day-card.off:hover { transform: none; }
+  .day-card.off .day-body { text-align: center; color: var(--text-soft); padding: 22px 14px; }
+
+  /* 今日(焚き火オレンジで光る) */
+  .day-card.today {
+    box-shadow: 0 0 0 3px var(--accent), 0 0 24px rgba(255, 184, 92, 0.5);
+  }
+  .today-badge {
+    background: var(--accent);
+    color: #4a3010;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  /* ===== 注意書き ===== */
+  .notes {
+    margin-top: 34px;
+    background: var(--panel-light);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 2px dashed var(--blue-border);
+    border-radius: 18px;
+    padding: 16px 18px;
+    font-size: 15px;
+    line-height: 1.9;
+  }
+  .notes .notes-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    color: #2264a5;
+    margin-bottom: 8px;
+  }
+
+  .cta { text-align: center; margin-top: 30px; }
+
+  footer {
+    text-align: center;
+    padding: 32px 16px 48px;
+    font-size: 14px;
+    color: var(--text-soft);
+  }
+
+  @media (max-width: 600px) {
+    .schedule-grid { grid-template-columns: 1fr; }
+    body { font-size: 16px; }
+    .bg-moon {
+      width: 60px; height: 60px; top: 4%; right: 5%;
+      opacity: 0.35;
+      box-shadow: 0 0 30px rgba(253, 246, 227, 0.2);
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== 夜の森背景 ===== -->
+<div class="bg-stars" id="starField"></div>
+<div class="bg-moon"></div>
+<div class="bg-forest">
+  <svg viewBox="0 0 1200 220" preserveAspectRatio="none" aria-hidden="true">
+    <g fill="#0c1830">
+      <polygon points="0,220 0,150 40,90 80,150 80,220"/>
+      <polygon points="60,220 60,160 110,80 160,160 160,220"/>
+      <polygon points="220,220 220,165 275,75 330,165 330,220"/>
+      <polygon points="400,220 400,160 455,70 510,160 510,220"/>
+      <polygon points="580,220 580,165 635,80 690,165 690,220"/>
+      <polygon points="760,220 760,160 815,75 870,160 870,220"/>
+      <polygon points="940,220 940,165 995,70 1050,165 1050,220"/>
+      <polygon points="1110,220 1110,160 1160,85 1200,150 1200,220"/>
+      <rect x="0" y="200" width="1200" height="20"/>
+    </g>
+    <g fill="#060e1f">
+      <polygon points="0,220 0,175 55,110 110,175 110,220"/>
+      <polygon points="130,220 130,185 200,95 270,185 270,220"/>
+      <polygon points="430,220 430,190 500,100 570,190 570,220"/>
+      <polygon points="620,220 620,180 675,120 730,180 730,220"/>
+      <polygon points="760,220 760,190 830,95 900,190 900,220"/>
+      <polygon points="1070,220 1070,190 1140,100 1200,180 1200,220"/>
+      <rect x="0" y="205" width="1200" height="15"/>
+    </g>
+  </svg>
+</div>
+
+<header>
+  <h1 class="site-title">WEEKLY SCHEDULE</h1>
+  <p>今週の配信予定</p>
+  <nav>
+    <a class="pixel-btn" href="index.html">🏠 ホーム</a>
+    <a class="pixel-btn active" href="schedule.html">📅 配信スケジュール</a>
+    <a class="pixel-btn" href="https://www.youtube.com/@MuiPGames/featured" target="_blank" rel="noopener">▶️ YouTube</a>
+  </nav>
+</header>
+
+<main>
+  <p class="week-range" id="weekRange"></p>
+
+  <div class="schedule-grid" id="scheduleGrid"></div>
+
+  <div class="notes">
+    <div class="notes-title">! NOTICE</div>
+    ※ 予定は変更になる場合があります。最新情報はXをチェックしてね！<br>
+    ※ 時間はすべて日本時間（JST）です。
+  </div>
+
+  <div class="cta">
+    <a class="pixel-btn" href="https://www.youtube.com/@MuiPGames/featured" target="_blank" rel="noopener">▶️ Youtube</a>
+    <a class="pixel-btn" href="https://discord.com/invite/faehhEMqG6" target="_blank" rel="noopener">💬 ムイピー軍団に参加する</a>
   </div>
 </main>
 
@@ -10,26 +295,41 @@
 </footer>
 
 <script>
+  // ===== 星をランダムに散りばめる =====
+  (function () {
+    const field = document.getElementById('starField');
+    for (let i = 0; i < 80; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      const size = Math.random() * 2.5 + 1;
+      star.style.width = size + 'px';
+      star.style.height = size + 'px';
+      star.style.left = Math.random() * 100 + '%';
+      star.style.top = Math.random() * 65 + '%';
+      star.style.animationDelay = (Math.random() * 3) + 's';
+      star.style.animationDuration = (2 + Math.random() * 3) + 's';
+      field.appendChild(star);
+    }
+  })();
+
   // ===== 週間スケジュール =====
-  // ここを毎週書き換えるだけでOK!
-  // off: true でお休み / time・title は自由に
+  // ここを毎週書き換えるだけでOK! off: true でお休み
   const SCHEDULE = [
-    { dow: "MON", label: "月曜日", color: "var(--pink)",   off: false, time: "21:00〜", title: "ゼルダの伝説 初見プレイ #12" },
-    { dow: "TUE", label: "火曜日", color: "var(--orange)", off: true },
-    { dow: "WED", label: "水曜日", color: "var(--yellow)", off: false, time: "21:00〜", title: "マイクラ ムイピー軍団サーバー建築" },
-    { dow: "THU", label: "木曜日", color: "var(--green)",  off: false, time: "22:00〜", title: "ホラーゲーム(タイトルは当日のお楽しみ👻)" },
-    { dow: "FRI", label: "金曜日", color: "var(--sky)",    off: true },
-    { dow: "SAT", label: "土曜日", color: "var(--purple)", off: false, time: "20:00〜", title: "視聴者参加型!かくれんぼしよう!!" },
-    { dow: "SUN", label: "日曜日", color: "var(--pink)",   off: false, time: "15:00〜", title: "雑談&ゲームリクエスト消化" }
+    { dow: "MON", label: "月曜日", off: false, time: "21:00〜", title: "ゼルダの伝説 初見プレイ #12" },
+    { dow: "TUE", label: "火曜日", off: true },
+    { dow: "WED", label: "水曜日", off: false, time: "21:00〜", title: "マイクラ ムイピー軍団サーバー建築" },
+    { dow: "THU", label: "木曜日", off: false, time: "22:00〜", title: "ホラーゲーム(タイトルは当日のお楽しみ👻)" },
+    { dow: "FRI", label: "金曜日", off: true },
+    { dow: "SAT", label: "土曜日", off: false, time: "20:00〜", title: "視聴者参加型!かくれんぼしよう!!" },
+    { dow: "SUN", label: "日曜日", off: false, time: "15:00〜", title: "雑談&ゲームリクエスト消化" }
   ];
 
   (function () {
-    // ---- 日本時間での「今日」を取得(視聴者がどの国にいてもJST基準) ----
+    // 日本時間での「今日」(視聴者がどの国にいてもJST基準)
     const jstNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
-    // 月曜はじまりのインデックス (月=0 ... 日=6)
-    const todayIdx = (jstNow.getDay() + 6) % 7;
+    const todayIdx = (jstNow.getDay() + 6) % 7; // 月=0 ... 日=6
 
-    // ---- 今週の月曜〜日曜を計算して表示 ----
+    // 今週の月曜〜日曜
     const monday = new Date(jstNow);
     monday.setDate(jstNow.getDate() - todayIdx);
     const sunday = new Date(monday);
@@ -38,13 +338,13 @@
     document.getElementById("weekRange").textContent =
       "📅 " + fmt(monday) + "(月) 〜 " + fmt(sunday) + "(日)";
 
-    // ---- 曜日カードを生成 ----
+    // 曜日カード生成
     const grid = document.getElementById("scheduleGrid");
     SCHEDULE.forEach((day, i) => {
       const card = document.createElement("div");
       card.className = "day-card" + (day.off ? " off" : "") + (i === todayIdx ? " today" : "");
       card.innerHTML = `
-        <div class="day-header" style="background:${day.color}">
+        <div class="day-header">
           <span class="dow">${day.dow}</span>
           <span>${day.label}</span>
           ${i === todayIdx ? '<span class="today-badge">TODAY</span>' : ""}
