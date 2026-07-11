@@ -16,6 +16,39 @@
   const HOVER_COOLDOWN = 150;    // ホバー音の全体クールダウン(ms)
   const HOVER_SELF_COOLDOWN = 600; // 同じグミの連続ホバー音防止(ms)
 
+  // ===== 💬 クリック時のランダムメッセージ =====
+  const MESSAGES = [
+    "やめて",
+    "わお",
+    "らぶ",
+    "Hey!",
+    "WHOA",
+    "ぷちゅん",
+    "ぴゅん",
+    "ぴゅう",
+    "え？",
+    "わっしょい",
+    "大当たり",
+    "そいや",
+    "金",
+    "これが出たらむいぴーに愛のメッセージ送ること！",
+    "むいぺー",
+    "いつもありがとう",
+    "🍙"
+  ];
+
+  function showMessage(x, y) {
+    const text = MESSAGES[Math.floor(Math.random() * MESSAGES.length)];
+    const el = document.createElement("div");
+    el.className = "gummy-msg";
+    el.textContent = "＼" + text + "／";
+    el.style.left = x + "px";
+    el.style.top = y + "px";
+    document.body.appendChild(el);
+    el.addEventListener("animationend", () => el.remove());
+    setTimeout(() => el.remove(), 1500); // 保険
+  }
+
   // ===== 🔊 「ぷに」サウンド(Web Audio APIで合成、音声ファイル不要) =====
   let audioCtx = null;
   let lastHoverSound = 0;
@@ -109,6 +142,25 @@
       animation: sugarFly 0.6s ease-out forwards;
     }
 
+    .gummy-msg {
+      position: fixed;
+      transform: translate(-50%, -100%);
+      font-family: 'DotGothic16', sans-serif;
+      font-size: 20px;
+      font-weight: bold;
+      color: #fff;
+      text-shadow:
+        0 0 8px rgba(140,190,255,0.8),
+        2px 2px 0 rgba(10,18,38,0.9);
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 9999;
+      animation: gummyMsgPop 1.2s ease-out forwards;
+    }
+    @media (max-width: 600px) {
+      .gummy-msg { font-size: 16px; white-space: normal; max-width: 80vw; text-align: center; }
+    }
+
     @keyframes gummyFloat {
       from { transform: translateY(0) rotate(var(--rot)); }
       to   { transform: translateY(-14px) rotate(calc(var(--rot) + 8deg)); }
@@ -132,6 +184,13 @@
     @keyframes sugarFly {
       from { transform: translate(0, 0) scale(1); opacity: 1; }
       to   { transform: translate(var(--dx), var(--dy)) scale(0.3); opacity: 0; }
+    }
+    @keyframes gummyMsgPop {
+      0%   { opacity: 0; transform: translate(-50%, -100%) scale(0.3); }
+      15%  { opacity: 1; transform: translate(-50%, -110%) scale(1.15); }
+      25%  { transform: translate(-50%, -110%) scale(1); }
+      70%  { opacity: 1; }
+      100% { opacity: 0; transform: translate(-50%, -220%) scale(1); }
     }
     @media (prefers-reduced-motion: reduce) {
       .gummy, .gummy:hover svg { animation: none; }
@@ -185,12 +244,15 @@
       hoverPuni();
     });
 
-    // クリックで「ぷに♪」→ ポップ💥 → しばらくして別の場所に復活
+    // クリックで「ぷに♪」→ ポップ💥 → メッセージ🗨 → しばらくして別の場所に復活
     wrap.addEventListener("click", () => {
       if (wrap.classList.contains("popping")) return;
       puniSound();
       const rect = wrap.getBoundingClientRect();
-      burst(rect.left + rect.width / 2, rect.top + rect.height / 2, color);
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      burst(cx, cy, color);
+      showMessage(cx, rect.top);   // ← グミの真上にメッセージ表示
       wrap.classList.add("popping");
       setTimeout(() => wrap.remove(), 400);
       setTimeout(() => layer.appendChild(makeGummy(shapeName, true)), RESPAWN_MS);
