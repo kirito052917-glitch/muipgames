@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>スケジュール | むいぴー</title>
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fff6e9;
+    --ink: #4a3628;
+    --pink: #ff5f7e;
+    --orange: #ff9f43;
+    --yellow: #ffd93a;
+    --green: #57d95e;
+    --sky: #45c8ff;
+    --purple: #b06bff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    font-family: 'DotGothic16', sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* グミより手前に出す */
+  header, main, footer { position: relative; z-index: 1; }
+
+  /* ===== ヘッダー ===== */
+  header {
+    background: linear-gradient(90deg, var(--pink), var(--orange), var(--yellow), var(--green), var(--sky), var(--purple));
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    border-bottom: 4px solid var(--ink);
+  }
+  .logo {
+    color: #fff;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    text-shadow: 2px 2px 0 var(--ink);
+  }
+  nav a {
+    color: #fff;
+    text-decoration: none;
+    margin-left: 18px;
+    font-size: 15px;
+    text-shadow: 1px 1px 0 var(--ink);
+  }
+  nav a.active, nav a:hover { color: var(--yellow); }
+
+  /* ===== メイン ===== */
+  main { max-width: 900px; margin: 0 auto; padding: 30px 16px 60px; }
+
+  .page-title {
+    text-align: center;
+    margin-bottom: 6px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 20px;
+    color: var(--pink);
+    text-shadow: 3px 3px 0 var(--yellow);
+  }
+  .page-sub {
+    text-align: center;
+    margin-bottom: 8px;
+    font-size: 15px;
+  }
+  .week-range {
+    text-align: center;
+    color: var(--purple);
+    font-size: 18px;
+    margin-bottom: 26px;
+  }
+
+  /* ===== 曜日カード ===== */
+  .schedule-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .day-card {
+    background: #fff;
+    border: 3px solid var(--ink);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 4px 4px 0 rgba(74,54,40,0.3);
+    transition: transform .15s;
+  }
+  .day-card:hover { transform: translateY(-3px); }
+
+  .day-header {
+    color: #fff;
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.35);
+  }
+  .day-header .dow { font-family: 'Press Start 2P', monospace; font-size: 12px; }
+
+  .day-body { padding: 16px 14px; }
+  .day-body .time {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+  .day-body .title { font-size: 17px; }
+
+  /* お休みの日 */
+  .day-card.off { opacity: 0.55; filter: grayscale(0.6); }
+  .day-card.off:hover { transform: none; }
+  .day-card.off .day-body { text-align: center; color: #999; font-size: 16px; padding: 22px 14px; }
+
+  /* 今日 */
+  .day-card.today {
+    box-shadow: 0 0 0 4px var(--yellow), 4px 4px 0 rgba(74,54,40,0.3);
+  }
+  .today-badge {
+    background: #ff3d3d;
+    color: #fff;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  /* ===== 注意書き ===== */
+  .notes {
+    margin-top: 34px;
+    background: #fff;
+    border: 3px solid var(--purple);
+    border-radius: 12px;
+    padding: 16px 18px;
+    font-size: 14px;
+    line-height: 1.9;
+  }
+  .notes .notes-title { font-family: 'Press Start 2P', monospace; font-size: 11px; color: var(--purple); margin-bottom: 8px; }
+
+  .cta { text-align: center; margin-top: 30px; }
+  .btn {
+    display: inline-block;
+    background: var(--pink);
+    color: #fff;
+    text-decoration: none;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 11px;
+    padding: 14px 22px;
+    border-radius: 8px;
+    border: 3px solid var(--ink);
+    box-shadow: 3px 3px 0 rgba(74,54,40,0.35);
+    margin: 6px;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn.secondary { background: #fff; color: var(--pink); }
+
+  footer { text-align: center; color: #b39b83; padding: 20px; font-size: 13px; }
+
+  @media (max-width: 600px) {
+    .page-title { font-size: 15px; }
+    .schedule-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">MUIPY CH.</div>
+  <nav>
+    <a href="index.html">ホーム</a>
+    <a href="schedule.html" class="active">スケジュール</a>
+  </nav>
+</header>
+
+<main>
+  <h1 class="page-title">WEEKLY SCHEDULE</h1>
+  <p class="page-sub">今週の配信予定</p>
+  <p class="week-range" id="weekRange"></p>
+
+  <div class="schedule-grid" id="scheduleGrid"></div>
+
+  <div class="notes">
+    <div class="notes-title">! NOTICE</div>
+    ※ 予定は変更になる場合があります。最新情報はXをチェックしてね！<br>
+    ※ 時間はすべて日本時間（JST）です。
+  </div>
+
+  <div class
