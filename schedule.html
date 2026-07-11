@@ -136,6 +136,12 @@
   .day-body .time.tbd-time { color: #b08a3e; }
   .day-body .title { font-size: 17px; }
 
+  /* 複数枠 */
+  .slot + .slot {
+    margin-top: 12px; padding-top: 12px;
+    border-top: 2px dashed rgba(74, 144, 217, 0.3);
+  }
+
   /* お休み */
   .day-card.off { opacity: 0.5; }
   .day-card.off:hover { transform: none; }
@@ -264,36 +270,104 @@
 
   // =====================================================================
   //  スケジュールデータ
-  //  「# 」で始まる行 = 新しい週のはじまり(1つ目=今週、2つ目=来週)
+  //  「# 」で始まる行 = 新しい週のはじまり
+  //    日付を書くとその週として扱う: 「# 2026/7/13 今週」
+  //    (週のどの曜日の日付でもOK。自動でその週の月曜に合わせる)
+  //    日付を書かない場合、1つ目のブロック = 今日を含む週とみなす
   //  各行の書式:
-  //    月 21:00 タイトル      → 配信あり
-  //    月 休み               → お休み
-  //    月 未定               → 完全に未定
-  //    月 未定 マイクラかも?   → 時間未定だけどゲームは決まってる
+  //    月 21:00 タイトル                  → 配信あり(24時間表記)
+  //    月 9PM タイトル                   → AM/PM表記もOK (9:00PM / 8:00 PM / 9pm)
+  //    月 11:30AM 朝枠 9:00PM 夜枠       → 1日に複数枠OK! 時間ごとに区切られる
+  //    月 休み                           → お休み
+  //    月 未定                           → 完全に未定
+  //    月 未定 マイクラかも?              → 時間未定だけどゲームは決まってる
+  //  ※「時間」と認識されるのは 21:00 / 11:30AM / 9PM / 8:00 PM のような形。
+  //    「9」だけの裸の数字は時間扱いされない(タイトル中の数字と区別するため)。
   //  schedule.txt があればそっちを読む。なければ↓のテキストを使う。
   // =====================================================================
   const FALLBACK_TEXT = `
-# 今週
-月 21:00 ゼルダの伝説 初見プレイ #12
+# 2026/7/13 今週
+月 11:30AM キングダムハーツ #9
 火 休み
-水 21:00 マイクラ ムイピー軍団サーバー建築
-木 22:00 ホラーゲーム(タイトルは当日のお楽しみ👻)
-金 休み
-土 20:00 視聴者参加型!かくれんぼしよう!!
-日 15:00 雑談&ゲームリクエスト消化
+水 11:30AM BG3 9:00PM チラズアート 地獄銭湯 #1
+木 11:30AM 【雑談回】線香花火 9:00PM キングダムハーツ #10
+金 11:30AM デトロイト #2 9:00PM デトロイト #3
+土 12:30PM 黒い砂漠PC　テルミアンSS一回目 8:00PM バイオハザード7 #3
+日 8:00PM 参加型配信 FF14 企画決め中
 
-# 来週
-月 未定
-火 休み
-水 未定 マイクラかも?
-木 21:00 ホラーゲーム続き
-金 休み
-土 未定
-日 15:00 雑談
+# 2026/7/20 来週
+月 12:00PM 海の日長時間配信!【キンハ・ホラー作品予定】
+火 11:30AM ポケモン銀 10:00PM キングダムハーツ
+水 11:30AM BG3 9:00PM クソデカ囃子
+木 11:30AM 【雑談回】マチョリウム 9:00PM キングダムハーツ
+金 11:30AM デトロイト #4 9:00PM デトロイト #5
+土 8:30PM テルミアンSS2回目 黒い砂漠PC 10:00PM ホラー何かやる
+日 12:30PM バイオハザード7 #4
 `;
 
   const DOWS   = ["月", "火", "水", "木", "金", "土", "日"];
   const DOW_EN = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
+  const DAY_MS = 24 * 60 * 60 * 1000;
+
+  // 任意の日付 → その週の月曜(0時)
+  function snapToMonday(d) {
+    const m = new Date(d);
+    m.setDate(d.getDate() - ((d.getDay() + 6) % 7));
+    m.setHours(0, 0, 0, 0);
+    return m;
+  }
+
+  // ---- 時間トークンの判定 ----
+  const AMPM_RE = /^[AaPp]\.?[Mm]\.?$/;              // "PM" "am" "p.m." など単独
+  const NUM_RE  = /^\d{1,2}(?::\d{2})?$/;            // "9" "21:00" "11:30"
+
+  // 行の残り(曜日以降)を複数の枠に分解する
+  //   時間っぽいトークンが出るたびに新しい枠が始まる
+  function parseSlots(rest) {
+    const tokens = rest.split(/\s+/).filter(Boolean); // 全角スペースも\sに含まれる
+    const slots = [];
+    let cur = null;
+    let leading = []; // 最初の時間より前のテキスト
+
+    for (let i = 0; i < tokens.length; i++) {
+      const t = tokens[i];
+      let time = null;
+
+      // "11:30AM" "9PM" "21:00" のような1トークン完結型
+      const attached = t.match(/^(\d{1,2}(?::\d{2})?)([AaPp]\.?[Mm]\.?)$/);
+      if (attached) {
+        time = t;
+      } else if (NUM_RE.test(t)) {
+        const hasColon = t.includes(":");
+        const nextIsAmPm = i + 1 < tokens.length && AMPM_RE.test(tokens[i + 1]);
+        if (nextIsAmPm) {           // "8:00 PM" / "9 pm" → 結合
+          time = t + tokens[++i];
+        } else if (hasColon) {      // "21:00" 単独 → 24時間表記
+          time = t;
+        }
+        // 裸の数字("9"だけ)は時間扱いしない → タイトルの一部
+      }
+
+      if (time !== null) {
+        cur = { time: time, titleParts: [] };
+        slots.push(cur);
+      } else if (cur) {
+        cur.titleParts.push(t);
+      } else {
+        leading.push(t);
+      }
+    }
+
+    if (!slots.length) return null; // 時間が1つも見つからなかった
+
+    // 最初の時間より前に書かれたテキストは1枠目のタイトルの頭につける
+    if (leading.length) slots[0].titleParts = leading.concat(slots[0].titleParts);
+
+    return slots.map(s => ({
+      time: s.time,
+      title: s.titleParts.join(" ") || "(タイトル未定)"
+    }));
+  }
 
   function parseSchedule(text) {
     const weeks = [];
@@ -302,22 +376,26 @@
       const line = raw.trim();
       if (!line) return;
       if (line.startsWith("#")) {
-        cur = Array(7).fill(null);
+        const dm = line.match(/(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})/);
+        cur = {
+          days: Array(7).fill(null),
+          start: dm ? snapToMonday(new Date(+dm[1], +dm[2] - 1, +dm[3])) : null
+        };
         weeks.push(cur);
         return;
       }
-      if (!cur) { cur = Array(7).fill(null); weeks.push(cur); }
+      if (!cur) { cur = { days: Array(7).fill(null), start: null }; weeks.push(cur); }
       const idx = DOWS.indexOf(line[0]);
       if (idx === -1) return; // 曜日で始まらない行は無視
       const rest = line.slice(1).trim();
       if (rest.startsWith("休")) {
-        cur[idx] = { off: true };
+        cur.days[idx] = { off: true };
       } else if (rest.startsWith("未定")) {
-        cur[idx] = { tbd: true, title: rest.slice(2).trim() };
+        cur.days[idx] = { tbd: true, title: rest.slice(2).trim() };
       } else {
-        const m = rest.match(/^(\S+)\s+(.+)$/);
-        cur[idx] = m ? { time: m[1], title: m[2] }
-                     : { tbd: true, title: rest }; // 時間が書いてない場合は未定扱い
+        const slots = parseSlots(rest);
+        cur.days[idx] = slots ? { slots: slots }
+                              : { tbd: true, title: rest }; // 時間が見つからなければ時間未定扱い
       }
     });
     return weeks;
@@ -325,14 +403,34 @@
 
   function init(text) {
     const weeks = parseSchedule(text);
-    if (!weeks.length) weeks.push(Array(7).fill(null));
+    if (!weeks.length) weeks.push({ days: Array(7).fill(null), start: null });
 
     // 日本時間の「今日」
     const jstNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
     const todayIdx = (jstNow.getDay() + 6) % 7; // 月=0 ... 日=6
-    const monday = new Date(jstNow);
-    monday.setDate(jstNow.getDate() - todayIdx);
+    const todayMonday = snapToMonday(jstNow);
+
+    // 各週の月曜を確定:
+    //   日付が書いてあればそれを使う。なければ「1つ目の週の月曜 + 7日×n」
+    const baseMonday = weeks[0].start || todayMonday;
+    const starts = weeks.map((wk, w) => {
+      if (wk.start) return wk.start;
+      const d = new Date(baseMonday);
+      d.setDate(baseMonday.getDate() + w * 7);
+      return d;
+    });
+
     const fmt = d => (d.getMonth() + 1) + "/" + d.getDate();
+
+    // 今日との関係でタブのラベルを決める
+    function weekLabel(start) {
+      const diff = Math.round((start - todayMonday) / DAY_MS);
+      if (diff === 0)  return "今週";
+      if (diff === 7)  return "来週";
+      if (diff === 14) return "再来週";
+      if (diff === -7) return "先週";
+      return fmt(start) + "〜";
+    }
 
     const tabsEl  = document.getElementById("weekTabs");
     const rangeEl = document.getElementById("weekRange");
@@ -344,14 +442,17 @@
         btn.classList.toggle("active", i === w));
 
       // 日付範囲
-      const start = new Date(monday); start.setDate(monday.getDate() + w * 7);
-      const end   = new Date(start);  end.setDate(start.getDate() + 6);
+      const start = starts[w];
+      const end = new Date(start); end.setDate(start.getDate() + 6);
       rangeEl.textContent = "📅 " + fmt(start) + "(月) 〜 " + fmt(end) + "(日)";
+
+      // この週が本当に「今日」を含むか
+      const isCurrentWeek = start.getTime() === todayMonday.getTime();
 
       // カード
       gridEl.innerHTML = "";
-      weeks[w].forEach((day, i) => {
-        const isToday = (w === 0 && i === todayIdx);
+      weeks[w].days.forEach((day, i) => {
+        const isToday = isCurrentWeek && i === todayIdx;
         let cls = "day-card", body = "";
 
         if (!day || (day.tbd && !day.title)) {
@@ -367,10 +468,11 @@
                     <div class="title">${day.title}</div>
                   </div>`;
         } else {
-          body = `<div class="day-body">
-                    <div class="time">🕘 ${day.time}〜</div>
-                    <div class="title">${day.title}</div>
-                  </div>`;
+          body = '<div class="day-body">' + day.slots.map(s => `
+                    <div class="slot">
+                      <div class="time">🕘 ${s.time}〜</div>
+                      <div class="title">${s.title}</div>
+                    </div>`).join("") + '</div>';
         }
         if (isToday) cls += " today";
 
@@ -387,12 +489,11 @@
     }
 
     // タブ生成(週が1つしかなければタブ非表示)
-    const labels = ["今週", "来週"];
     if (weeks.length > 1) {
       weeks.slice(0, 2).forEach((_, w) => {
         const btn = document.createElement("button");
         btn.className = "pixel-btn";
-        btn.textContent = labels[w];
+        btn.textContent = weekLabel(starts[w]);
         btn.addEventListener("click", () => render(w));
         tabsEl.appendChild(btn);
       });
