@@ -65,15 +65,18 @@
   .hud-item.best { color: #ffe08a; border-color: rgba(255,224,138,0.4); }
 
   #game-wrap {
-  position: relative;
-  width: 100%;
-  max-width: 520px;
-  height: min(62vh, 540px);  /* ★画面の高さの62%か540pxの小さい方 */
-  flex: none;                 /* ★勝手に伸びるのをやめる */
-  display: flex;
-  padding: 0 8px;
-  margin-bottom: 8px;
-}
+    position: relative;
+    /* ★変更: 画面の高さに合わせて拡大(縦横比は固定)
+       - 94vw           : 横幅いっぱいは超えない(スマホ用)
+       - calc(...)      : 上下のUI(約220px)を引いた高さに収まる幅
+       - 780px          : 大きくなりすぎ防止の上限 */
+    width: min(94vw, calc((100vh - 220px) * 26 / 27), 780px);
+    aspect-ratio: 26 / 27;   /* ★変更: 元の 520×540 とほぼ同じ比率を維持 */
+    flex: none;
+    display: flex;
+    padding: 0 8px;
+    margin-bottom: 8px;
+  }
   canvas#game {
     width: 100%;
     height: 100%;
@@ -333,6 +336,7 @@
   const cardImg = document.getElementById('card-img');
 
   let W = 0, H = 0, dpr = 1;
+  let SCALE = 1;   // ★追加: 基準幅520pxに対する拡大率
   function resize() {
     dpr = window.devicePixelRatio || 1;
     const rect = canvas.getBoundingClientRect();
@@ -341,6 +345,7 @@
     canvas.width = W * dpr;
     canvas.height = H * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    SCALE = W / 520;   // ★追加: 大画面ではグミやカゴも大きく・速く
   }
   window.addEventListener('resize', resize);
   resize();
@@ -470,7 +475,7 @@
   let spawnTimer = 0, lastTime = 0, elapsed = 0;
   let lastResultMsg = '';
   let muipiCaught = 0;
-  const BASKET_W = 76, BASKET_H = 42;
+  const BASKET_W = 76, BASKET_H = 42;   // 基準サイズ(520px幅のとき)
 
   function reset() {
     items = []; particles = []; floaters = [];
@@ -498,8 +503,8 @@
       shape: SHAPES[Math.floor(Math.random() * SHAPES.length)],
       color: GUMMY_COLORS[Math.floor(Math.random() * GUMMY_COLORS.length)],
       x: 0.08 + Math.random() * 0.84,
-      y: -40,
-      vy: type === 'muipi' ? 110 : baseSpeed,
+      y: -40 * SCALE,                                          // ★変更
+      vy: (type === 'muipi' ? 110 : baseSpeed) * SCALE,        // ★変更: 落下速度もスケール
       vx: (Math.random() < 0.3 + elapsed * 0.015)
           ? (Math.random() - 0.5) * (0.08 + elapsed * 0.004)
           : 0,
@@ -507,20 +512,20 @@
       rot: Math.random() * Math.PI * 2,
       vr: (Math.random() - 0.5) * 2,
       wobble: Math.random() * Math.PI * 2,
-      wobbleAmp: type === 'muipi' ? 30 : 8 + elapsed * 0.5
+      wobbleAmp: (type === 'muipi' ? 30 : 8 + elapsed * 0.5) * SCALE   // ★変更
     });
   }
 
   function addParticles(x, y, color, n = 10) {
     for (let i = 0; i < n; i++) {
       const a = Math.random() * Math.PI * 2;
-      const sp = 60 + Math.random() * 120;
+      const sp = (60 + Math.random() * 120) * SCALE;   // ★変更
       particles.push({
         x, y,
-        vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 60,
+        vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 60 * SCALE,   // ★変更
         life: 0.6 + Math.random() * 0.3,
         maxLife: 0.9,
-        r: 2 + Math.random() * 3,
+        r: (2 + Math.random() * 3) * SCALE,   // ★変更
         color
       });
     }
@@ -612,6 +617,7 @@
     const py = it.y;
     ctx.save();
     ctx.translate(px, py);
+    ctx.scale(SCALE, SCALE);   // ★追加: 大画面ではグミも大きく描画
 
     if (it.type === 'muipi') {
       ctx.rotate(Math.sin(it.wobble * 1.5) * 0.2);
@@ -646,9 +652,10 @@
 
   function drawBasket() {
     const bx = playerX * W;
-    const by = H - 34;
+    const by = H - 34 * SCALE;   // ★変更
     ctx.save();
     ctx.translate(bx, by);
+    ctx.scale(SCALE, SCALE);     // ★追加: カゴも大きく描画
     const grad = ctx.createLinearGradient(0, -BASKET_H / 2, 0, BASKET_H / 2);
     grad.addColorStop(0, '#ffd9ec');
     grad.addColorStop(1, '#ff9ecf');
@@ -684,19 +691,20 @@
       const alpha = 0.3 + Math.abs(Math.sin(s.tw)) * 0.7;
       ctx.fillStyle = `rgba(255,255,255,${alpha})`;
       ctx.beginPath();
-      ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2);
+      ctx.arc(s.x * W, s.y * H, s.r * SCALE, 0, Math.PI * 2);   // ★変更
       ctx.fill();
     }
+    // 月(★変更: 位置・サイズをスケール)
     ctx.fillStyle = 'rgba(255,240,190,0.9)';
     ctx.shadowColor = 'rgba(255,240,190,0.8)';
     ctx.shadowBlur = 20;
     ctx.beginPath();
-    ctx.arc(W - 50, 55, 22, 0, Math.PI * 2);
+    ctx.arc(W - 50 * SCALE, 55 * SCALE, 22 * SCALE, 0, Math.PI * 2);
     ctx.fill();
     ctx.shadowBlur = 0;
     ctx.fillStyle = '#1a1f4d';
     ctx.beginPath();
-    ctx.arc(W - 42, 50, 19, 0, Math.PI * 2);
+    ctx.arc(W - 42 * SCALE, 50 * SCALE, 19 * SCALE, 0, Math.PI * 2);
     ctx.fill();
 
     for (const it of items) drawGummy(it);
@@ -712,7 +720,7 @@
     ctx.globalAlpha = 1;
 
     ctx.textAlign = 'center';
-    ctx.font = 'bold 18px sans-serif';
+    ctx.font = `bold ${Math.round(18 * SCALE)}px sans-serif`;   // ★変更
     for (const f of floaters) {
       ctx.globalAlpha = Math.max(f.life, 0);
       ctx.fillStyle = f.color;
@@ -721,9 +729,9 @@
     ctx.globalAlpha = 1;
 
     if (combo >= 3) {
-      ctx.font = 'bold 15px sans-serif';
+      ctx.font = `bold ${Math.round(15 * SCALE)}px sans-serif`;   // ★変更
       ctx.fillStyle = 'rgba(255,224,138,0.9)';
-      ctx.fillText(`${combo} コンボ! ✨`, W / 2, 28);
+      ctx.fillText(`${combo} コンボ! ✨`, W / 2, 28 * SCALE);      // ★変更
     }
   }
 
@@ -738,7 +746,7 @@
     const interval = Math.max(0.6 - elapsed * 0.014, 0.26);
     if (spawnTimer <= 0) { spawnItem(); spawnTimer = interval; }
 
-    const basketTop = H - 34 - BASKET_H / 2;
+    const basketTop = H - 34 * SCALE - (BASKET_H * SCALE) / 2;   // ★変更
     const bx = playerX * W;
 
     for (let i = items.length - 1; i >= 0; i--) {
@@ -750,37 +758,38 @@
       it.wobble += dt * 3;
       const px = it.x * W + Math.sin(it.wobble) * it.wobbleAmp;
 
-      if (it.y > basketTop - 6 && it.y < basketTop + 26 &&
-          Math.abs(px - bx) < BASKET_W / 2 + it.size * 0.4) {
+      // ★変更: 当たり判定もスケールに合わせる
+      if (it.y > basketTop - 6 * SCALE && it.y < basketTop + 26 * SCALE &&
+          Math.abs(px - bx) < (BASKET_W / 2 + it.size * 0.4) * SCALE) {
         if (it.type === 'muipi') {
           score += 100; combo++;
           muipiCaught++;
           muipiSound();
           addParticles(px, it.y, '#fffdf5', 24);
           addParticles(px, it.y, '#ffe08a', 12);
-          addFloater(px, it.y - 20, 'むいぴー!? +100', '#ffe08a');
+          addFloater(px, it.y - 20 * SCALE, 'むいぴー!? +100', '#ffe08a');
         } else if (it.type === 'rare') {
           score += 50; combo++;
           rareSound();
           addParticles(px, it.y, '#ffe08a', 18);
-          addFloater(px, it.y - 20, '+50 🍙', '#ffe08a');
+          addFloater(px, it.y - 20 * SCALE, '+50 🍙', '#ffe08a');
         } else if (it.type === 'rock') {
           score = Math.max(0, score - 20); combo = 0;
           badSound();
           addParticles(px, it.y, '#999', 8);
-          addFloater(px, it.y - 20, '-20 いてっ', '#ff8a8a');
+          addFloater(px, it.y - 20 * SCALE, '-20 いてっ', '#ff8a8a');
         } else {
           const bonus = combo >= 3 ? 5 : 0;
           score += 10 + bonus; combo++;
           puniSound(440 + Math.min(combo * 40, 400));
           addParticles(px, it.y, it.color.hi, 12);
-          addFloater(px, it.y - 20, `+${10 + bonus}`, '#fff');
+          addFloater(px, it.y - 20 * SCALE, `+${10 + bonus}`, '#fff');
         }
         scoreEl.textContent = score;
         items.splice(i, 1);
         continue;
       }
-      if (it.y > H + 60) {
+      if (it.y > H + 60 * SCALE) {   // ★変更
         if (it.type !== 'rock') combo = 0;
         items.splice(i, 1);
       }
@@ -791,13 +800,13 @@
       p.life -= dt;
       p.x += p.vx * dt;
       p.y += p.vy * dt;
-      p.vy += 300 * dt;
+      p.vy += 300 * SCALE * dt;   // ★変更
       if (p.life <= 0) particles.splice(i, 1);
     }
     for (let i = floaters.length - 1; i >= 0; i--) {
       const f = floaters[i];
       f.life -= dt;
-      f.y -= 40 * dt;
+      f.y -= 40 * SCALE * dt;   // ★変更
       if (f.life <= 0) floaters.splice(i, 1);
     }
   }
