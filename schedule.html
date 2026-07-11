@@ -26,59 +26,41 @@
     font-size: 18px;
     line-height: 1.8;
     background: linear-gradient(180deg,
-      #0a1226 0%,
-      #0e1c3a 35%,
-      #16294e 65%,
-      #1b3055 100%);
+      #0a1226 0%, #0e1c3a 35%, #16294e 65%, #1b3055 100%);
     background-attachment: fixed;
     overflow-x: hidden;
     min-height: 100vh;
   }
 
-  /* ===== 夜空の背景(index.htmlとおそろい) ===== */
+  /* ===== 夜空の背景 ===== */
   .bg-stars { position: fixed; inset: 0; z-index: -3; pointer-events: none; }
   .star {
-    position: absolute;
-    background: #fff;
-    border-radius: 50%;
+    position: absolute; background: #fff; border-radius: 50%;
     animation: twinkle 3s ease-in-out infinite;
   }
   @keyframes twinkle {
     0%, 100% { opacity: 0.9; transform: scale(1); }
     50%      { opacity: 0.2; transform: scale(0.7); }
   }
-
   .bg-moon {
-    position: fixed;
-    top: 7%;
-    right: 10%;
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
+    position: fixed; top: 7%; right: 10%;
+    width: 90px; height: 90px; border-radius: 50%;
     background: radial-gradient(circle at 38% 35%, #fdf6e3, #e8ddb8 70%);
-    box-shadow: 0 0 50px rgba(253, 246, 227, 0.4), 0 0 120px rgba(253, 246, 227, 0.15);
-    z-index: -3;
-    pointer-events: none;
+    box-shadow: 0 0 50px rgba(253,246,227,0.4), 0 0 120px rgba(253,246,227,0.15);
+    z-index: -3; pointer-events: none;
   }
   .bg-moon::before, .bg-moon::after {
-    content: "";
-    position: absolute;
-    border-radius: 50%;
+    content: ""; position: absolute; border-radius: 50%;
     background: rgba(190, 178, 140, 0.5);
   }
   .bg-moon::before { width: 18px; height: 18px; top: 28%; left: 22%; }
   .bg-moon::after  { width: 12px; height: 12px; top: 58%; left: 55%; }
-
   .bg-forest {
-    position: fixed;
-    left: 0; right: 0; bottom: 0;
-    z-index: -2;
-    pointer-events: none;
-    line-height: 0;
+    position: fixed; left: 0; right: 0; bottom: 0;
+    z-index: -2; pointer-events: none; line-height: 0;
   }
   .bg-forest svg { width: 100%; height: auto; display: block; }
 
-  /* コンテンツはグミ(z-index:0)より手前に */
   header, main, footer { position: relative; z-index: 1; }
 
   /* ===== ヘッダー ===== */
@@ -87,57 +69,45 @@
     font-family: 'Press Start 2P', 'DotGothic16', monospace;
     font-size: clamp(16px, 3.5vw, 26px);
     color: var(--blue-bright);
-    text-shadow:
-      0 0 16px rgba(140, 190, 255, 0.5),
-      2px 2px 4px rgba(10, 18, 38, 0.9);
+    text-shadow: 0 0 16px rgba(140,190,255,0.5), 2px 2px 4px rgba(10,18,38,0.9);
     letter-spacing: 2px;
   }
   header > p {
-    color: var(--text-on-dark);
-    margin-top: 8px;
-    text-shadow: 1px 1px 3px rgba(10, 18, 38, 0.9);
+    color: var(--text-on-dark); margin-top: 8px;
+    text-shadow: 1px 1px 3px rgba(10,18,38,0.9);
   }
   nav {
-    display: flex;
-    justify-content: center;
-    gap: 12px;
-    flex-wrap: wrap;
-    margin-top: 20px;
+    display: flex; justify-content: center; gap: 12px;
+    flex-wrap: wrap; margin-top: 20px;
   }
   .pixel-btn {
-    display: inline-block;
-    padding: 10px 20px;
-    background: rgba(255, 255, 255, 0.92);
-    color: var(--blue-deep);
+    display: inline-block; padding: 10px 20px;
+    background: rgba(255,255,255,0.92); color: var(--blue-deep);
     text-decoration: none;
-    border: 2px solid var(--blue-border);
-    border-radius: 9999px;
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
-    transition: transform 0.15s, box-shadow 0.15s, background 0.2s, color 0.2s;
-    font-size: 16px;
-    font-family: 'DotGothic16', sans-serif;
-    cursor: pointer;
+    border: 2px solid var(--blue-border); border-radius: 9999px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+    transition: transform .15s, box-shadow .15s, background .2s, color .2s;
+    font-size: 16px; font-family: 'DotGothic16', sans-serif; cursor: pointer;
   }
   .pixel-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(74, 144, 217, 0.45);
-    background: var(--blue-main);
-    color: #fff;
+    box-shadow: 0 6px 20px rgba(74,144,217,0.45);
+    background: var(--blue-main); color: #fff;
   }
   .pixel-btn.active { background: var(--blue-main); color: #fff; }
 
   /* ===== メイン ===== */
   main { max-width: 900px; margin: 0 auto; padding: 20px 16px 60px; }
 
+  .week-tabs {
+    display: flex; justify-content: center; gap: 10px; margin-bottom: 16px;
+  }
   .week-range {
-    text-align: center;
-    color: var(--text-on-dark);
-    text-shadow: 1px 1px 3px rgba(10, 18, 38, 0.9);
-    font-size: 18px;
-    margin-bottom: 26px;
+    text-align: center; color: var(--text-on-dark);
+    text-shadow: 1px 1px 3px rgba(10,18,38,0.9);
+    font-size: 18px; margin-bottom: 26px;
   }
 
-  /* ===== 曜日カード(ガラスパネル) ===== */
   .schedule-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -145,81 +115,63 @@
   }
   .day-card {
     background: var(--panel-light);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 2px solid var(--blue-border);
-    border-radius: 18px;
-    overflow: hidden;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 2px solid var(--blue-border); border-radius: 18px;
+    overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.35);
     transition: transform .15s;
   }
   .day-card:hover { transform: translateY(-3px); }
-
   .day-header {
     background: linear-gradient(90deg, #4a90d9, #6fb0e8);
-    color: #fff;
-    padding: 8px 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 15px;
-    text-shadow: 1px 1px 0 rgba(20, 50, 90, 0.4);
+    color: #fff; padding: 8px 14px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 15px; text-shadow: 1px 1px 0 rgba(20,50,90,0.4);
   }
   .day-header .dow { font-family: 'Press Start 2P', monospace; font-size: 12px; }
-
   .day-body { padding: 16px 14px; }
   .day-body .time {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 13px;
-    color: #2264a5;
-    margin-bottom: 8px;
+    font-family: 'Press Start 2P', monospace; font-size: 13px;
+    color: #2264a5; margin-bottom: 8px;
   }
+  .day-body .time.tbd-time { color: #b08a3e; }
   .day-body .title { font-size: 17px; }
 
-  /* お休みの日 */
+  /* お休み */
   .day-card.off { opacity: 0.5; }
   .day-card.off:hover { transform: none; }
   .day-card.off .day-body { text-align: center; color: var(--text-soft); padding: 22px 14px; }
 
-  /* 今日(焚き火オレンジで光る) */
+  /* 未定 */
+  .day-card.tbd { border-style: dashed; }
+  .day-card.tbd .day-header { background: linear-gradient(90deg, #7d97b5, #9db3cc); }
+  .day-card.tbd .day-body.empty { text-align: center; color: #b08a3e; padding: 22px 14px; }
+
+  /* 今日 */
   .day-card.today {
-    box-shadow: 0 0 0 3px var(--accent), 0 0 24px rgba(255, 184, 92, 0.5);
+    box-shadow: 0 0 0 3px var(--accent), 0 0 24px rgba(255,184,92,0.5);
   }
   .today-badge {
-    background: var(--accent);
-    color: #4a3010;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 9px;
-    padding: 3px 8px;
-    border-radius: 4px;
+    background: var(--accent); color: #4a3010;
+    font-family: 'Press Start 2P', monospace; font-size: 9px;
+    padding: 3px 8px; border-radius: 4px;
   }
 
-  /* ===== 注意書き ===== */
   .notes {
     margin-top: 34px;
     background: var(--panel-light);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 2px dashed var(--blue-border);
-    border-radius: 18px;
-    padding: 16px 18px;
-    font-size: 15px;
-    line-height: 1.9;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 2px dashed var(--blue-border); border-radius: 18px;
+    padding: 16px 18px; font-size: 15px; line-height: 1.9;
   }
   .notes .notes-title {
-    font-family: 'Press Start 2P', monospace;
-    font-size: 11px;
-    color: #2264a5;
-    margin-bottom: 8px;
+    font-family: 'Press Start 2P', monospace; font-size: 11px;
+    color: #2264a5; margin-bottom: 8px;
   }
-
   .cta { text-align: center; margin-top: 30px; }
 
   footer {
-    text-align: center;
-    padding: 32px 16px 48px;
-    font-size: 14px;
-    color: var(--text-soft);
+    text-align: center; padding: 32px 16px 48px;
+    font-size: 14px; color: var(--text-soft);
   }
 
   @media (max-width: 600px) {
@@ -227,15 +179,13 @@
     body { font-size: 16px; }
     .bg-moon {
       width: 60px; height: 60px; top: 4%; right: 5%;
-      opacity: 0.35;
-      box-shadow: 0 0 30px rgba(253, 246, 227, 0.2);
+      opacity: 0.35; box-shadow: 0 0 30px rgba(253,246,227,0.2);
     }
   }
 </style>
 </head>
 <body>
 
-<!-- ===== 夜の森背景 ===== -->
 <div class="bg-stars" id="starField"></div>
 <div class="bg-moon"></div>
 <div class="bg-forest">
@@ -265,7 +215,7 @@
 
 <header>
   <h1 class="site-title">WEEKLY SCHEDULE</h1>
-  <p>今週の配信予定</p>
+  <p>配信予定</p>
   <nav>
     <a class="pixel-btn" href="index.html">🏠 ホーム</a>
     <a class="pixel-btn active" href="schedule.html">📅 配信スケジュール</a>
@@ -274,8 +224,8 @@
 </header>
 
 <main>
+  <div class="week-tabs" id="weekTabs"></div>
   <p class="week-range" id="weekRange"></p>
-
   <div class="schedule-grid" id="scheduleGrid"></div>
 
   <div class="notes">
@@ -295,7 +245,7 @@
 </footer>
 
 <script>
-  // ===== 星をランダムに散りばめる =====
+  // ===== 星 =====
   (function () {
     const field = document.getElementById('starField');
     for (let i = 0; i < 80; i++) {
@@ -312,51 +262,149 @@
     }
   })();
 
-  // ===== 週間スケジュール =====
-  // ここを毎週書き換えるだけでOK! off: true でお休み
-  const SCHEDULE = [
-    { dow: "MON", label: "月曜日", off: false, time: "21:00〜", title: "ゼルダの伝説 初見プレイ #12" },
-    { dow: "TUE", label: "火曜日", off: true },
-    { dow: "WED", label: "水曜日", off: false, time: "21:00〜", title: "マイクラ ムイピー軍団サーバー建築" },
-    { dow: "THU", label: "木曜日", off: false, time: "22:00〜", title: "ホラーゲーム(タイトルは当日のお楽しみ👻)" },
-    { dow: "FRI", label: "金曜日", off: true },
-    { dow: "SAT", label: "土曜日", off: false, time: "20:00〜", title: "視聴者参加型!かくれんぼしよう!!" },
-    { dow: "SUN", label: "日曜日", off: false, time: "15:00〜", title: "雑談&ゲームリクエスト消化" }
-  ];
+  // =====================================================================
+  //  スケジュールデータ
+  //  「# 」で始まる行 = 新しい週のはじまり(1つ目=今週、2つ目=来週)
+  //  各行の書式:
+  //    月 21:00 タイトル      → 配信あり
+  //    月 休み               → お休み
+  //    月 未定               → 完全に未定
+  //    月 未定 マイクラかも?   → 時間未定だけどゲームは決まってる
+  //  schedule.txt があればそっちを読む。なければ↓のテキストを使う。
+  // =====================================================================
+  const FALLBACK_TEXT = `
+# 今週
+月 21:00 ゼルダの伝説 初見プレイ #12
+火 休み
+水 21:00 マイクラ ムイピー軍団サーバー建築
+木 22:00 ホラーゲーム(タイトルは当日のお楽しみ👻)
+金 休み
+土 20:00 視聴者参加型!かくれんぼしよう!!
+日 15:00 雑談&ゲームリクエスト消化
 
-  (function () {
-    // 日本時間での「今日」(視聴者がどの国にいてもJST基準)
+# 来週
+月 未定
+火 休み
+水 未定 マイクラかも?
+木 21:00 ホラーゲーム続き
+金 休み
+土 未定
+日 15:00 雑談
+`;
+
+  const DOWS   = ["月", "火", "水", "木", "金", "土", "日"];
+  const DOW_EN = ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"];
+
+  function parseSchedule(text) {
+    const weeks = [];
+    let cur = null;
+    text.split(/\r?\n/).forEach(raw => {
+      const line = raw.trim();
+      if (!line) return;
+      if (line.startsWith("#")) {
+        cur = Array(7).fill(null);
+        weeks.push(cur);
+        return;
+      }
+      if (!cur) { cur = Array(7).fill(null); weeks.push(cur); }
+      const idx = DOWS.indexOf(line[0]);
+      if (idx === -1) return; // 曜日で始まらない行は無視
+      const rest = line.slice(1).trim();
+      if (rest.startsWith("休")) {
+        cur[idx] = { off: true };
+      } else if (rest.startsWith("未定")) {
+        cur[idx] = { tbd: true, title: rest.slice(2).trim() };
+      } else {
+        const m = rest.match(/^(\S+)\s+(.+)$/);
+        cur[idx] = m ? { time: m[1], title: m[2] }
+                     : { tbd: true, title: rest }; // 時間が書いてない場合は未定扱い
+      }
+    });
+    return weeks;
+  }
+
+  function init(text) {
+    const weeks = parseSchedule(text);
+    if (!weeks.length) weeks.push(Array(7).fill(null));
+
+    // 日本時間の「今日」
     const jstNow = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Tokyo" }));
     const todayIdx = (jstNow.getDay() + 6) % 7; // 月=0 ... 日=6
-
-    // 今週の月曜〜日曜
     const monday = new Date(jstNow);
     monday.setDate(jstNow.getDate() - todayIdx);
-    const sunday = new Date(monday);
-    sunday.setDate(monday.getDate() + 6);
-    const fmt = (d) => (d.getMonth() + 1) + "/" + d.getDate();
-    document.getElementById("weekRange").textContent =
-      "📅 " + fmt(monday) + "(月) 〜 " + fmt(sunday) + "(日)";
+    const fmt = d => (d.getMonth() + 1) + "/" + d.getDate();
 
-    // 曜日カード生成
-    const grid = document.getElementById("scheduleGrid");
-    SCHEDULE.forEach((day, i) => {
-      const card = document.createElement("div");
-      card.className = "day-card" + (day.off ? " off" : "") + (i === todayIdx ? " today" : "");
-      card.innerHTML = `
-        <div class="day-header">
-          <span class="dow">${day.dow}</span>
-          <span>${day.label}</span>
-          ${i === todayIdx ? '<span class="today-badge">TODAY</span>' : ""}
-        </div>
-        <div class="day-body">
-          ${day.off
-            ? "😴 お休み"
-            : `<div class="time">🕘 ${day.time}</div><div class="title">${day.title}</div>`}
-        </div>`;
-      grid.appendChild(card);
-    });
-  })();
+    const tabsEl  = document.getElementById("weekTabs");
+    const rangeEl = document.getElementById("weekRange");
+    const gridEl  = document.getElementById("scheduleGrid");
+
+    function render(w) {
+      // タブの見た目
+      [...tabsEl.children].forEach((btn, i) =>
+        btn.classList.toggle("active", i === w));
+
+      // 日付範囲
+      const start = new Date(monday); start.setDate(monday.getDate() + w * 7);
+      const end   = new Date(start);  end.setDate(start.getDate() + 6);
+      rangeEl.textContent = "📅 " + fmt(start) + "(月) 〜 " + fmt(end) + "(日)";
+
+      // カード
+      gridEl.innerHTML = "";
+      weeks[w].forEach((day, i) => {
+        const isToday = (w === 0 && i === todayIdx);
+        let cls = "day-card", body = "";
+
+        if (!day || (day.tbd && !day.title)) {
+          cls += " tbd";
+          body = '<div class="day-body empty">❓ 未定</div>';
+        } else if (day.off) {
+          cls += " off";
+          body = '<div class="day-body">😴 お休み</div>';
+        } else if (day.tbd) {
+          cls += " tbd";
+          body = `<div class="day-body">
+                    <div class="time tbd-time">🕘 時間未定</div>
+                    <div class="title">${day.title}</div>
+                  </div>`;
+        } else {
+          body = `<div class="day-body">
+                    <div class="time">🕘 ${day.time}〜</div>
+                    <div class="title">${day.title}</div>
+                  </div>`;
+        }
+        if (isToday) cls += " today";
+
+        const card = document.createElement("div");
+        card.className = cls;
+        card.innerHTML = `
+          <div class="day-header">
+            <span class="dow">${DOW_EN[i]}</span>
+            <span>${DOWS[i]}曜日</span>
+            ${isToday ? '<span class="today-badge">TODAY</span>' : ""}
+          </div>${body}`;
+        gridEl.appendChild(card);
+      });
+    }
+
+    // タブ生成(週が1つしかなければタブ非表示)
+    const labels = ["今週", "来週"];
+    if (weeks.length > 1) {
+      weeks.slice(0, 2).forEach((_, w) => {
+        const btn = document.createElement("button");
+        btn.className = "pixel-btn";
+        btn.textContent = labels[w];
+        btn.addEventListener("click", () => render(w));
+        tabsEl.appendChild(btn);
+      });
+    }
+    render(0);
+  }
+
+  // schedule.txt を読みに行く → だめならFALLBACK_TEXT
+  fetch("schedule.txt", { cache: "no-store" })
+    .then(r => r.ok ? r.text() : Promise.reject())
+    .then(init)
+    .catch(() => init(FALLBACK_TEXT));
 </script>
 
 <script src="gummies.js"></script>
