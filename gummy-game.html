@@ -65,16 +65,15 @@
   .hud-item.best { color: #ffe08a; border-color: rgba(255,224,138,0.4); }
 
   #game-wrap {
-    position: relative;
-    width: 100%;
-    max-width: 520px;
-    flex: 1;
-    max-height: 600px;
-    display: flex;
-    padding: 0 8px;
-    margin-bottom: 8px;
-  }
-
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  height: min(62vh, 540px);  /* ★画面の高さの62%か540pxの小さい方 */
+  flex: none;                 /* ★勝手に伸びるのをやめる */
+  display: flex;
+  padding: 0 8px;
+  margin-bottom: 8px;
+}
   canvas#game {
     width: 100%;
     height: 100%;
