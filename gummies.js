@@ -1,4 +1,4 @@
-/* gummies.js — サワーグミ & キャンディ背景 & ぷにサウンド 🍬🔊
+/* gummies.js — 夜空に浮かぶサワーグミ & ぷにサウンド 🍬🌙
    使い方: 各ページの </body> の直前に
    <script src="gummies.js"></script> を入れるだけ */
 (function () {
@@ -81,22 +81,10 @@
     </filter>`;
   document.body.appendChild(defs);
 
-  // ===== 共通スタイル(キャンディ背景 + アニメーション) =====
+  // ===== スタイル(グミのアニメーションのみ — 背景はサイトのまま) =====
   const style = document.createElement("style");
   style.textContent = `
-    /* 🍭 両ページ共通のキャンディ背景 */
-    body {
-      background: linear-gradient(160deg,
-        #ffeef3 0%,
-        #fff6e9 22%,
-        #fffbe0 42%,
-        #e9fbea 62%,
-        #e6f6ff 82%,
-        #f3ecff 100%) !important;
-      background-attachment: fixed !important;
-    }
-
-    .gummy-layer { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+    .gummy-layer { position: fixed; inset: 0; overflow: hidden; pointer-events: none; z-index: 3; }
     .gummy {
       position: absolute;
       opacity: 0.85;
@@ -117,7 +105,7 @@
       width: 7px; height: 7px;
       border-radius: 50%;
       pointer-events: none;
-      z-index: 2;
+      z-index: 4;
       animation: sugarFly 0.6s ease-out forwards;
     }
 
