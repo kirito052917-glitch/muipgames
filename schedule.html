@@ -10,7 +10,7 @@
 <style>
   :root{ --jp:"DotGothic16","MS Gothic",monospace; --px:"Press Start 2P",var(--jp); }
   *{box-sizing:border-box}
-  html,body{margin:0;background:#070b18;color:#cfe0f2}
+  html,body{margin:0;background:#070b18;color:#cfe0f2;overflow-x:hidden}
   body{font-family:var(--jp);padding:0 12px 40px}
   a{color:#7fc4ff}
 
@@ -39,7 +39,7 @@
   .wk .pick em{display:block;font-family:var(--px);font-size:8px;color:#8fd0ff;font-style:normal;margin-top:4px}
 
   /* ---------- toolbar ---------- */
-  .bar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:14px 0 10px;
+  .bar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin:14px 0 10px;
        font-family:var(--px);font-size:10px;color:#7f9db8}
   .bar b{color:#cfe0f2;margin-right:6px}
   .bar button{font-family:var(--px);font-size:10px;padding:6px 9px;cursor:pointer;
@@ -56,8 +56,8 @@
   .dlbtn:hover{background:#3a72bd}
   .dlbtn:active{transform:translateY(2px);box-shadow:0 2px 0 #1b3a68}
 
-  /* ---------- stage shell ---------- */
-  .rawscroll{width:100%;overflow:auto;-webkit-overflow-scrolling:touch}
+  /* ---------- stage shell (常に画面幅にフィット) ---------- */
+  .holder{width:100%;overflow:hidden}
   .wrap{position:relative;margin:0 auto;overflow:hidden;border-radius:6px;
         outline:2px solid #4a90d9;box-shadow:0 10px 34px rgba(0,0,0,.55)}
   .stage{position:relative;width:var(--W);height:var(--H);transform-origin:0 0;
@@ -65,8 +65,6 @@
 
   .sky{position:absolute;inset:0}
   .sky i{position:absolute;background:#fff;border-radius:50%}
-  .guide{position:absolute;top:0;bottom:0;left:50%;width:0;border-left:1px dashed #ff5c8a;display:none}
-  .guide.on{display:block}
 
   /* ---------- header inside stage ---------- */
   .title{position:absolute;left:0;right:0;top:var(--titleY);margin:0;text-align:center;
@@ -117,8 +115,8 @@
 
   @media (max-width:820px){
     body{padding:0 8px 32px}
-    .bar{gap:10px}
     .wk .pick{font-size:14px}
+    .dlbtn{width:100%;text-align:center}
   }
 </style>
 </head>
@@ -149,18 +147,14 @@
   <!-- ============================== TOOLBAR ============================== -->
   <div class="bar">
     <button class="dlbtn" id="open">ダウンロード</button>
-    <span><b>ZOOM</b><button id="zf">FIT</button><button id="zr">1:1</button></span>
     <span><b>TIME</b><button id="t24" class="on">24H</button><button id="tap">AM·PM</button></span>
-    <span><b>GUIDE</b><button id="gd">CENTER</button></span>
-    <span class="hud" id="hud"></span>
   </div>
 
   <!-- =============================== STAGE =============================== -->
-  <div class="rawscroll" id="scroll">
+  <div class="holder" id="holder">
     <div class="wrap" id="wrap">
       <div class="stage" id="stage">
         <div class="sky" id="sky"></div>
-        <div class="guide" id="guide"></div>
         <h1 class="title" id="title"></h1>
         <div class="pill" id="pill"></div>
         <div class="who" id="who"></div>
@@ -188,8 +182,7 @@
 
 <script>
 /* ============================================================
-   0. BRAND — 表示名などはここだけで管理（schedule.txt のメタ行は廃止）
-      画像から名前・リンクを消したい場合は showHandle:false
+   0. BRAND — 表示名などはここだけで管理
    ============================================================ */
 const BRAND={
   title : 'むいぴーの配信予定',
@@ -207,11 +200,11 @@ const L={ W:1080,H:1080, pad:40,
   rowsTop:220, rowH:104, gap:12, badgeW:96, bodyGap:12,
   bodyPad:20, timeW:118,
   enY:16, jpY:36, dtY:74 };
-L.bodyX   = L.pad + L.badgeW + L.bodyGap;              // 148
-L.bodyW   = (L.W - L.pad) - L.bodyX;                   // 892
-L.textX   = L.bodyX + L.bodyPad + L.timeW;             // 286
-L.textMax = (L.W - L.pad) - L.textX - L.bodyPad;       // 734 (時間あり)
-L.wideMax = (L.W - L.pad) - L.bodyX - L.bodyPad*2;     // 852 (時間なし/休み)
+L.bodyX   = L.pad + L.badgeW + L.bodyGap;
+L.bodyW   = (L.W - L.pad) - L.bodyX;
+L.textX   = L.bodyX + L.bodyPad + L.timeW;
+L.textMax = (L.W - L.pad) - L.textX - L.bodyPad;
+L.wideMax = (L.W - L.pad) - L.bodyX - L.bodyPad*2;
 for(const k in L) document.documentElement.style.setProperty('--'+k, L[k]+'px');
 
 const PAL=['#ff79c6','#7dff9b','#ff9ff3','#ffe066','#8be9fd','#c58bff','#ffa94d','#63e6be','#74c0fc'];
@@ -221,11 +214,10 @@ const DAY_META={月:['MON','wd'],火:['TUE','wd'],水:['WED','wd'],木:['THU','w
 const WD=['日','月','火','水','木','金','土'];
 const jpF=s=>`${s}px "DotGothic16","MS Gothic",monospace`;
 const pxF=s=>`${s}px "Press Start 2P","DotGothic16",monospace`;
-const LH=1.30;                       // 2行時の行間
+const LH=1.30;
 
 /* ============================================================
-   2. schedule.txt（file:// 用の埋め込みフォールバック）
-      ※ サイト上からは編集・保存できません（読み込み専用）
+   2. schedule.txt（file:// 用の埋め込みフォールバック／読み込み専用）
    ============================================================ */
 const DEFAULT_TXT=`# 2026/8/10 今週
 月 休み
@@ -247,7 +239,7 @@ const DEFAULT_TXT=`# 2026/8/10 今週
 `;
 
 /* ============================================================
-   3. TEXT FITTING（1080幅用：最大2行で自動折り返し）
+   3. TEXT FITTING（最大2行で自動折り返し）
    ============================================================ */
 const measure=document.createElement('canvas').getContext('2d');
 const OFF=/^(休み|お休み|やすみ|オフ|off|rest|-|—|ー|なし)$/i;
@@ -266,7 +258,7 @@ function wrapText(t,maxW,f){
     if(measure.measureText(cand).width<=maxW){ cur=cand; continue; }
     if(measure.measureText(w).width<=maxW){ flush(); cur=w; continue; }
     flush();
-    for(const ch of w){                                  // 日本語は文字単位で折る
+    for(const ch of w){
       if(cur && measure.measureText(cur+ch).width>maxW){ lines.push(cur); cur=''; }
       cur+=ch;
     }
@@ -315,7 +307,7 @@ function parseFile(src){
   src.split(/\r?\n/).forEach((raw,i)=>{
     const line=raw.replace(/\u3000/g,' ').replace(/\t/g,' ').trim();
     if(!line || line.startsWith('//')) return;
-    if(line.startsWith('#')){                              // 週ヘッダ
+    if(line.startsWith('#')){
       const body=line.replace(/^#+/,'').trim();
       const m=body.match(/(\d{4})\s*[\/\-.年]\s*(\d{1,2})\s*[\/\-.月]\s*(\d{1,2})/);
       if(!m){ warn.push(`L${i+1}: 週ヘッダに日付なし`); return; }
@@ -358,7 +350,7 @@ function buildRows(w){
     const t=off?null:e.t;
     const text=off?((e&&e.text&&!OFF.test(e.text))?e.text:'😌 お休み'):(e.text||'（内容未定）');
     const maxW=off?L.wideMax:(t?L.textMax:L.wideMax);
-    const lay=layoutText(text,maxW,off?26:26,12,off?1:2);
+    const lay=layoutText(text,maxW,26,12,off?1:2);
     return { en,jp,kind,date,off,t,text, fs:lay.fs, lines:lay.lines,
              s24:t?t24(t):'', sap:t?tap(t):'' };
   });
@@ -368,7 +360,7 @@ function buildRows(w){
    5. STATE + RENDER
    ============================================================ */
 const $=id=>document.getElementById(id);
-const wrap=$('wrap'), stage=$('stage'), scroller=$('scroll'), hud=$('hud'), stat=$('stat');
+const wrap=$('wrap'), stage=$('stage'), holder=$('holder'), stat=$('stat');
 let FILE=parseFile(DEFAULT_TXT), SEL=0, TF='24';
 const timeOf=r=>TF==='24'?r.s24:r.sap;
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -432,39 +424,28 @@ function draw(){
 }
 
 /* ============================================================
-   6. FIT / ZOOM（大きく表示するための修正ポイント）
+   6. AUTO-FIT — 常にブラウザ幅に合わせる（拡大は等倍まで）
    ============================================================ */
-let Z=(document.documentElement.clientWidth<820)?'raw':'fit';   // スマホは等倍＋スクロール
-const MAXZ=1;                                                   // FIT は等倍まで拡大
 function fit(){
   const vw=document.documentElement.clientWidth;
-  if(Z==='raw'){
-    stage.style.transform='scale(1)';
-    wrap.style.width=L.W+'px'; wrap.style.height=L.H+'px';
-    hud.textContent=`1:1  ${L.W}x${L.H}  viewport ${vw}`;
-  } else {
-    const avail=Math.max(240, Math.min(scroller.clientWidth, vw-24));
-    const s=Math.max(.1, Math.min(MAXZ, avail/L.W));
-    stage.style.transform=`scale(${s})`;
-    wrap.style.width=Math.round(L.W*s)+'px';
-    wrap.style.height=Math.round(L.H*s)+'px';
-    hud.textContent=`FIT  scale ${s.toFixed(3)}  viewport ${vw}`;
-  }
-  $('zf').classList.toggle('on',Z==='fit');
-  $('zr').classList.toggle('on',Z==='raw');
+  const avail=Math.max(200, Math.min(holder.clientWidth||vw, vw-24));
+  const s=Math.min(1, avail/L.W);
+  stage.style.transform=`scale(${s})`;
+  wrap.style.width =Math.round(L.W*s)+'px';
+  wrap.style.height=Math.round(L.H*s)+'px';
 }
 const refit=()=>requestAnimationFrame(()=>requestAnimationFrame(fit));
-new ResizeObserver(refit).observe(scroller); addEventListener('resize',refit);
-$('zf').onclick=()=>{Z='fit';refit();};
-$('zr').onclick=()=>{Z='raw';refit();};
-$('gd').onclick=e=>{$('guide').classList.toggle('on');e.currentTarget.classList.toggle('on');};
+new ResizeObserver(refit).observe(holder);
+addEventListener('resize',refit);
+addEventListener('orientationchange',refit);
+
 $('t24').onclick=()=>{TF='24';$('t24').classList.add('on');$('tap').classList.remove('on');draw();};
 $('tap').onclick=()=>{TF='ap';$('tap').classList.add('on');$('t24').classList.remove('on');draw();};
 $('prev').onclick=()=>{if(SEL>0){SEL--;drawTabs();draw();}};
 $('next').onclick=()=>{if(SEL<FILE.weeks.length-1){SEL++;drawTabs();draw();}};
 
 /* ============================================================
-   7. PNG 生成 → 新しいタブで表示（保存はしない）
+   7. PNG 生成（常に 1080×1080）→ 新しいタブで表示
    ============================================================ */
 function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);
   c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
@@ -476,7 +457,6 @@ async function renderPNG(w){
   cv.width=L.W*S; cv.height=L.H*S;
   const c=cv.getContext('2d'); c.scale(S,S);
 
-  /* background */
   const g=c.createLinearGradient(0,0,L.W,L.H);
   g.addColorStop(0,'#0a1026');g.addColorStop(.55,'#0d1530');g.addColorStop(1,'#101b3a');
   c.fillStyle=g;c.fillRect(0,0,L.W,L.H);
@@ -552,10 +532,9 @@ async function renderPNG(w){
   return {blob, name:`muipgames_schedule_${tag}_1080.png`};
 }
 
-/* 「ダウンロード」＝ 新しいタブで画像を開く（download属性は使わない） */
 async function openPNG(w){
   if(!w){ stat.innerHTML='<span class="err">週が選択されていません</span>'; return; }
-  const tab=window.open('','_blank');                    // ← 同期で開く（ブロック回避）
+  const tab=window.open('','_blank');                    // 同期で開く（ブロック回避）
   stat.innerHTML='<span class="hud">rendering …</span>';
   try{
     const {blob,name}=await renderPNG(w);
@@ -579,7 +558,7 @@ async function openPNG(w){
 $('open').onclick=()=>openPNG(FILE.weeks[SEL]);
 
 /* ============================================================
-   8. BOOT — schedule.txt は読み込み専用（編集UIなし）
+   8. BOOT — schedule.txt は読み込み専用
    ============================================================ */
 function load(src){
   FILE=parseFile(src);
@@ -594,9 +573,9 @@ addEventListener('keydown',e=>{
   let src=DEFAULT_TXT;
   try{ const r=await fetch('schedule.txt',{cache:'no-store'});
        if(r.ok){ const t=await r.text(); if(t.trim()) src=t; } }
-  catch(e){ /* file:// → 埋め込みを使用 */ }
+  catch(e){}
   load(src);
-  document.fonts.ready.then(()=>load(src));   // webフォント確定後に再計測
+  document.fonts.ready.then(()=>load(src));
 })();
 </script>
 </body>
