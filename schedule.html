@@ -11,12 +11,12 @@
   :root{ --jp:"DotGothic16","MS Gothic",monospace; --px:"Press Start 2P",var(--jp); }
   *{box-sizing:border-box}
   html,body{margin:0;background:#070b18;color:#cfe0f2}
-  body{font-family:var(--jp);padding:0 14px 40px}
+  body{font-family:var(--jp);padding:0 12px 40px}
   a{color:#7fc4ff}
 
   /* ---------- site nav ---------- */
   .site{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:space-between;
-        max-width:1000px;margin:0 auto;padding:16px 0 10px;border-bottom:1px solid #1c2a45}
+        max-width:1140px;margin:0 auto;padding:16px 0 10px;border-bottom:1px solid #1c2a45}
   .site .brand{font-family:var(--px);font-size:11px;color:#cfe0f2;letter-spacing:1px}
   .site .brand small{display:block;margin-top:6px;color:#7f9db8;font-size:9px}
   .site nav{display:flex;flex-wrap:wrap;gap:8px}
@@ -25,22 +25,18 @@
   .site nav a:hover{background:#1b2c4c;color:#eaf2ff}
   .site nav a[aria-current]{background:#2f5c9b;color:#fff;border-color:#4a90d9}
 
-  .page{max-width:1000px;margin:0 auto}
+  .page{max-width:1140px;margin:0 auto}
   h2.sec{font-family:var(--px);font-size:11px;color:#7f9db8;margin:22px 0 10px;letter-spacing:1px}
 
-  /* ---------- week picker / downloads ---------- */
+  /* ---------- week picker ---------- */
   .panel{background:#0b1224;border:1px solid #1f2f4d;border-radius:8px;padding:12px}
   .weeks{display:flex;flex-wrap:wrap;gap:10px}
-  .wk{display:flex;align-items:stretch;border:1px solid #2a3f60;border-radius:6px;overflow:hidden;background:#132038}
+  .wk{display:flex;border:1px solid #2a3f60;border-radius:6px;overflow:hidden;background:#132038}
   .wk.on{border-color:#4a90d9;box-shadow:0 0 0 1px #4a90d9 inset}
   .wk .pick{font-family:var(--jp);font-size:15px;color:#cfe0f2;background:transparent;border:0;cursor:pointer;
-            padding:9px 12px;text-align:left;line-height:1.35}
+            padding:9px 14px;text-align:left;line-height:1.35}
   .wk.on .pick{background:#2f5c9b;color:#fff}
   .wk .pick em{display:block;font-family:var(--px);font-size:8px;color:#8fd0ff;font-style:normal;margin-top:4px}
-  .wk .dl{font-family:var(--px);font-size:9px;cursor:pointer;border:0;border-left:1px solid #2a3f60;
-          background:#182b49;color:#9fe0b4;padding:0 12px}
-  .wk .dl:hover{background:#21406c;color:#fff}
-  .wk.on .dl{border-left-color:#4a90d9}
 
   /* ---------- toolbar ---------- */
   .bar{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin:14px 0 10px;
@@ -53,10 +49,555 @@
   .hud{font-family:var(--px);font-size:10px;color:#7f9db8}
   .ok{color:#9fe0b4}.err{color:#ff9aa9}
 
+  /* ▼ ダウンロード（新しいタブで開く）ボタン */
+  .dlbtn{font-family:var(--jp);font-size:17px;font-weight:700;cursor:pointer;
+         padding:12px 26px;border-radius:8px;background:#2f5c9b;color:#fff;border:1px solid #4a90d9;
+         box-shadow:0 4px 0 #1b3a68}
+  .dlbtn:hover{background:#3a72bd}
+  .dlbtn:active{transform:translateY(2px);box-shadow:0 2px 0 #1b3a68}
+
   /* ---------- stage shell ---------- */
-  .wrap{position:relative;width:100%;overflow:hidden;border-radius:6px;
+  .rawscroll{width:100%;overflow:auto;-webkit-overflow-scrolling:touch}
+  .wrap{position:relative;margin:0 auto;overflow:hidden;border-radius:6px;
         outline:2px solid #4a90d9;box-shadow:0 10px 34px rgba(0,0,0,.55)}
-  .wrap.raw{width:1600px;max-width:none;overflow:visible}
-  .rawscroll{overflow-x:auto}
-  .stage{position:relative;width:1600px;height:900px;transform-origin:0 0;
+  .stage{position:relative;width:var(--W);height:var(--H);transform-origin:0 0;
          background:linear-gradient(160deg,#0a1026 0%,#0d1530 55%,#101b3a 100%);overflow:hidden}
+
+  .sky{position:absolute;inset:0}
+  .sky i{position:absolute;background:#fff;border-radius:50%}
+  .guide{position:absolute;top:0;bottom:0;left:50%;width:0;border-left:1px dashed #ff5c8a;display:none}
+  .guide.on{display:block}
+
+  /* ---------- header inside stage ---------- */
+  .title{position:absolute;left:0;right:0;top:var(--titleY);margin:0;text-align:center;
+         font-family:var(--jp);line-height:1;letter-spacing:var(--titleTrack);white-space:nowrap}
+  .title span{
+    text-shadow:
+      -2px -2px 0 #fff, 0 -2px 0 #fff, 2px -2px 0 #fff, 2px 0 0 #fff,
+       2px  2px 0 #fff, 0  2px 0 #fff,-2px  2px 0 #fff,-2px 0 0 #fff,
+       5px  6px 0 #0b1630;
+  }
+  .pill{position:absolute;left:50%;top:var(--pillTop);transform:translateX(-50%);
+        height:var(--pillH);display:flex;align-items:center;gap:12px;padding:0 30px;
+        border:2px solid #9fb8d8;border-radius:999px;background:rgba(255,255,255,.05);
+        font-family:var(--jp);color:#eaf2ff;white-space:nowrap}
+  .who{position:absolute;left:0;right:0;top:var(--whoTop);text-align:center;
+       font-family:var(--px);color:#9db4cc;white-space:nowrap}
+  .who .lk{color:#7fc4ff}
+
+  /* ---------- rows ---------- */
+  .rows{position:absolute;left:var(--pad);right:var(--pad);top:var(--rowsTop)}
+  .row{position:relative;height:var(--rowH);margin-bottom:var(--gap)}
+  .badge{position:absolute;left:0;top:0;width:var(--badgeW);height:100%;border-radius:8px;color:#fff}
+  .badge .en{position:absolute;left:0;right:0;top:var(--enY);text-align:center;font-family:var(--px);font-size:11px;opacity:.9}
+  .badge .jp{position:absolute;left:0;right:0;top:var(--jpY);text-align:center;font-family:var(--jp);font-size:28px;line-height:1}
+  .badge .dt{position:absolute;left:0;right:0;top:var(--dtY);text-align:center;font-family:var(--px);font-size:10px;opacity:.8}
+  .badge.wd{background:#2f5c9b}.badge.sat{background:#3f8fc4}.badge.sun{background:#d9538a}
+
+  .body{position:absolute;left:calc(var(--badgeW) + 12px);right:0;top:0;height:100%;
+        border-radius:8px;background:#d9dde3;display:flex;align-items:center;
+        padding:0 var(--bodyPad);overflow:hidden}
+  .body .t{font-family:var(--px);color:#1f5aa0;width:var(--timeW);flex:none}
+  .body .d{font-family:var(--jp);color:#16233a;display:flex;flex-direction:column;
+           justify-content:center;line-height:1.3;flex:1;min-width:0}
+  .body .d span{white-space:nowrap}
+  .row.off .body{background:rgba(255,255,255,.04);border:2px dashed #4a5f80;justify-content:center}
+  .row.off .body .d{color:#b9c7da;text-align:center;flex:0 0 auto}
+
+  /* ---------- notice / cta / footer ---------- */
+  .notice{margin-top:22px;background:#0b1224;border:1px solid #2a3f60;border-radius:8px;padding:14px 16px;
+          font-size:15px;line-height:1.9;color:#b9c7da}
+  .notice h3{font-family:var(--px);font-size:10px;color:#ffd166;margin:0 0 8px;letter-spacing:1px}
+  .cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+  .cta a{font-family:var(--px);font-size:10px;text-decoration:none;padding:11px 14px;border-radius:6px;
+         background:#2f5c9b;color:#fff;border:1px solid #4a90d9}
+  .cta a.alt{background:#132038;color:#9db4cc;border-color:#2a3f60}
+  footer{max-width:1140px;margin:26px auto 0;padding-top:14px;border-top:1px solid #1c2a45;
+         font-family:var(--px);font-size:9px;color:#5f7ea8;text-align:center}
+
+  @media (max-width:820px){
+    body{padding:0 8px 32px}
+    .bar{gap:10px}
+    .wk .pick{font-size:14px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============================== SITE NAV ============================== -->
+<header class="site">
+  <div class="brand">むいぴー<small>WEEKLY SCHEDULE / 配信予定</small></div>
+  <nav>
+    <a href="index.html">🏠 ホーム</a>
+    <a href="schedule.html" aria-current="page">📅 配信スケジュール</a>
+    <a href="https://www.youtube.com/@MuiPGames" target="_blank" rel="noopener">▶️ YouTube</a>
+  </nav>
+</header>
+
+<main class="page">
+
+  <!-- ============================ WEEK SELECT ============================ -->
+  <h2 class="sec">▚ WEEK SELECT</h2>
+  <div class="panel">
+    <div class="weeks" id="weeks"></div>
+    <div class="bar" style="margin:12px 0 0">
+      <span><b>NAV</b><button id="prev">‹ PREV</button><button id="next">NEXT ›</button></span>
+      <span class="hud" id="stat"></span>
+    </div>
+  </div>
+
+  <!-- ============================== TOOLBAR ============================== -->
+  <div class="bar">
+    <button class="dlbtn" id="open">ダウンロード</button>
+    <span><b>ZOOM</b><button id="zf">FIT</button><button id="zr">1:1</button></span>
+    <span><b>TIME</b><button id="t24" class="on">24H</button><button id="tap">AM·PM</button></span>
+    <span><b>GUIDE</b><button id="gd">CENTER</button></span>
+    <span class="hud" id="hud"></span>
+  </div>
+
+  <!-- =============================== STAGE =============================== -->
+  <div class="rawscroll" id="scroll">
+    <div class="wrap" id="wrap">
+      <div class="stage" id="stage">
+        <div class="sky" id="sky"></div>
+        <div class="guide" id="guide"></div>
+        <h1 class="title" id="title"></h1>
+        <div class="pill" id="pill"></div>
+        <div class="who" id="who"></div>
+        <div class="rows" id="rows"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============================== NOTICE =============================== -->
+  <section class="notice">
+    <h3>! NOTICE</h3>
+    ※ 予定は変更になる場合があります。最新情報はXをチェックしてね！<br>
+    ※ 時間はすべて日本時間（JST）です。<br>
+    ※ 「ダウンロード」を押すと 1080×1080 の画像が新しいタブで開きます（長押し／右クリックで保存できます）。
+  </section>
+
+  <div class="cta">
+    <!-- ▼ Discord招待リンクを入れてください -->
+    <a href="#" target="_blank" rel="noopener">💬 ムイピー軍団に参加する</a>
+    <a class="alt" href="https://www.youtube.com/@MuiPGames" target="_blank" rel="noopener">▶️ YouTube</a>
+  </div>
+</main>
+
+<footer>© 2026 むいぴー / muiPGames</footer>
+
+<script>
+/* ============================================================
+   0. BRAND — 表示名などはここだけで管理（schedule.txt のメタ行は廃止）
+      画像から名前・リンクを消したい場合は showHandle:false
+   ============================================================ */
+const BRAND={
+  title : 'むいぴーの配信予定',
+  handle: 'むいぴー / muiPGames',
+  link  : 'youtube.com/@MuiPGames',
+  showHandle: true
+};
+
+/* ============================================================
+   1. LAYOUT — 1080 x 1080 (1:1)
+   ============================================================ */
+const L={ W:1080,H:1080, pad:40,
+  titleY:34, titleSize:56, titleTrack:4,
+  pillTop:112, pillH:46, whoTop:176,
+  rowsTop:220, rowH:104, gap:12, badgeW:96, bodyGap:12,
+  bodyPad:20, timeW:118,
+  enY:16, jpY:36, dtY:74 };
+L.bodyX   = L.pad + L.badgeW + L.bodyGap;              // 148
+L.bodyW   = (L.W - L.pad) - L.bodyX;                   // 892
+L.textX   = L.bodyX + L.bodyPad + L.timeW;             // 286
+L.textMax = (L.W - L.pad) - L.textX - L.bodyPad;       // 734 (時間あり)
+L.wideMax = (L.W - L.pad) - L.bodyX - L.bodyPad*2;     // 852 (時間なし/休み)
+for(const k in L) document.documentElement.style.setProperty('--'+k, L[k]+'px');
+
+const PAL=['#ff79c6','#7dff9b','#ff9ff3','#ffe066','#8be9fd','#c58bff','#ffa94d','#63e6be','#74c0fc'];
+const DAY_ORDER=['月','火','水','木','金','土','日'];
+const DAY_META={月:['MON','wd'],火:['TUE','wd'],水:['WED','wd'],木:['THU','wd'],
+                金:['FRI','wd'],土:['SAT','sat'],日:['SUN','sun']};
+const WD=['日','月','火','水','木','金','土'];
+const jpF=s=>`${s}px "DotGothic16","MS Gothic",monospace`;
+const pxF=s=>`${s}px "Press Start 2P","DotGothic16",monospace`;
+const LH=1.30;                       // 2行時の行間
+
+/* ============================================================
+   2. schedule.txt（file:// 用の埋め込みフォールバック）
+      ※ サイト上からは編集・保存できません（読み込み専用）
+   ============================================================ */
+const DEFAULT_TXT=`# 2026/8/10 今週
+月 休み
+火 11:30AM ピクセルラボ縦型 予約無し　SFCドラえもん２ のび太のトイズランド大冒険
+水 11:30AM BG3 #21
+木 11:30AM God of war ラグナロク
+金 11:30AM 雑談配信
+土 12:30PM バイオハザード7
+日 12:30PM FF14参加型紅蓮祭で遊ぼう
+
+# 2026/8/17 今週
+月 休み
+火 11:30AM ポケモン銀遊びながら雑談
+水 11:30AM BG3 #22
+木 11:30AM God of war ラグナロク
+金 11:30AM 雑談配信
+土 12:30PM バイオハザード7
+日 12:30PM 雑談しながらゲームをカジュアルに遊ぶ回
+`;
+
+/* ============================================================
+   3. TEXT FITTING（1080幅用：最大2行で自動折り返し）
+   ============================================================ */
+const measure=document.createElement('canvas').getContext('2d');
+const OFF=/^(休み|お休み|やすみ|オフ|off|rest|-|—|ー|なし)$/i;
+
+function fitFont(text,max,start,min,fam){
+  let f=start; measure.font=fam(f);
+  while(measure.measureText(text).width>max && f>min){ f--; measure.font=fam(f); }
+  return f;
+}
+function wrapText(t,maxW,f){
+  measure.font=jpF(f);
+  const parts=t.split(/\s+/).filter(Boolean), lines=[]; let cur='';
+  const flush=()=>{ if(cur){ lines.push(cur); cur=''; } };
+  for(const w of parts){
+    const cand=cur?cur+' '+w:w;
+    if(measure.measureText(cand).width<=maxW){ cur=cand; continue; }
+    if(measure.measureText(w).width<=maxW){ flush(); cur=w; continue; }
+    flush();
+    for(const ch of w){                                  // 日本語は文字単位で折る
+      if(cur && measure.measureText(cur+ch).width>maxW){ lines.push(cur); cur=''; }
+      cur+=ch;
+    }
+  }
+  flush();
+  return lines.length?lines:[''];
+}
+function layoutText(t,maxW,start,min,maxLines){
+  for(let f=start; f>=min; f--){
+    const lines=wrapText(t,maxW,f);
+    if(lines.length<=maxLines) return {fs:f,lines};
+  }
+  return {fs:min,lines:wrapText(t,maxW,min).slice(0,maxLines)};
+}
+function fitTitle(t){
+  const max=L.W-L.pad*2; let f=L.titleSize;
+  while(f>26){
+    measure.font=jpF(f);
+    const w=[...t].reduce((a,ch)=>a+measure.measureText(ch).width+L.titleTrack,0)-L.titleTrack;
+    if(w<=max) break; f--;
+  }
+  return f;
+}
+
+/* ============================================================
+   4. PARSER（週ブロックのみ／メタ行なし）
+   ============================================================ */
+function parseTime(s){
+  const m=s.match(/^(午前|午後|AM|PM|am|pm)?\s*(\d{1,2})\s*[:：時]\s*(\d{1,2})?\s*分?\s*(午前|午後|AM|PM|am|pm)?/);
+  if(!m) return null;
+  let h=+m[2], mi=m[3]?+m[3]:0;
+  const mer=(m[1]||m[4]||'').toLowerCase();
+  if(mer==='pm'||mer==='午後'){ if(h<12) h+=12; }
+  if(mer==='am'||mer==='午前'){ if(h===12) h=0; }
+  if(h>23||mi>59) return null;
+  return { h, mi, rest:s.slice(m[0].length).replace(/^[\s|｜:：-]+/,'').trim() };
+}
+const pad2=n=>String(n).padStart(2,'0');
+const t24=t=>`${pad2(t.h)}:${pad2(t.mi)}`;
+const tap=t=>`${t.h%12||12}:${pad2(t.mi)}${t.h<12?'AM':'PM'}`;
+const iso=d=>`${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+const mondayOf=d=>{const x=new Date(d); x.setDate(x.getDate()-((x.getDay()+6)%7)); x.setHours(0,0,0,0); return x;};
+
+function parseFile(src){
+  const weeks=[], warn=[]; let cur=null;
+  src.split(/\r?\n/).forEach((raw,i)=>{
+    const line=raw.replace(/\u3000/g,' ').replace(/\t/g,' ').trim();
+    if(!line || line.startsWith('//')) return;
+    if(line.startsWith('#')){                              // 週ヘッダ
+      const body=line.replace(/^#+/,'').trim();
+      const m=body.match(/(\d{4})\s*[\/\-.年]\s*(\d{1,2})\s*[\/\-.月]\s*(\d{1,2})/);
+      if(!m){ warn.push(`L${i+1}: 週ヘッダに日付なし`); return; }
+      const d=new Date(+m[1],+m[2]-1,+m[3]);
+      cur={ monday:mondayOf(d), label:body.replace(m[0],'').replace(/[日曜（）()]/g,'').trim(), days:{} };
+      weeks.push(cur); return;
+    }
+    const dm=line.match(/^([月火水木金土日])(?:曜日?)?[\s:：|]*(.*)$/);
+    if(!dm){ warn.push(`L${i+1}: 読めない行「${line.slice(0,18)}」`); return; }
+    if(!cur){ cur={monday:null,label:'',days:{}}; weeks.push(cur); }
+    const rest=dm[2].trim();
+    if(OFF.test(rest) || rest===''){ cur.days[dm[1]]={off:true,text:rest||''}; return; }
+    const t=parseTime(rest);
+    cur.days[dm[1]] = t ? {off:false,t,text:t.rest} : {off:false,t:null,text:rest};
+  });
+
+  weeks.sort((a,b)=>(a.monday?+a.monday:0)-(b.monday?+b.monday:0));
+  weeks.forEach((w,idx)=>{
+    w.key   = w.monday?iso(w.monday):'week-'+idx;
+    w.range = w.monday?rangeText(w.monday):'';
+    w.short = w.monday
+      ? `${w.monday.getMonth()+1}/${w.monday.getDate()} – ${(()=>{const e=new Date(w.monday);e.setDate(e.getDate()+6);return (e.getMonth()+1)+'/'+e.getDate();})()}`
+      : '（日付なし）';
+    w.rows  = buildRows(w);
+  });
+  return {weeks,warn};
+}
+function rangeText(mon){
+  const end=new Date(mon); end.setDate(end.getDate()+6);
+  return `${mon.getFullYear()}/${mon.getMonth()+1}/${mon.getDate()}(${WD[mon.getDay()]}) ～ `
+       + `${end.getMonth()+1}/${end.getDate()}(${WD[end.getDay()]})`;
+}
+function buildRows(w){
+  return DAY_ORDER.map((jp,i)=>{
+    const [en,kind]=DAY_META[jp];
+    const e=w.days[jp];
+    let date='';
+    if(w.monday){ const d=new Date(w.monday); d.setDate(d.getDate()+i); date=`${d.getMonth()+1}/${d.getDate()}`; }
+    const off=!e||e.off;
+    const t=off?null:e.t;
+    const text=off?((e&&e.text&&!OFF.test(e.text))?e.text:'😌 お休み'):(e.text||'（内容未定）');
+    const maxW=off?L.wideMax:(t?L.textMax:L.wideMax);
+    const lay=layoutText(text,maxW,off?26:26,12,off?1:2);
+    return { en,jp,kind,date,off,t,text, fs:lay.fs, lines:lay.lines,
+             s24:t?t24(t):'', sap:t?tap(t):'' };
+  });
+}
+
+/* ============================================================
+   5. STATE + RENDER
+   ============================================================ */
+const $=id=>document.getElementById(id);
+const wrap=$('wrap'), stage=$('stage'), scroller=$('scroll'), hud=$('hud'), stat=$('stat');
+let FILE=parseFile(DEFAULT_TXT), SEL=0, TF='24';
+const timeOf=r=>TF==='24'?r.s24:r.sap;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function rand(seed){let s=seed>>>0;return()=>{s^=s<<13;s^=s>>>17;s^=s<<5;return (s>>>0)/4294967296;};}
+const STARS=(()=>{const r=rand(20250810),a=[];for(let i=0;i<140;i++)
+  a.push({x:r()*L.W,y:r()*L.H,s:r()<.85?1.5:2.5,o:.25+r()*.6});return a;})();
+
+function pickDefaultWeek(){
+  const t=+mondayOf(new Date());
+  let i=FILE.weeks.findIndex(w=>w.monday&&+w.monday===t);
+  if(i<0) i=FILE.weeks.findIndex(w=>w.monday&&+w.monday>t);
+  return i<0?Math.max(0,FILE.weeks.length-1):i;
+}
+function drawTabs(){
+  $('weeks').innerHTML=FILE.weeks.map((w,i)=>`
+    <div class="wk${i===SEL?' on':''}">
+      <button class="pick" data-i="${i}">${esc(w.short)}${w.label?`<em>${esc(w.label)}</em>`:'<em>&nbsp;</em>'}</button>
+    </div>`).join('') || '<span class="hud err">週データがありません（schedule.txt を確認）</span>';
+  $('weeks').querySelectorAll('.pick').forEach(b=>b.onclick=()=>{SEL=+b.dataset.i;drawTabs();draw();});
+}
+const pillText=w=>w.range+(w.label?`  ・  ${w.label}`:'');
+
+function draw(){
+  const w=FILE.weeks[SEL];
+  $('sky').innerHTML=STARS.map(s=>
+    `<i style="left:${s.x.toFixed(1)}px;top:${s.y.toFixed(1)}px;width:${s.s}px;height:${s.s}px;opacity:${s.o.toFixed(2)}"></i>`).join('');
+
+  const tfs=fitTitle(BRAND.title);
+  $('title').style.fontSize=tfs+'px';
+  $('title').innerHTML=[...BRAND.title].map((ch,i)=>
+    `<span style="color:${PAL[i%PAL.length]}">${ch}</span>`).join('');
+
+  if(BRAND.showHandle){
+    const wf=fitFont(`${BRAND.handle}  ▶  ${BRAND.link}`,L.W-L.pad*2,13,8,pxF);
+    $('who').style.fontSize=wf+'px';
+    $('who').innerHTML=`${esc(BRAND.handle)} &nbsp;▶&nbsp; <span class="lk">${esc(BRAND.link)}</span>`;
+  } else $('who').innerHTML='';
+
+  if(!w){ $('pill').textContent='—'; $('rows').innerHTML=''; refit(); return; }
+  const pf=fitFont('🗓  '+pillText(w),L.W-L.pad*2-60,20,12,jpF);
+  $('pill').style.fontSize=pf+'px';
+  $('pill').innerHTML=`<span>🗓</span><span>${esc(pillText(w))}</span>`;
+
+  $('rows').innerHTML=w.rows.map(r=>{
+    const ts=timeOf(r), tsz=ts?fitFont(ts,L.timeW-8,20,11,pxF):0;
+    return `<div class="row${r.off?' off':''}">
+      <div class="badge ${r.kind}">
+        <span class="en">${r.en}</span><span class="jp">${r.jp}</span>
+        ${r.date?`<span class="dt">${r.date}</span>`:''}
+      </div>
+      <div class="body">
+        ${ts?`<span class="t" style="font-size:${tsz}px">${esc(ts)}</span>`:''}
+        <span class="d" style="font-size:${r.fs}px">${r.lines.map(l=>`<span>${esc(l)}</span>`).join('')}</span>
+      </div></div>`;}).join('');
+
+  stat.innerHTML=FILE.warn.length
+    ? `<span class="err">⚠ ${esc(FILE.warn.join('  '))}</span>`
+    : `<span class="ok">OK — ${FILE.weeks.length} 週</span>`;
+  refit();
+}
+
+/* ============================================================
+   6. FIT / ZOOM（大きく表示するための修正ポイント）
+   ============================================================ */
+let Z=(document.documentElement.clientWidth<820)?'raw':'fit';   // スマホは等倍＋スクロール
+const MAXZ=1;                                                   // FIT は等倍まで拡大
+function fit(){
+  const vw=document.documentElement.clientWidth;
+  if(Z==='raw'){
+    stage.style.transform='scale(1)';
+    wrap.style.width=L.W+'px'; wrap.style.height=L.H+'px';
+    hud.textContent=`1:1  ${L.W}x${L.H}  viewport ${vw}`;
+  } else {
+    const avail=Math.max(240, Math.min(scroller.clientWidth, vw-24));
+    const s=Math.max(.1, Math.min(MAXZ, avail/L.W));
+    stage.style.transform=`scale(${s})`;
+    wrap.style.width=Math.round(L.W*s)+'px';
+    wrap.style.height=Math.round(L.H*s)+'px';
+    hud.textContent=`FIT  scale ${s.toFixed(3)}  viewport ${vw}`;
+  }
+  $('zf').classList.toggle('on',Z==='fit');
+  $('zr').classList.toggle('on',Z==='raw');
+}
+const refit=()=>requestAnimationFrame(()=>requestAnimationFrame(fit));
+new ResizeObserver(refit).observe(scroller); addEventListener('resize',refit);
+$('zf').onclick=()=>{Z='fit';refit();};
+$('zr').onclick=()=>{Z='raw';refit();};
+$('gd').onclick=e=>{$('guide').classList.toggle('on');e.currentTarget.classList.toggle('on');};
+$('t24').onclick=()=>{TF='24';$('t24').classList.add('on');$('tap').classList.remove('on');draw();};
+$('tap').onclick=()=>{TF='ap';$('tap').classList.add('on');$('t24').classList.remove('on');draw();};
+$('prev').onclick=()=>{if(SEL>0){SEL--;drawTabs();draw();}};
+$('next').onclick=()=>{if(SEL<FILE.weeks.length-1){SEL++;drawTabs();draw();}};
+
+/* ============================================================
+   7. PNG 生成 → 新しいタブで表示（保存はしない）
+   ============================================================ */
+function rr(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);
+  c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+
+async function renderPNG(w){
+  await Promise.all([document.fonts.load(jpF(56)),document.fonts.load(jpF(28)),
+                     document.fonts.load(pxF(20)),document.fonts.load(pxF(11)),document.fonts.ready]);
+  const S=2, cv=document.createElement('canvas');
+  cv.width=L.W*S; cv.height=L.H*S;
+  const c=cv.getContext('2d'); c.scale(S,S);
+
+  /* background */
+  const g=c.createLinearGradient(0,0,L.W,L.H);
+  g.addColorStop(0,'#0a1026');g.addColorStop(.55,'#0d1530');g.addColorStop(1,'#101b3a');
+  c.fillStyle=g;c.fillRect(0,0,L.W,L.H);
+  STARS.forEach(s=>{c.globalAlpha=s.o;c.fillStyle='#fff';
+    c.beginPath();c.arc(s.x,s.y,s.s/2,0,6.284);c.fill();});
+  c.globalAlpha=1;
+
+  /* title */
+  const tfs=fitTitle(BRAND.title);
+  c.font=jpF(tfs); c.textAlign='left'; c.textBaseline='top';
+  const chars=[...BRAND.title], adv=chars.map(ch=>c.measureText(ch).width+L.titleTrack);
+  let tx=(L.W-(adv.reduce((a,b)=>a+b,0)-L.titleTrack))/2;
+  chars.forEach((ch,i)=>{
+    c.fillStyle='#0b1630'; c.fillText(ch,tx+5,L.titleY+6);
+    c.lineWidth=5; c.strokeStyle='#fff'; c.lineJoin='round'; c.strokeText(ch,tx,L.titleY);
+    c.fillStyle=PAL[i%PAL.length]; c.fillText(ch,tx,L.titleY);
+    tx+=adv[i];
+  });
+
+  /* pill */
+  const label='🗓  '+pillText(w);
+  c.font=jpF(fitFont(label,L.W-L.pad*2-60,20,12,jpF));
+  const pw=c.measureText(label).width+60, pxx=(L.W-pw)/2;
+  c.fillStyle='rgba(255,255,255,.05)'; rr(c,pxx,L.pillTop,pw,L.pillH,L.pillH/2); c.fill();
+  c.strokeStyle='#9fb8d8'; c.lineWidth=2; c.stroke();
+  c.fillStyle='#eaf2ff'; c.textAlign='center'; c.textBaseline='middle';
+  c.fillText(label,L.W/2,L.pillTop+L.pillH/2+1);
+
+  /* handle + link */
+  if(BRAND.showHandle){
+    c.font=pxF(fitFont(`${BRAND.handle}  ▶  ${BRAND.link}`,L.W-L.pad*2,13,8,pxF));
+    const a=BRAND.handle+'  ▶  ', wA=c.measureText(a).width, wB=c.measureText(BRAND.link).width;
+    let hx=(L.W-(wA+wB))/2; c.textAlign='left'; c.textBaseline='top';
+    c.fillStyle='#9db4cc'; c.fillText(a,hx,L.whoTop);
+    c.fillStyle='#7fc4ff'; c.fillText(BRAND.link,hx+wA,L.whoTop);
+  }
+
+  /* rows */
+  w.rows.forEach((r,i)=>{
+    const y=L.rowsTop+i*(L.rowH+L.gap), cx=L.pad+L.badgeW/2, mid=y+L.rowH/2;
+    c.fillStyle={wd:'#2f5c9b',sat:'#3f8fc4',sun:'#d9538a'}[r.kind];
+    rr(c,L.pad,y,L.badgeW,L.rowH,8); c.fill();
+    c.fillStyle='#fff'; c.textAlign='center'; c.textBaseline='top';
+    c.globalAlpha=.9; c.font=pxF(11); c.fillText(r.en,cx,y+L.enY); c.globalAlpha=1;
+    c.font=jpF(28); c.fillText(r.jp,cx,y+L.jpY);
+    if(r.date){ c.globalAlpha=.8; c.font=pxF(10); c.fillText(r.date,cx,y+L.dtY); c.globalAlpha=1; }
+
+    c.textBaseline='middle';
+    const lineH=r.fs*LH, top=mid-(r.lines.length*lineH)/2+lineH/2;
+    if(r.off){
+      c.fillStyle='rgba(255,255,255,.04)'; rr(c,L.bodyX,y,L.bodyW,L.rowH,8); c.fill();
+      c.setLineDash([8,6]); c.strokeStyle='#4a5f80'; c.lineWidth=2; c.stroke(); c.setLineDash([]);
+      c.fillStyle='#b9c7da'; c.font=jpF(r.fs); c.textAlign='center';
+      r.lines.forEach((ln,k)=>c.fillText(ln,L.bodyX+L.bodyW/2,top+k*lineH));
+    } else {
+      c.fillStyle='#d9dde3'; rr(c,L.bodyX,y,L.bodyW,L.rowH,8); c.fill();
+      c.textAlign='left';
+      const ts=timeOf(r);
+      if(ts){
+        c.fillStyle='#1f5aa0'; c.font=pxF(fitFont(ts,L.timeW-8,20,11,pxF));
+        c.fillText(ts,L.bodyX+L.bodyPad,mid);
+        c.fillStyle='#16233a'; c.font=jpF(r.fs);
+        r.lines.forEach((ln,k)=>c.fillText(ln,L.textX,top+k*lineH+1));
+      } else {
+        c.fillStyle='#16233a'; c.font=jpF(r.fs);
+        r.lines.forEach((ln,k)=>c.fillText(ln,L.bodyX+L.bodyPad,top+k*lineH+1));
+      }
+    }
+  });
+
+  const tag=w.monday?iso(w.monday):'week';
+  const blob=await new Promise(res=>cv.toBlob(res,'image/png'));
+  return {blob, name:`muipgames_schedule_${tag}_1080.png`};
+}
+
+/* 「ダウンロード」＝ 新しいタブで画像を開く（download属性は使わない） */
+async function openPNG(w){
+  if(!w){ stat.innerHTML='<span class="err">週が選択されていません</span>'; return; }
+  const tab=window.open('','_blank');                    // ← 同期で開く（ブロック回避）
+  stat.innerHTML='<span class="hud">rendering …</span>';
+  try{
+    const {blob,name}=await renderPNG(w);
+    const url=URL.createObjectURL(blob);
+    if(tab && !tab.closed){
+      try{
+        tab.document.write(`<!doctype html><html lang="ja"><head><meta charset="utf-8">`
+          +`<meta name="viewport" content="width=device-width,initial-scale=1">`
+          +`<title>${esc(name)}</title><style>html,body{margin:0;background:#070b18;height:100%;`
+          +`display:grid;place-items:center}img{max-width:100%;max-height:100vh;height:auto}</style></head>`
+          +`<body><img src="${url}" alt="${esc(name)}"></body></html>`);
+        tab.document.close();
+      }catch(e){ tab.location.href=url; }
+      stat.innerHTML=`<span class="ok">✔ 新しいタブで開きました（1080×1080）</span>`;
+    }else{
+      stat.innerHTML=`<span class="err">ポップアップがブロックされました → </span>`
+        +`<a href="${url}" target="_blank" rel="noopener">画像を開く</a>`;
+    }
+  }catch(e){ stat.innerHTML='<span class="err">画像の生成に失敗しました</span>'; }
+}
+$('open').onclick=()=>openPNG(FILE.weeks[SEL]);
+
+/* ============================================================
+   8. BOOT — schedule.txt は読み込み専用（編集UIなし）
+   ============================================================ */
+function load(src){
+  FILE=parseFile(src);
+  SEL=pickDefaultWeek(); if(SEL<0) SEL=0;
+  drawTabs(); draw();
+}
+addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft')$('prev').click();
+  if(e.key==='ArrowRight')$('next').click();
+});
+(async()=>{
+  let src=DEFAULT_TXT;
+  try{ const r=await fetch('schedule.txt',{cache:'no-store'});
+       if(r.ok){ const t=await r.text(); if(t.trim()) src=t; } }
+  catch(e){ /* file:// → 埋め込みを使用 */ }
+  load(src);
+  document.fonts.ready.then(()=>load(src));   // webフォント確定後に再計測
+})();
+</script>
+</body>
+</html>
