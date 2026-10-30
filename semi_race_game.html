@@ -1,0 +1,3744 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#def4e9">
+<title>むいぴ vs セミ軍団</title>
+
+<style>
+:root {
+  --ink: #34483e;
+  --paper: #fffdf4;
+  --pink: #ec709f;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+body {
+  color: var(--ink);
+  background: #def4e9;
+  font-family:
+    ui-rounded, "Hiragino Maru Gothic ProN", "Yu Gothic", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+button, a { -webkit-tap-highlight-color: transparent; }
+button {
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+button:disabled { cursor: default; }
+button:focus-visible,
+a:focus-visible,
+canvas:focus-visible {
+  outline: 3px solid #8263bc;
+  outline-offset: 3px;
+}
+
+.app {
+  width: min(100%, 1100px);
+  height: 100%;
+  height: 100dvh;
+  margin: auto;
+  padding:
+    max(8px, env(safe-area-inset-top))
+    max(8px, env(safe-area-inset-right))
+    max(8px, env(safe-area-inset-bottom))
+    max(8px, env(safe-area-inset-left));
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  touch-action: none;
+}
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+}
+.brand { font-size: 17px; font-weight: 900; }
+.brand small {
+  display: block;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: #719382;
+}
+.header-buttons { display: flex; gap: 6px; }
+.mini-button {
+  height: 34px;
+  min-width: 43px;
+  padding: 0 9px;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  background: var(--paper);
+  font-size: 12px;
+  font-weight: 900;
+}
+.mini-button.sound-on { background: #ffe1ee; }
+.mini-button.sound-off { background: #e4ebe5; }
+
+.hud {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr 1fr;
+  gap: 6px;
+  flex: none;
+}
+.stat {
+  min-width: 0;
+  padding: 5px 9px;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  background: var(--paper);
+}
+.stat small {
+  display: block;
+  color: #789182;
+  font-size: 9px;
+  font-weight: 900;
+}
+.stat strong {
+  display: block;
+  font-size: clamp(20px, 5vw, 27px);
+  white-space: nowrap;
+}
+#life { color: #e65f87; }
+
+.stage {
+  position: relative;
+  flex: 1;
+  min-height: 145px;
+  overflow: hidden;
+  border: 3px solid var(--ink);
+  border-radius: 18px;
+  background: #d8f3e5;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.stage.playing { cursor: pointer; }
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+.stage-head {
+  position: absolute;
+  inset: 9px 9px auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+  pointer-events: none;
+}
+.pill {
+  padding: 5px 8px;
+  border-radius: 20px;
+  background: #fffdf3eb;
+  font-size: 10px;
+  font-weight: 900;
+}
+.status {
+  position: absolute;
+  top: 41px;
+  left: 9px;
+  right: 9px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  pointer-events: none;
+}
+.progress {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 5px;
+  background: #ffffff50;
+  pointer-events: none;
+}
+.progress div {
+  width: 0;
+  height: 100%;
+  background: #ec719f;
+}
+
+/* 発動中スキルの残り時間 */
+.skill-gauges {
+  position: absolute;
+  top: 76px;
+  right: 10px;
+  z-index: 2;
+  width: min(184px, 47%);
+  display: grid;
+  gap: 5px;
+  pointer-events: none;
+}
+.skill-gauge {
+  padding: 6px 8px;
+  border: 1.5px solid #34483e;
+  border-radius: 11px;
+  background: #fffdf4ed;
+  box-shadow: 0 2px #34483e20;
+}
+.skill-gauge-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 4px;
+  font-size: 10px;
+  font-weight: 900;
+}
+.skill-gauge-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.skill-gauge-time {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+}
+.skill-gauge-track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #34483e18;
+}
+.skill-gauge-fill {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--gauge-color, #ec709f);
+  transform-origin: left center;
+}
+.skill-gauge.ending {
+  border-color: #df6287;
+  background: #fff0f5f5;
+}
+.skill-gauge.ending .skill-gauge-time { color: #d84e79; }
+
+.speech {
+  display: grid;
+  place-items: center;
+  min-height: 32px;
+  padding: 4px 7px;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  background: var(--paper);
+  text-align: center;
+  font-size: 11px;
+  font-weight: 900;
+  flex: none;
+}
+.inventory {
+  display: grid;
+  grid-template-columns: 1fr 24px 1fr;
+  align-items: center;
+  flex: none;
+}
+.plus {
+  text-align: center;
+  font-size: 23px;
+  font-weight: 900;
+  color: #819e8c;
+}
+.slot {
+  min-height: 46px;
+  padding: 5px;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  background: var(--paper);
+  font-size: 13px;
+  font-weight: 900;
+}
+.slot small {
+  display: block;
+  margin-top: 2px;
+  font-size: 9px;
+}
+.slot.empty {
+  border-style: dashed;
+  border-color: #91b19e;
+  background: #eaf4e9;
+  color: #819c8a;
+}
+.actions {
+  display: grid;
+  grid-template-columns: 1.8fr .85fr;
+  gap: 6px;
+  flex: none;
+}
+.action {
+  min-height: 59px;
+  padding: 5px 3px;
+  border: 2px solid var(--ink);
+  border-radius: 13px;
+  font-size: 14px;
+  font-weight: 900;
+}
+.action.attack {
+  background: #ffc4da;
+  box-shadow: 0 3px #c28ba2;
+}
+.action.cancel {
+  background: #ffe0a4;
+  box-shadow: 0 3px #c2a276;
+}
+.action small {
+  display: block;
+  margin-top: 3px;
+  font-size: 9px;
+  line-height: 1.4;
+}
+.action:disabled { opacity: .48; }
+.action:not(:disabled):active,
+.slot:not(:disabled):active { transform: translateY(2px); }
+.footer {
+  margin: 0;
+  text-align: center;
+  color: #789082;
+  font-size: 9px;
+  flex: none;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding:
+    max(16px, env(safe-area-inset-top))
+    max(16px, env(safe-area-inset-right))
+    max(16px, env(safe-area-inset-bottom))
+    max(16px, env(safe-area-inset-left));
+  background: #253e32ad;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+.panel {
+  width: min(100%, 470px);
+  max-height: 100%;
+  padding: 22px 18px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  border: 3px solid var(--ink);
+  border-radius: 23px;
+  background: var(--paper);
+  box-shadow: 0 6px #233b30;
+  text-align: center;
+}
+.eyebrow {
+  color: #789384;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+h1 {
+  margin: 10px 0;
+  font-size: clamp(21px, 6vw, 28px);
+  line-height: 1.4;
+}
+h2 { margin: 12px 0; font-size: 25px; }
+.lead { font-size: 12px; line-height: 1.9; font-weight: 700; }
+.mode-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  margin: 16px 0;
+}
+.mode-card {
+  padding: 15px 8px;
+  border: 2px solid var(--ink);
+  border-radius: 15px;
+  background: #e8f2ed;
+}
+.mode-card.selected {
+  background: #ffdfec;
+  box-shadow: 0 0 0 2px #ee86ae inset;
+}
+.mode-card strong { display: block; font-size: 16px; }
+.mode-card span {
+  display: block;
+  margin-top: 5px;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.sound-setting {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  background: #f7e8f0;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 900;
+}
+.sound-setting small {
+  display: block;
+  margin-top: 3px;
+  color: #8b7c88;
+  font-size: 9px;
+}
+.rules {
+  padding: 12px;
+  border-radius: 13px;
+  background: #eaf3e7;
+  text-align: left;
+  font-size: 11px;
+  line-height: 1.95;
+}
+details {
+  margin: 12px 0;
+  padding: 10px 12px;
+  background: #f8eaf0;
+  border-radius: 12px;
+  text-align: left;
+  font-size: 11px;
+  line-height: 1.8;
+}
+summary { cursor: pointer; font-weight: 900; }
+.recipes { margin-top: 9px; }
+.recipes div { padding: 5px 0; border-bottom: 1px solid #e8d4df; }
+.recipes b, .recipes span { display: block; }
+.primary {
+  display: block;
+  width: 100%;
+  min-height: 50px;
+  padding: 12px 9px;
+  border: 2px solid var(--ink);
+  border-radius: 13px;
+  background: var(--pink);
+  color: white;
+  box-shadow: 0 4px #b2557a;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 900;
+  text-align: center;
+}
+.primary:disabled { opacity: .6; }
+.secondary {
+  margin-top: 15px;
+  padding: 8px;
+  border: 0;
+  background: transparent;
+  text-decoration: underline;
+  font-size: 12px;
+}
+.note { color: #7c9183; font-size: 10px; line-height: 1.8; }
+.result-box {
+  margin: 15px 0;
+  padding: 15px;
+  border-radius: 14px;
+  background: #fbe2ec;
+  font-size: 12px;
+  line-height: 1.9;
+}
+.result-box strong { display: block; font-size: 38px; }
+.share-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 14px 0 18px;
+}
+.share-button {
+  min-height: 49px;
+  padding: 9px 4px;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  background: #bfe7dc;
+  font-size: 12px;
+  font-weight: 900;
+}
+.share-button.x { color: white; background: #222c29; }
+.share-button:disabled { opacity: .6; }
+#cardPreview {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 12px auto;
+  border-radius: 12px;
+  touch-action: auto;
+  -webkit-touch-callout: default;
+  user-select: auto;
+}
+.card-download { background: #5f9b82; box-shadow: 0 4px #44735e; }
+#nativeShareButton { width: 100%; margin-top: 12px; }
+#shareStatus { min-height: 16px; }
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 360px) {
+  .brand { font-size: 14px; }
+  .mini-button { min-width: 36px; padding: 0 6px; }
+  .action { font-size: 12px; }
+  .action small { font-size: 8px; }
+  .pill { padding: 4px 6px; font-size: 9px; }
+  .skill-gauge-head { font-size: 9px; }
+}
+@media (max-height: 680px) {
+  .app { gap: 5px; }
+  .brand small, .footer { display: none; }
+  .stat { padding: 3px 8px; }
+  .stat strong { font-size: 21px; }
+  .slot { min-height: 40px; }
+  .action { min-height: 49px; font-size: 12px; }
+  .speech { min-height: 28px; font-size: 10px; }
+}
+@media (max-height: 440px) and (orientation: landscape) {
+  .app {
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    grid-template-rows: 32px 48px 1fr 43px 53px;
+    gap: 5px 8px;
+  }
+  header { grid-column: 1; grid-row: 1; }
+  .stage {
+    grid-column: 1;
+    grid-row: 2 / 6;
+    height: 100%;
+    min-height: 0;
+  }
+  .hud { grid-column: 2; grid-row: 1 / 3; align-self: center; }
+  .speech { grid-column: 2; grid-row: 3; }
+  .inventory { grid-column: 2; grid-row: 4; }
+  .actions { grid-column: 2; grid-row: 5; gap: 4px; }
+  .stat { padding: 4px; }
+  .stat strong { font-size: 18px; }
+  .action { font-size: 11px; min-height: 48px; }
+  .action small { font-size: 8px; }
+  .slot { font-size: 11px; }
+  .skill-gauges {
+    top: 66px;
+    right: 8px;
+    width: min(155px, 44%);
+    gap: 3px;
+  }
+  .skill-gauge { padding: 4px 6px; border-radius: 8px; }
+  .skill-gauge-head { margin-bottom: 3px; font-size: 9px; }
+  .skill-gauge-track { height: 5px; }
+}
+</style>
+</head>
+
+<body>
+<main class="app" id="app">
+  <header>
+    <div class="brand">
+      <small>MUIPI VS CICADA ARMY</small>
+      むいぴ vs セミ軍団
+    </div>
+    <div class="header-buttons">
+      <button id="soundButton" class="mini-button sound-on"
+              aria-label="効果音" aria-pressed="true">♪ ON</button>
+      <button id="pauseButton" class="mini-button"
+              aria-label="一時停止">Ⅱ</button>
+    </div>
+  </header>
+
+  <div class="hud">
+    <div class="stat">
+      <small>SCORE</small>
+      <strong id="score">0</strong>
+    </div>
+    <div class="stat">
+      <small>LIFE</small>
+      <strong id="life">♥♥♥</strong>
+    </div>
+    <div class="stat">
+      <small id="timerLabel">残り時間</small>
+      <strong id="timer">60.0</strong>
+    </div>
+  </div>
+
+  <section class="stage" id="stage">
+    <canvas id="canvas" tabindex="0"
+      aria-label="ゲーム画面。タップでジャンプ、空中でもう一度タップで二段ジャンプ。Spaceまたは上矢印でもジャンプ。Zでスキル、Xで解除、1と2で単独使用。"></canvas>
+
+    <div class="stage-head">
+      <span class="pill" id="modeBadge">NORMAL</span>
+      <span class="pill" id="speedBadge">SPEED 1.00×</span>
+      <span class="pill" id="bestBadge">BEST 0</span>
+    </div>
+
+    <div class="status">
+      <span class="pill" id="moleHintBadge" hidden></span>
+      <span class="pill" id="safeBadge" hidden></span>
+    </div>
+
+    <div id="skillGauges" class="skill-gauges"
+         role="group" aria-label="発動中スキルの残り時間" hidden></div>
+
+    <div class="progress" id="progress">
+      <div id="progressFill"></div>
+    </div>
+  </section>
+
+  <div class="speech" id="speech">
+    画面タップでジャンプよ〜！！ 空中でもう1回♡
+  </div>
+
+  <div class="inventory">
+    <button id="slot0" class="slot empty" disabled></button>
+    <div class="plus">＋</div>
+    <button id="slot1" class="slot empty" disabled></button>
+  </div>
+
+  <div class="actions">
+    <button id="attackButton" class="action attack">
+      <span id="attackName">スキル待ち</span>
+      <small id="attackHint">拾って使おう</small>
+    </button>
+    <button id="cancelButton" class="action cancel" disabled>
+      <span id="cancelName">✕ 解除</span>
+      <small id="cancelHint">発動中スキル</small>
+    </button>
+  </div>
+
+  <p class="footer">
+    画面タップ / Space / ↑：ジャンプ　Z：スキル　X：解除　
+    1 / 2：単独使用　Esc：一時停止　M：効果音
+  </p>
+</main>
+
+<div id="audioStatus" class="sr-only"
+     role="status" aria-live="polite"></div>
+
+<div class="overlay" id="overlay">
+  <section class="panel" id="startPanel">
+    <div class="eyebrow">JUMP・SURVIVE・COMBINE!</div>
+    <h1>むいぴ vs セミ軍団</h1>
+
+    <div class="mode-grid">
+      <button class="mode-card selected" id="normalSelect"
+              aria-pressed="true">
+        <strong>ノーマル</strong>
+        <span>60秒生き残ればクリア</span>
+        <span id="normalBest">BEST 0</span>
+      </button>
+      <button class="mode-card" id="endlessSelect"
+              aria-pressed="false">
+        <strong>エンドレス</strong>
+        <span>限界までハイスコア挑戦</span>
+        <span id="endlessBest">BEST 0</span>
+      </button>
+    </div>
+
+    <div class="sound-setting">
+      <div>
+        ♪ かわいい効果音
+        <small>ぽよっ・きらん♪ 外部音源なし</small>
+      </div>
+      <button id="startSoundButton" class="mini-button sound-on"
+              aria-label="効果音" aria-pressed="true">♪ ON</button>
+    </div>
+
+    <div class="rules">
+      ⤴ 自動で前進。ジャンプはタップで二段階！<br>
+      ♥ 蝉・トゲ・落下で合計3ダメージになると終了。<br>
+      🪲 蝉はスキルか踏みつけで倒せる。<br>
+      ✨ 大きなボタンで使用。2個あると合体！<br>
+      👆 スキルの枠を押すと、その1個だけ使える。
+    </div>
+
+    <details>
+      <summary>スキル・合体レシピを見る</summary>
+      <div class="recipes" id="recipeList"></div>
+    </details>
+
+    <button class="primary" id="startButton">
+      ノーマルでスタート！
+    </button>
+
+    <p class="note">
+      ノーマル：クリア＋1,000点、残りライフ1個につき＋500点。<br>
+      ハイスコアと効果音設定は、このブラウザへ保存します。<br>
+      解除しても使用済みスキルは戻りません。<br>
+      グミのゲージは最大残り時間。命中などで早く消えます。<br>
+      キャラクターはコードで描いた仮イラストです。
+    </p>
+  </section>
+
+  <section class="panel" id="pausePanel" hidden>
+    <div class="eyebrow">PAUSE</div>
+    <h2>ちょっとひと休みよ♡</h2>
+    <p class="lead">時間もセミも止めておいたわよ〜！！</p>
+    <div class="sound-setting">
+      <span>♪ かわいい効果音</span>
+      <button id="pauseSoundButton" class="mini-button sound-on"
+              aria-label="効果音" aria-pressed="true">♪ ON</button>
+    </div>
+    <button class="primary" id="resumeButton">つづけるわよー！！</button>
+    <button class="secondary" id="pauseHomeButton">モード選択へ戻る</button>
+  </section>
+
+  <section class="panel" id="resultPanel" hidden>
+    <div class="eyebrow" id="resultEyebrow">GAME OVER</div>
+    <h2 id="resultTitle"></h2>
+    <p class="lead" id="resultMessage"></p>
+    <div class="result-box" id="resultStats"></div>
+
+    <div class="share-buttons">
+      <button class="share-button x" id="tweetButton">𝕏 Xでシェア</button>
+      <button class="share-button" id="saveCardButton">📷 カードを保存</button>
+    </div>
+
+    <p class="note" id="shareStatus" role="status" aria-live="polite"></p>
+    <button class="primary" id="retryButton">もう一度いくわよー！！</button>
+    <button class="secondary" id="homeButton">モード選択へ戻る</button>
+  </section>
+
+  <section class="panel" id="cardPanel" hidden>
+    <div class="eyebrow">MY SCORE CARD</div>
+    <h2>記録を保存しちゃいましょ♡</h2>
+    <img id="cardPreview" alt="今回のスコアと自己ベストのカード">
+
+    <a id="cardDownload" class="primary card-download"
+       download="muipi-score.png">PNG画像を保存</a>
+
+    <button class="share-button" id="nativeShareButton" hidden>
+      画像を共有・保存
+    </button>
+    <p class="note" id="cardStatus" role="status" aria-live="polite">
+      保存できない場合は画像を長押ししてください。
+    </p>
+    <button class="secondary" id="cardBackButton">結果画面へ戻る</button>
+  </section>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const $ = id => document.getElementById(id);
+  const canvas = $("canvas");
+  const ctx = canvas.getContext("2d");
+
+  if (!ctx) {
+    $("startButton").disabled = true;
+    $("startButton").textContent = "Canvas対応ブラウザで開いてください";
+    return;
+  }
+
+  const GAME_TITLE = "むいぴ vs セミ軍団";
+  const GAME_HASHTAG = "むいぴvsセミ軍団";
+
+  const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+  const rand = (min, max) => min + Math.random() * (max - min);
+  const choose = list => list[Math.floor(Math.random() * list.length)];
+
+  const reducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+
+  const CONFIG = {
+    normalSeconds: 60,
+    startSpeed: 250,
+    extraSpeed: 340,
+    accelerationTime: 65,
+    gravity: 1550,
+    jumpPower: 650,
+    secondJumpPower: 580,
+    skillIntervalMin: 4.5,
+    skillIntervalMax: 7.5,
+    invincibleSeconds: 1.8,
+    pickupRange: 47,
+    exitSafetySeconds: 1.5,
+    exitJumpPower: 620,
+    giantShieldScale: 3,
+    killScore: 100,
+    clearBonus: 1000,
+    lifeBonus: 500,
+    storagePrefix: "muipi-cicada-modes-v3-",
+    soundVolume: 0.28,
+    soundStorageKey: "muipi-cicada-sound-v1",
+
+    // 公開URLを固定する場合だけ入力。
+    shareUrl: ""
+  };
+
+  // ==================================================
+  // 効果音：外部音声ファイル不要
+  // ==================================================
+  const Sound = (() => {
+    const AudioContextClass =
+      window.AudioContext || window.webkitAudioContext;
+
+    let enabled = true;
+    let audio = null;
+    let master = null;
+    let compressor = null;
+    let generation = 0;
+
+    const voices = new Set();
+    const lastPlayed = new Map();
+
+    try {
+      enabled = localStorage.getItem(CONFIG.soundStorageKey) !== "off";
+    } catch (_) {}
+
+    function updateButtons() {
+      for (const id of [
+        "soundButton", "startSoundButton", "pauseSoundButton"
+      ]) {
+        const button = $(id);
+        button.disabled = !AudioContextClass;
+        button.textContent = !AudioContextClass
+          ? "♪ 非対応"
+          : enabled ? "♪ ON" : "♪ OFF";
+        button.classList.toggle("sound-on", enabled);
+        button.classList.toggle("sound-off", !enabled);
+        button.setAttribute("aria-pressed", String(enabled));
+        button.setAttribute(
+          "aria-label",
+          enabled ? "効果音をオフにする" : "効果音をオンにする"
+        );
+      }
+    }
+
+    function createAudio() {
+      if (audio) return true;
+      if (!AudioContextClass) return false;
+
+      try {
+        audio = new AudioContextClass();
+        master = audio.createGain();
+        master.gain.value = enabled ? CONFIG.soundVolume : 0;
+
+        compressor = audio.createDynamicsCompressor();
+        compressor.threshold.value = -18;
+        compressor.knee.value = 20;
+        compressor.ratio.value = 8;
+        compressor.attack.value = 0.003;
+        compressor.release.value = 0.15;
+
+        compressor.connect(master);
+        master.connect(audio.destination);
+        return true;
+      } catch (_) {
+        audio = null;
+        return false;
+      }
+    }
+
+    function unlock() {
+      if (!enabled || !createAudio()) return Promise.resolve(false);
+      if (audio.state === "running") return Promise.resolve(true);
+      try {
+        return audio.resume()
+          .then(() => audio.state === "running")
+          .catch(() => false);
+      } catch (_) {
+        return Promise.resolve(false);
+      }
+    }
+
+    function ready() {
+      return enabled && audio &&
+        audio.state === "running" && !document.hidden;
+    }
+
+    function removeVoice(voice) {
+      voices.delete(voice);
+      try { voice.osc.disconnect(); } catch (_) {}
+      try { voice.gain.disconnect(); } catch (_) {}
+    }
+
+    function tone({
+      frequency = 440,
+      endFrequency = frequency,
+      duration = 0.16,
+      delay = 0,
+      volume = 0.18,
+      type = "sine",
+      attack = 0.009
+    } = {}) {
+      if (!ready() || voices.size >= 48) return;
+
+      const start = audio.currentTime + 0.005 + delay;
+      const end = start + duration;
+      const osc = audio.createOscillator();
+      const gain = audio.createGain();
+
+      osc.type = type;
+      osc.frequency.setValueAtTime(Math.max(30, frequency), start);
+      osc.frequency.exponentialRampToValueAtTime(
+        Math.max(30, endFrequency), end
+      );
+
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(
+        Math.max(0.0002, volume),
+        start + Math.min(attack, duration * 0.3)
+      );
+      gain.gain.exponentialRampToValueAtTime(0.0001, end);
+
+      osc.connect(gain);
+      gain.connect(compressor);
+
+      const voice = { osc, gain };
+      voices.add(voice);
+      osc.onended = () => removeVoice(voice);
+      osc.start(start);
+      osc.stop(end + 0.025);
+    }
+
+    function notes(
+      frequencies, interval = 0.085,
+      duration = 0.2, volume = 0.17, delay = 0
+    ) {
+      frequencies.forEach((frequency, i) => {
+        tone({
+          frequency, duration,
+          delay: delay + i * interval, volume
+        });
+      });
+    }
+
+    function stopAll() {
+      generation++;
+      lastPlayed.clear();
+      if (!audio) return;
+
+      const now = audio.currentTime;
+      for (const voice of [...voices]) {
+        try {
+          voice.gain.gain.cancelScheduledValues(now);
+          voice.gain.gain.setTargetAtTime(0.0001, now, 0.006);
+          voice.osc.stop(now + 0.035);
+        } catch (_) {
+          removeVoice(voice);
+        }
+      }
+    }
+
+    const limits = {
+      defeat: 0.085,
+      stomp: 0.08,
+      shieldHit: 0.11,
+      bounce: 0.1,
+      pickup: 0.08,
+      click: 0.07,
+      countdown: 0.5
+    };
+
+    function play(name) {
+      if (!ready()) return;
+
+      const now = audio.currentTime;
+      if (now - (lastPlayed.get(name) ?? -100) < (limits[name] || 0)) {
+        return;
+      }
+      lastPlayed.set(name, now);
+
+      switch (name) {
+        case "click":
+          tone({
+            frequency: 740, endFrequency: 920,
+            duration: 0.065, volume: 0.12
+          });
+          break;
+
+        case "start":
+          notes([523.25, 659.25, 783.99, 1046.5], 0.09, 0.25, 0.19);
+          tone({
+            frequency: 261.63, duration: 0.34,
+            delay: 0.27, volume: 0.09, type: "triangle"
+          });
+          break;
+
+        case "jump":
+          tone({
+            frequency: 280, endFrequency: 720,
+            duration: 0.15, volume: 0.27
+          });
+          tone({
+            frequency: 900, endFrequency: 650,
+            duration: 0.09, delay: 0.075, volume: 0.07
+          });
+          break;
+
+        case "doubleJump":
+          tone({
+            frequency: 460, endFrequency: 1120,
+            duration: 0.17, volume: 0.22
+          });
+          notes([1046.5, 1318.51], 0.055, 0.13, 0.08, 0.07);
+          break;
+
+        case "pickup":
+          notes([783.99, 1046.5, 1318.51], 0.055, 0.2, 0.15);
+          break;
+
+        case "pair":
+          notes([659.25, 783.99, 1046.5, 1318.51], 0.06, 0.23, 0.16);
+          break;
+
+        case "gummy":
+          tone({
+            frequency: 390, endFrequency: 850,
+            duration: 0.14, volume: 0.22
+          });
+          tone({
+            frequency: 640, endFrequency: 420,
+            duration: 0.11, delay: 0.07, volume: 0.11
+          });
+          break;
+
+        case "gummyBig":
+          [0, 0.06, 0.12, 0.18].forEach((delay, i) => {
+            tone({
+              frequency: 350 + i * 90,
+              endFrequency: 850 + i * 100,
+              duration: 0.17, delay, volume: 0.16
+            });
+          });
+          break;
+
+        case "beam":
+          tone({
+            frequency: 470, endFrequency: 1250,
+            duration: 0.12, volume: 0.12, type: "triangle"
+          });
+          tone({
+            frequency: 1250, endFrequency: 430,
+            duration: 0.3, delay: 0.09,
+            volume: 0.16, type: "triangle"
+          });
+          tone({
+            frequency: 1568, endFrequency: 784,
+            duration: 0.26, delay: 0.1, volume: 0.055
+          });
+          break;
+
+        case "beamBig":
+          notes([523.25, 659.25, 783.99, 1046.5], 0.045, 0.17, 0.12);
+          [0.12, 0.3, 0.48, 0.66, 0.84, 1.02].forEach((delay, i) => {
+            tone({
+              frequency: 1046.5 + i % 2 * 261.63,
+              endFrequency: 523.25, duration: 0.25,
+              delay, volume: 0.13, type: "triangle"
+            });
+            tone({
+              frequency: 1568, endFrequency: 1046.5,
+              duration: 0.19, delay: delay + 0.04, volume: 0.06
+            });
+          });
+          break;
+
+        case "shield":
+          notes([523.25, 783.99, 1046.5], 0.07, 0.3, 0.16);
+          tone({
+            frequency: 261.63, endFrequency: 523.25,
+            duration: 0.28, volume: 0.1
+          });
+          break;
+
+        case "shieldBig":
+          notes([392, 523.25, 659.25, 783.99, 1046.5], 0.07, 0.3, 0.16);
+          notes([1318.51, 1568, 2093], 0.08, 0.24, 0.06, 0.28);
+          break;
+
+        case "shieldHit":
+          notes([1046.5, 1568], 0.045, 0.16, 0.1);
+          break;
+
+        case "mole":
+          [0, 0.085, 0.17].forEach((delay, i) => {
+            tone({
+              frequency: 420 - i * 70,
+              endFrequency: 145, duration: 0.11,
+              delay, volume: 0.2
+            });
+          });
+          break;
+
+        case "moleBig":
+          notes([261.63, 329.63, 392, 523.25], 0.07, 0.15, 0.15);
+          [0.28, 0.36, 0.44].forEach(delay => {
+            tone({
+              frequency: 360, endFrequency: 160,
+              duration: 0.12, delay, volume: 0.15
+            });
+          });
+          break;
+
+        case "moleExit":
+          tone({
+            frequency: 180, endFrequency: 880,
+            duration: 0.22, volume: 0.23
+          });
+          notes([1046.5, 1318.51], 0.065, 0.2, 0.09, 0.12);
+          break;
+
+        case "combo":
+          notes([523.25, 659.25, 783.99], 0.045, 0.18, 0.1);
+          break;
+
+        case "defeat":
+          tone({
+            frequency: 660, endFrequency: 1000,
+            duration: 0.08, volume: 0.13
+          });
+          tone({
+            frequency: 1318.51, endFrequency: 880,
+            duration: 0.11, delay: 0.035, volume: 0.08
+          });
+          break;
+
+        case "stomp":
+          tone({
+            frequency: 240, endFrequency: 760,
+            duration: 0.14, volume: 0.23
+          });
+          tone({
+            frequency: 1046.5, duration: 0.13,
+            delay: 0.06, volume: 0.09
+          });
+          break;
+
+        case "bounce":
+          tone({
+            frequency: 430, endFrequency: 620,
+            duration: 0.07, volume: 0.06
+          });
+          break;
+
+        case "hit":
+          tone({
+            frequency: 520, endFrequency: 180,
+            duration: 0.23, volume: 0.2, type: "triangle"
+          });
+          tone({
+            frequency: 390, endFrequency: 130,
+            duration: 0.2, delay: 0.06, volume: 0.1
+          });
+          break;
+
+        case "fall":
+          tone({
+            frequency: 660, endFrequency: 140,
+            duration: 0.34, volume: 0.18
+          });
+          break;
+
+        case "rescue":
+          notes([392, 523.25, 783.99], 0.065, 0.18, 0.1, 0.15);
+          break;
+
+        case "cancel":
+          notes([783.99, 523.25], 0.055, 0.13, 0.14);
+          break;
+
+        case "countdown":
+          tone({ frequency: 880, duration: 0.1, volume: 0.085 });
+          break;
+
+        case "resume":
+          notes([523.25, 783.99], 0.07, 0.18, 0.14);
+          break;
+
+        case "clear":
+          notes(
+            [523.25, 659.25, 783.99, 1046.5, 783.99, 1046.5],
+            0.115, 0.3, 0.18
+          );
+          [523.25, 659.25, 783.99].forEach(frequency => {
+            tone({
+              frequency, duration: 0.48,
+              delay: 0.78, volume: 0.085
+            });
+          });
+          notes([1318.51, 1568, 2093], 0.08, 0.23, 0.055, 0.83);
+          break;
+
+        case "gameover":
+          notes([659.25, 587.33, 523.25, 392], 0.15, 0.3, 0.15);
+          tone({
+            frequency: 523.25, duration: 0.35,
+            delay: 0.65, volume: 0.11
+          });
+          break;
+
+        case "best":
+          notes(
+            [523.25, 659.25, 783.99, 1046.5, 1318.51],
+            0.09, 0.25, 0.16
+          );
+          tone({
+            frequency: 783.99, duration: 0.4,
+            delay: 0.48, volume: 0.12
+          });
+          break;
+
+        case "save":
+          notes([783.99, 1046.5, 1318.51], 0.07, 0.2, 0.13);
+          break;
+      }
+    }
+
+    function gesture(name) {
+      const token = generation;
+      unlock().then(ok => {
+        if (ok && token === generation && name) play(name);
+      });
+    }
+
+    function toggle() {
+      if (!AudioContextClass) return;
+      enabled = !enabled;
+      stopAll();
+
+      try {
+        localStorage.setItem(
+          CONFIG.soundStorageKey, enabled ? "on" : "off"
+        );
+      } catch (_) {}
+
+      if (master && audio) {
+        const now = audio.currentTime;
+        master.gain.cancelScheduledValues(now);
+        master.gain.setTargetAtTime(
+          enabled ? CONFIG.soundVolume : 0, now, 0.015
+        );
+      }
+
+      updateButtons();
+      $("audioStatus").textContent =
+        enabled ? "効果音をオンにしました" : "効果音をオフにしました";
+      if (enabled) gesture("pickup");
+    }
+
+    updateButtons();
+    return { play, gesture, unlock, stopAll, toggle };
+  })();
+
+  // ==================================================
+  // スキル・合体レシピ
+  // ==================================================
+  const SKILLS = {
+    gummy: { icon: "🩷", name: "グミ", color: "#f69bc1" },
+    beam: { icon: "⚡", name: "ビーム", color: "#92def0" },
+    barrier: { icon: "🛡️", name: "バリア", color: "#c9b6f2" },
+    mole: { icon: "🕳️", name: "モグラ", color: "#d8b48a" }
+  };
+
+  const RECIPES = {};
+  const recipeKey = types => [...types].sort().join("+");
+
+  function recipe(types, name, description, action) {
+    RECIPES[recipeKey(types)] = { name, description, action };
+  }
+
+  recipe(["gummy"], "グミぽーん",
+    "グミを前方へ1個投げる。",
+    () => throwGummies(1));
+
+  recipe(["beam"], "むいぴビーム",
+    "前方へ短い貫通ビーム。",
+    () => addBeam(0.4, 25));
+
+  recipe(["barrier"], "ぷいっとバリア",
+    "5秒間、接触した蝉を撃退。穴・トゲは防げない。",
+    () => addShield(5));
+
+  recipe(["mole"], "モグラむいぴ",
+    "3秒間もぐって蝉・トゲを回避。穴の前では解除！",
+    () => dig(3));
+
+  recipe(["gummy", "beam"], "グミビーム",
+    "グミを3個投げながら、前方へビーム！",
+    () => { throwGummies(3); addBeam(0.55, 30); });
+
+  recipe(["gummy", "barrier"], "グミっとバリア",
+    "5秒バリア＋3方向へグミ。",
+    () => { addShield(5); throwGummies(3); });
+
+  recipe(["gummy", "mole"], "地中グミぽーん",
+    "3秒もぐりながら地上へグミを5個。",
+    () => { dig(3); throwGummies(5); });
+
+  recipe(["beam", "barrier"], "バリアビーム",
+    "5秒バリア＋少し太いビーム。",
+    () => { addShield(5); addBeam(0.75, 42); });
+
+  recipe(["beam", "mole"], "モグラビーム",
+    "3秒もぐりながら地上へ1秒ビーム。",
+    () => { dig(3); addBeam(1, 38); });
+
+  recipe(["barrier", "mole"], "もぐってガード",
+    "3秒もぐり、自然終了後も4秒バリア。",
+    () => { dig(3); addShield(7); });
+
+  recipe(["gummy", "gummy"], "グミ大放出",
+    "グミを7個、扇状にばらまく。",
+    () => throwGummies(7));
+
+  recipe(["beam", "beam"], "全画面むいぴビーム",
+    "1.6秒間、画面いっぱいにビーム。画面内の蝉を一掃！",
+    () => addBeam(1.6, 70, true));
+
+  recipe(["barrier", "barrier"], "超巨大バリア",
+    "10秒間、約3倍の巨大バリアで広範囲の蝉を撃退！",
+    () => addShield(10, true));
+
+  recipe(["mole", "mole"], "無敵地中モグラ",
+    "6秒間、蝉・トゲ・穴をすべて通過！",
+    () => dig(6, true));
+
+  $("recipeList").innerHTML = Object.entries(RECIPES)
+    .map(([key, value]) => `
+      <div>
+        <b>${key.split("+").map(k => SKILLS[k].icon).join("＋")}
+        ${value.name}</b>
+        <span>${value.description}</span>
+      </div>
+    `).join("");
+
+  // ==================================================
+  // 状態
+  // ==================================================
+  let state = "title";
+  let selectedMode = "normal";
+  let gameMode = "normal";
+
+  let W = 720, H = 500, ground = 430;
+  let elapsed = 0, distance = 0, speed = CONFIG.startSpeed;
+  let kills = 0, hits = 0, uses = 0, combos = 0, cancels = 0;
+  let endBonus = 0;
+
+  let inventory = [], enemies = [], pickups = [], hazards = [];
+  let projectiles = [], beams = [], particles = [], labels = [];
+  let skillBag = [];
+
+  let enemyTimer = 2.3, skillTimer = 5, hazardTimer = 4;
+  let hazardCount = 0;
+
+  let shieldUntil = 0, giantShieldUntil = 0;
+  let shieldStarted = 0, giantShieldStarted = 0;
+  let digging = false, digUntil = 0, digStarted = 0;
+  let moleCanCrossPits = false;
+  let holeGuardUntil = 0, invincibleUntil = 0, cooldownUntil = 0;
+
+  let speechUntil = 0, fullNoticeUntil = 0;
+  let nextIdleAt = 0, lastJumpLineAt = -100;
+  let flash = 0, lastFrame = 0, hudStamp = "";
+  let lastCountdown = -1;
+
+  let lastResult = null, resultSerial = 0;
+  let cardObjectUrl = "", cardFile = null;
+  let cardBusy = false, nativeShareBusy = false;
+
+  const player = {
+    x: 144, y: 430, vy: 0,
+    width: 42, height: 76, jumps: 0
+  };
+
+  const records = {
+    normal: readRecord("normal"),
+    endless: readRecord("endless")
+  };
+
+  function readRecord(mode) {
+    try {
+      const n = Number(localStorage.getItem(CONFIG.storagePrefix + mode));
+      return Number.isFinite(n) ? Math.max(0, n) : 0;
+    } catch (_) {
+      return 0;
+    }
+  }
+
+  function saveRecord(mode, value) {
+    records[mode] = Math.max(records[mode], value);
+    try {
+      localStorage.setItem(
+        CONFIG.storagePrefix + mode, String(records[mode])
+      );
+    } catch (_) {}
+  }
+
+  const scoreValue = () =>
+    Math.floor(distance / 12) + kills * CONFIG.killScore + endBonus;
+
+  const isShielded = () => elapsed < shieldUntil;
+  const isGiantShielded = () =>
+    isShielded() && elapsed < giantShieldUntil;
+  const isSuperMole = () => digging && moleCanCrossPits;
+  const hasHoleGuard = () => elapsed < holeGuardUntil;
+
+  function hasActiveSkill() {
+    return digging || isShielded() ||
+      beams.some(b => b.life > 0) ||
+      projectiles.some(p => p.life > 0);
+  }
+
+  function holeAt(x) {
+    return hazards.find(h =>
+      h.type === "pit" &&
+      x > h.x + 7 && x < h.x + h.width - 7
+    );
+  }
+
+  function focusElement(element) {
+    if (!element) return;
+    try { element.focus({ preventScroll: true }); }
+    catch (_) { element.focus(); }
+  }
+
+  function showPanel(id) {
+    $("overlay").hidden = !id;
+    $("app").inert = Boolean(id);
+
+    for (const name of [
+      "startPanel", "pausePanel", "resultPanel", "cardPanel"
+    ]) {
+      $(name).hidden = name !== id;
+    }
+
+    if (id) {
+      $(id).scrollTop = 0;
+      const focusIds = {
+        startPanel: "startButton",
+        pausePanel: "resumeButton",
+        resultPanel: "retryButton",
+        cardPanel: "cardBackButton"
+      };
+      focusElement($(focusIds[id]));
+    } else {
+      focusElement(canvas);
+    }
+  }
+
+  // ==================================================
+  // かわいいおねえ言葉
+  // ==================================================
+  function say(message, duration = 2) {
+    $("speech").textContent = message;
+    speechUntil = elapsed + duration;
+    nextIdleAt = speechUntil + 5;
+  }
+
+  function characterSay(lines, duration = 2) {
+    say(Array.isArray(lines) ? choose(lines) : lines, duration);
+  }
+
+  function idleMessage() {
+    if (isSuperMole()) {
+      return "強化モグラよ〜！！ 穴だってへっちゃらなんだから♡";
+    }
+    if (digging) {
+      return "穴が来たら解除よ〜！！ 華麗に飛び出すわよー！！";
+    }
+    if (hasHoleGuard()) {
+      return "今は穴に落ちないわよ〜！！ トゲには気をつけて♡";
+    }
+    if (isGiantShielded()) {
+      return "巨大バリア、見てちょうだい♡ セミはおどき〜！！";
+    }
+    if (isShielded()) {
+      return "バリアで守っちゃうわよー！！ 穴とトゲはジャンプよ♡";
+    }
+    if (inventory.length === 2) {
+      return "スキルがそろったわよ〜！！ 合体、いっちゃう？♡";
+    }
+    return choose([
+      "画面タップでジャンプよ〜！！ 空中でもう1回いけるわよ♡",
+      "まだまだ行けるわよ〜！！ ついてらっしゃい♡",
+      "あら、いい調子じゃない♡ このまま進むわよー！！",
+      "セミ軍団なんかに負けないわよー！！",
+      "おさんぽは優雅に、ジャンプは華麗によ〜！！"
+    ]);
+  }
+
+  function label(message, x, y, color = "#da648f", life = 0.9) {
+    labels.push({ message, x, y, color, life, max: life });
+  }
+
+  function burst(x, y, color, count = 10) {
+    count = reducedMotion ? Math.min(count, 4) : count;
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2;
+      const power = rand(50, 180);
+      particles.push({
+        x, y,
+        vx: Math.cos(angle) * power,
+        vy: Math.sin(angle) * power,
+        life: rand(0.25, 0.55),
+        size: rand(3, 7), color
+      });
+    }
+  }
+
+  // ==================================================
+  // スキル残り時間ゲージ
+  // ==================================================
+  const skillGaugeHost = $("skillGauges");
+  const skillGaugeRows = new Map();
+
+  // 通常／強化の終了が異なる効果は別々に表示。
+  const gaugeDefinitions = [
+    ["shield", "🛡️ バリア", "#b995ed"],
+    ["giant", "🛡️ 超巨大バリア", "#a77ce8"],
+    ["mole", "🕳️ モグラ", "#c79b66"],
+    ["beam", "⚡ ビーム", "#69cce6"],
+    ["fullBeam", "⚡ 全画面ビーム", "#8eb9f1"],
+    ["gummy", "🩷 グミ", "#ef8bb7"]
+  ];
+
+  for (const [key, name, color] of gaugeDefinitions) {
+    const row = document.createElement("div");
+    row.className = "skill-gauge";
+    row.hidden = true;
+    row.innerHTML = `
+      <div class="skill-gauge-head">
+        <span class="skill-gauge-name"></span>
+        <span class="skill-gauge-time"></span>
+      </div>
+      <div class="skill-gauge-track"
+           role="progressbar"
+           aria-valuemin="0" aria-valuemax="100"
+           aria-valuenow="100">
+        <div class="skill-gauge-fill"></div>
+      </div>
+    `;
+    skillGaugeHost.appendChild(row);
+    skillGaugeRows.set(key, {
+      row, defaultName: name, color,
+      name: row.querySelector(".skill-gauge-name"),
+      time: row.querySelector(".skill-gauge-time"),
+      track: row.querySelector(".skill-gauge-track"),
+      fill: row.querySelector(".skill-gauge-fill")
+    });
+  }
+
+  function resetSkillGauges() {
+    skillGaugeHost.hidden = true;
+    for (const item of skillGaugeRows.values()) item.row.hidden = true;
+  }
+
+  function longestLiving(list, predicate = () => true) {
+    let best = null;
+    for (const item of list) {
+      if (
+        item.life > 0 && predicate(item) &&
+        (!best || item.life > best.life)
+      ) best = item;
+    }
+    return best;
+  }
+
+  function updateSkillGauges() {
+    if (state !== "playing" && state !== "paused") {
+      resetSkillGauges();
+      return;
+    }
+
+    const giant = isGiantShielded();
+    const normalBeam = longestLiving(beams, b => !b.fullscreen);
+    const fullBeam = longestLiving(beams, b => b.fullscreen);
+    const gummy = longestLiving(projectiles);
+
+    const effects = {
+      shield: {
+        // 巨大バリアと終了時刻が同じなら重複表示しない。
+        remaining: isShielded() &&
+          (!giant || shieldUntil > giantShieldUntil + 0.001)
+          ? shieldUntil - elapsed : 0,
+        duration: shieldUntil - shieldStarted
+      },
+      giant: {
+        remaining: giant ? giantShieldUntil - elapsed : 0,
+        duration: giantShieldUntil - giantShieldStarted
+      },
+      mole: {
+        remaining: digging ? digUntil - elapsed : 0,
+        duration: digUntil - digStarted,
+        name: isSuperMole() ? "🕳️ 強化モグラ" : "🕳️ モグラ",
+        color: isSuperMole() ? "#e3b448" : "#c79b66"
+      },
+      beam: {
+        remaining: normalBeam ? normalBeam.life : 0,
+        duration: normalBeam ? normalBeam.maxLife : 1
+      },
+      fullBeam: {
+        remaining: fullBeam ? fullBeam.life : 0,
+        duration: fullBeam ? fullBeam.maxLife : 1
+      },
+      gummy: {
+        remaining: gummy ? gummy.life : 0,
+        duration: 3
+      }
+    };
+
+    let visibleCount = 0;
+
+    for (const [key, effect] of Object.entries(effects)) {
+      const item = skillGaugeRows.get(key);
+      const remaining = Math.max(0, effect.remaining);
+
+      if (remaining <= 0) {
+        item.row.hidden = true;
+        continue;
+      }
+
+      visibleCount++;
+      const duration = Math.max(0.001, effect.duration);
+      const ratio = clamp(remaining / duration, 0, 1);
+      const ending = remaining <= Math.min(1, duration * 0.25);
+      const name = effect.name || item.defaultName;
+
+      item.row.hidden = false;
+      item.row.classList.toggle("ending", ending);
+      item.row.style.setProperty(
+        "--gauge-color",
+        ending ? "#ec709f" : effect.color || item.color
+      );
+      item.name.textContent = name;
+      item.time.textContent =
+        (Math.ceil(remaining * 10) / 10).toFixed(1) + "秒";
+      item.fill.style.transform = `scaleX(${ratio})`;
+
+      item.track.setAttribute("aria-label", name + "の残り時間");
+      item.track.setAttribute("aria-valuenow", String(Math.round(ratio * 100)));
+      item.track.setAttribute(
+        "aria-valuetext",
+        `残り${(Math.ceil(remaining * 10) / 10).toFixed(1)}秒`
+      );
+    }
+
+    skillGaugeHost.hidden = visibleCount === 0;
+  }
+
+  // ==================================================
+  // リサイズ
+  // ==================================================
+  function resize() {
+    const box = canvas.getBoundingClientRect();
+    if (!box.width || !box.height) return;
+
+    const oldGround = ground;
+    const oldPlayerX = player.x;
+
+    W = box.width < 600 ? 720 : 960;
+    const scale = box.width / W;
+    H = box.height / scale;
+    ground = H - clamp(H * 0.14, 45, 85);
+    player.x = W * 0.2;
+
+    const dy = ground - oldGround;
+    const dx = player.x - oldPlayerX;
+
+    player.y += dy;
+    for (const item of hazards) item.x += dx;
+    for (const item of pickups) item.x += dx;
+
+    for (const item of enemies) {
+      item.x += dx;
+      item.y += dy;
+    }
+    for (const list of [projectiles, particles, labels]) {
+      for (const item of list) {
+        item.x += dx;
+        item.y += dy;
+      }
+    }
+
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.round(box.width * dpr);
+    canvas.height = Math.round(box.height * dpr);
+    ctx.setTransform(dpr * scale, 0, 0, dpr * scale, 0, 0);
+  }
+
+  if ("ResizeObserver" in window) {
+    new ResizeObserver(resize).observe($("stage"));
+  } else {
+    window.addEventListener("resize", resize);
+  }
+
+  // ==================================================
+  // 開始・終了
+  // ==================================================
+  function selectMode(mode) {
+    selectedMode = mode;
+    const normal = mode === "normal";
+
+    $("normalSelect").classList.toggle("selected", normal);
+    $("endlessSelect").classList.toggle("selected", !normal);
+    $("normalSelect").setAttribute("aria-pressed", String(normal));
+    $("endlessSelect").setAttribute("aria-pressed", String(!normal));
+
+    $("startButton").textContent = normal
+      ? "ノーマルでスタート！" : "エンドレスでスタート！";
+    $("normalBest").textContent = "BEST " + records.normal.toLocaleString();
+    $("endlessBest").textContent = "BEST " + records.endless.toLocaleString();
+
+    if (state === "title") {
+      gameMode = selectedMode;
+      updateHUD();
+    }
+  }
+
+  function resetCard() {
+    if (cardObjectUrl) URL.revokeObjectURL(cardObjectUrl);
+    cardObjectUrl = "";
+    cardFile = null;
+    $("cardPreview").removeAttribute("src");
+    $("cardDownload").removeAttribute("href");
+    $("nativeShareButton").hidden = true;
+  }
+
+  function resetGame() {
+    resetSkillGauges();
+
+    elapsed = distance = 0;
+    speed = CONFIG.startSpeed;
+    kills = hits = uses = combos = cancels = endBonus = 0;
+    inventory = [];
+    enemies = [];
+    pickups = [];
+    hazards = [];
+    projectiles = [];
+    beams = [];
+    particles = [];
+    labels = [];
+    skillBag = [];
+
+    enemyTimer = 2.3;
+    skillTimer = rand(CONFIG.skillIntervalMin, CONFIG.skillIntervalMax);
+    hazardTimer = 4;
+    hazardCount = 0;
+
+    shieldUntil = giantShieldUntil = 0;
+    shieldStarted = giantShieldStarted = 0;
+    digging = false;
+    digUntil = digStarted = 0;
+    moleCanCrossPits = false;
+    holeGuardUntil = invincibleUntil = cooldownUntil = 0;
+    speechUntil = fullNoticeUntil = flash = nextIdleAt = 0;
+    lastJumpLineAt = -100;
+    hudStamp = "";
+    lastCountdown = -1;
+
+    player.x = W * 0.2;
+    player.y = ground;
+    player.vy = 0;
+    player.jumps = 0;
+  }
+
+  function start(mode = selectedMode) {
+    Sound.stopAll();
+    Sound.gesture("start");
+
+    resultSerial++;
+    lastResult = null;
+    resetCard();
+
+    gameMode = selectedMode = mode;
+    resetGame();
+    state = "playing";
+    showPanel(null);
+
+    say(
+      gameMode === "normal"
+        ? "60秒、生き残るわよー！！ タップで二段ジャンプよ♡"
+        : "どこまでも行くわよー！！ 自己ベスト、更新しちゃうわ♡",
+      4
+    );
+
+    lastFrame = performance.now();
+    updateHUD();
+  }
+
+  function pause() {
+    if (state !== "playing") return;
+    state = "paused";
+    Sound.stopAll();
+    showPanel("pausePanel");
+    updateHUD();
+  }
+
+  function resume() {
+    if (state !== "paused") return;
+    state = "playing";
+    Sound.gesture("resume");
+    lastFrame = performance.now();
+    showPanel(null);
+    updateHUD();
+  }
+
+  function goHome() {
+    Sound.stopAll();
+    Sound.gesture("click");
+
+    resultSerial++;
+    lastResult = null;
+    resetCard();
+    state = "title";
+    resetGame();
+
+    $("speech").textContent =
+      "画面タップでジャンプよ〜！！ 空中でもう1回♡";
+
+    showPanel("startPanel");
+    selectMode(selectedMode);
+    updateHUD();
+  }
+
+  function finish(cleared = false, cause = "") {
+    if (state !== "playing") return;
+    state = "result";
+
+    if (cleared) {
+      elapsed = CONFIG.normalSeconds;
+      endBonus = CONFIG.clearBonus + (3 - hits) * CONFIG.lifeBonus;
+    }
+
+    const total = scoreValue();
+    const newBest = total > records[gameMode];
+    saveRecord(gameMode, total);
+    resultSerial++;
+
+    Sound.stopAll();
+    Sound.play(cleared ? "clear" : newBest ? "best" : "gameover");
+
+    lastResult = Object.freeze({
+      mode: gameMode,
+      cleared, cause,
+      score: total,
+      best: records[gameMode],
+      normalBest: records.normal,
+      endlessBest: records.endless,
+      newBest,
+      seconds: elapsed,
+      meters: Math.floor(distance / 10),
+      kills, life: 3 - hits,
+      uses, combos, cancels,
+      bonus: endBonus,
+      speed: speed / CONFIG.startSpeed,
+      date: new Date()
+    });
+
+    $("resultEyebrow").textContent =
+      `${gameMode === "normal" ? "NORMAL" : "ENDLESS"} · ` +
+      `${cleared ? "CLEAR!" : "GAME OVER"}` +
+      (newBest ? " · NEW BEST!" : "");
+
+    $("resultTitle").textContent = cleared
+      ? hits === 0 ? "ノーダメージよ〜！！♡" : "クリアしたわよー！！"
+      : newBest ? "ｷｬｰ‼︎‼︎ 自己ベストよ♡" : "まだまだ負けないわよ♡";
+
+    const messages = {
+      cicada:
+        "ｷｬｰ‼︎‼︎ セミにぶつかっちゃったわ〜！！ 次は踏んであげるんだから♡",
+      spike:
+        "ｷｬｰ‼︎‼︎ トゲはバリアでも防げないのよ〜！！ ジャンプかモグラよ♡",
+      fall:
+        "ｷｬｰ‼︎‼︎ 穴に落ちちゃったわ〜！！ 通常モグラは解除で脱出よ♡"
+    };
+
+    $("resultMessage").textContent = cleared
+      ? "おさんぽ完了よ〜！！ 次はエンドレスにも挑戦しちゃいましょ♡"
+      : messages[cause] || "次はもっと遠くまで行くわよー！！";
+
+    $("resultStats").innerHTML = `
+      <strong>${total.toLocaleString()}</strong>
+      SCORE<br>
+      ${cleared ? `クリアボーナス ＋${endBonus.toLocaleString()}点<br>` : ""}
+      生存 ${elapsed.toFixed(1)}秒 ／ 距離 ${lastResult.meters}m<br>
+      セミ撃破 ${kills}匹 ／ 残りライフ ${3 - hits}<br>
+      スキル ${uses}回 ／ 合体 ${combos}回 ／ 解除 ${cancels}回<br>
+      最高速度 ${lastResult.speed.toFixed(2)}倍<br>
+      BEST ${records[gameMode].toLocaleString()}
+    `;
+
+    $("shareStatus").textContent = "この記録、みんなに見せちゃいましょ♡";
+    showPanel("resultPanel");
+    updateHUD();
+  }
+
+  // ==================================================
+  // ジャンプ・ダメージ
+  // ==================================================
+  function jump() {
+    if (state !== "playing") return;
+
+    if (digging) {
+      say("地上へ戻るなら解除よ〜！！ Xキーでもいいわよ♡", 1.5);
+      return;
+    }
+
+    if (player.jumps >= 2 || player.y > ground + 100) return;
+
+    player.vy = player.jumps === 0
+      ? -CONFIG.jumpPower : -CONFIG.secondJumpPower;
+    player.jumps++;
+
+    Sound.play(player.jumps === 2 ? "doubleJump" : "jump");
+    burst(
+      player.x, player.y - 3,
+      player.jumps === 2 ? "#fff3a3" : "#e8d5ae", 8
+    );
+
+    if (
+      player.jumps === 2 &&
+      elapsed >= speechUntil &&
+      elapsed - lastJumpLineAt > 6
+    ) {
+      lastJumpLineAt = elapsed;
+      characterSay([
+        "もう1回、飛ぶわよー！！♡",
+        "ｷｬｰ‼︎‼︎ 華麗な二段ジャンプよ♡",
+        "まだまだ上がれるわよ〜！！"
+      ], 1.4);
+    }
+  }
+
+  function defeat(enemy, source) {
+    if (enemy.dead) return;
+    enemy.dead = true;
+    kills++;
+
+    Sound.play(
+      source === "stomp" ? "stomp" :
+      source === "shield" ? "shieldHit" : "defeat"
+    );
+
+    burst(
+      enemy.x, enemy.y,
+      source === "shield" ? "#c1a9ef" : "#ffd98b", 11
+    );
+    label("＋100", enemy.x, enemy.y - 24, "#967333", 0.65);
+  }
+
+  function takeHit(source = "cicada") {
+    if (state !== "playing" || elapsed < invincibleUntil) return false;
+    if (source === "cicada" && (isShielded() || digging)) return false;
+    if (source === "spike" && digging) return false;
+    if (source === "fall" && (hasHoleGuard() || isSuperMole())) return false;
+
+    hits++;
+    invincibleUntil = elapsed + CONFIG.invincibleSeconds;
+    flash = 0.2;
+    Sound.play(source === "fall" ? "fall" : "hit");
+    burst(player.x, Math.min(player.y - 30, ground - 15), "#f198a8", 14);
+
+    const messages = {
+      cicada: "ｷｬｰ‼︎‼︎ セミがぶつかってきたわ〜！！",
+      spike: "ｷｬｰ‼︎‼︎ トゲは聞いてないわよー！！",
+      fall: "ｷｬｰ‼︎‼︎ 落ちちゃったじゃないの〜！！"
+    };
+
+    say(
+      messages[source] +
+      (hits === 2 ? " あと1回！ 慎重によ♡" : " まだ負けないわよ♡"),
+      2.5
+    );
+
+    if (hits >= 3) finish(false, source);
+    return true;
+  }
+
+  function rescueFromFall() {
+    takeHit("fall");
+    if (state !== "playing") return;
+
+    digging = false;
+    digUntil = 0;
+    moleCanCrossPits = false;
+
+    const safeLeft = player.x - 100;
+    const safeRight = player.x + speed * 1.25;
+
+    hazards = hazards.filter(h =>
+      h.x + h.width < safeLeft || h.x > safeRight
+    );
+
+    player.y = Math.max(player.height + 12, ground - 105);
+    player.vy = -150;
+    player.jumps = 1;
+
+    invincibleUntil = Math.max(
+      invincibleUntil, elapsed + CONFIG.invincibleSeconds
+    );
+
+    Sound.play("rescue");
+    label("助かったわ♡", player.x, player.y - 80, "#b48b3b", 1);
+    burst(player.x, player.y - 25, "#ffe8a2", 14);
+  }
+
+  // ==================================================
+  // スキル・解除
+  // ==================================================
+  function addShield(seconds, giant = false) {
+    const nextUntil = Math.max(shieldUntil, elapsed + seconds);
+
+    if (!isShielded() || nextUntil > shieldUntil) {
+      shieldStarted = elapsed;
+    }
+    shieldUntil = nextUntil;
+
+    if (giant) {
+      const nextGiant = Math.max(giantShieldUntil, elapsed + seconds);
+      if (elapsed >= giantShieldUntil || nextGiant > giantShieldUntil) {
+        giantShieldStarted = elapsed;
+      }
+      giantShieldUntil = nextGiant;
+    }
+
+    Sound.play(giant ? "shieldBig" : "shield");
+    burst(
+      player.x, player.y - 35,
+      giant ? "#ba9cff" : "#c7b4ef", giant ? 30 : 12
+    );
+  }
+
+  function dig(seconds, crossPits = false) {
+    const nextUntil = Math.max(digUntil, elapsed + seconds);
+    const upgraded = crossPits && !moleCanCrossPits;
+
+    if (!digging || nextUntil > digUntil || upgraded) {
+      digStarted = elapsed;
+    }
+
+    digging = true;
+    digUntil = nextUntil;
+    moleCanCrossPits = moleCanCrossPits || crossPits;
+
+    player.y = ground;
+    player.vy = 0;
+    player.jumps = 0;
+
+    Sound.play(crossPits ? "moleBig" : "mole");
+    burst(
+      player.x, ground - 3,
+      crossPits ? "#ffd875" : "#b48b62", crossPits ? 24 : 12
+    );
+  }
+
+  function exitMole(manual) {
+    if (!digging) return;
+
+    digging = false;
+    digUntil = 0;
+    moleCanCrossPits = false;
+
+    player.y = Math.max(player.height + 12, ground - 42);
+    player.vy = -CONFIG.exitJumpPower;
+    player.jumps = 1;
+
+    holeGuardUntil = Math.max(
+      holeGuardUntil, elapsed + CONFIG.exitSafetySeconds
+    );
+
+    Sound.play("moleExit");
+    burst(player.x, ground - 5, "#ffe5a0", 17);
+
+    label(
+      manual ? "解除よ〜！！" : "地上へ戻るわ♡",
+      player.x + 45, Math.max(90, ground - 130), "#a67a2d", 1
+    );
+
+    say(
+      manual
+        ? "解除したわよ〜！！ 1.5秒は穴に落ちないわ♡"
+        : "モグラ終了よ〜！！ 安全ジャンプで華麗に帰還♡",
+      2
+    );
+  }
+
+  function cancelSkills() {
+    if (state !== "playing" || !hasActiveSkill()) return;
+
+    const wasMole = digging;
+    shieldUntil = giantShieldUntil = 0;
+    beams = [];
+    projectiles = [];
+
+    Sound.stopAll();
+
+    if (wasMole) {
+      exitMole(true);
+    } else {
+      Sound.play("cancel");
+      burst(player.x, player.y - 35, "#fff0b6", 8);
+      label("解除よ♡", player.x, player.y - 95, "#a67a2d", 0.8);
+      say("スキル解除よ〜！！ 拾ってある分は残してあるわ♡", 1.6);
+    }
+
+    cancels++;
+    updateHUD();
+  }
+
+  function muzzle() {
+    return {
+      x: player.x + 26,
+      y: digging
+        ? Math.min(player.y - 36, ground - 36)
+        : player.y - 38
+    };
+  }
+
+  function throwGummies(count) {
+    const point = muzzle();
+    Sound.play(count >= 7 ? "gummyBig" : "gummy");
+
+    for (let i = 0; i < count; i++) {
+      const spread = count === 1 ? 0.32 : i / (count - 1);
+      projectiles.push({
+        x: point.x, y: point.y,
+        vx: 560 + spread * 160,
+        vy: -80 - spread * 390,
+        radius: 13, life: 3,
+        bounces: 0, angle: 0
+      });
+    }
+  }
+
+  function addBeam(duration, width, fullscreen = false) {
+    beams.push({
+      life: duration, maxLife: duration, width, fullscreen
+    });
+    Sound.play(fullscreen ? "beamBig" : "beam");
+    if (fullscreen) burst(player.x, player.y - 38, "#a1ecff", 28);
+  }
+
+  function useSkills(index = null) {
+    if (state !== "playing" || elapsed < cooldownUntil) return;
+
+    if (player.y > ground + 20) {
+      say(
+        digging
+          ? "ｷｬｰ‼︎‼︎ 落ちそう！ 解除で飛び出すのよ〜！！"
+          : "ｷｬｰ‼︎‼︎ 空中ジャンプが残ってたら使うのよ〜！！",
+        1.2
+      );
+      return;
+    }
+
+    let chosenTypes;
+    if (index === null) {
+      if (!inventory.length) return;
+      chosenTypes = inventory.splice(0, 2);
+    } else {
+      if (!inventory[index]) return;
+      chosenTypes = inventory.splice(index, 1);
+    }
+
+    const key = recipeKey(chosenTypes);
+    const chosen = RECIPES[key];
+
+    if (chosenTypes.length === 2) {
+      combos++;
+      if (chosenTypes[0] !== chosenTypes[1]) Sound.play("combo");
+    }
+
+    chosen.action();
+    uses++;
+    cooldownUntil = elapsed + 0.25;
+
+    const bigLines = {
+      "barrier+barrier": [
+        "超巨大バリアよ〜！！ セミはまとめておどき〜！！",
+        "ｷｬｰ‼︎‼︎ この大きさ、見てちょうだい♡"
+      ],
+      "beam+beam": [
+        "全画面ビームよー！！ まとめてお見舞いするわ♡",
+        "ｷｬｰ‼︎‼︎ 画面ごとキラッキラにしちゃうわよ〜！！"
+      ],
+      "mole+mole": [
+        "強化モグラよ〜！！ 穴だって通っちゃうんだから♡",
+        "地中から失礼するわよー！！ もう止まらないわ♡"
+      ],
+      "gummy+gummy": [
+        "グミ大放出よー！！ た〜っぷり受け取って♡",
+        "甘〜いグミ、まとめていくわよ〜！！"
+      ]
+    };
+
+    if (bigLines[key]) {
+      characterSay(bigLines[key], 2.5);
+    } else {
+      const prefix = chosenTypes.length === 2 ? "合体よ〜！！ " : "";
+      characterSay([
+        `${prefix}${chosen.name}、いくわよー！！`,
+        `${prefix}${chosen.name}、お見舞いするわよ♡`,
+        `${prefix}${chosen.name}で進んじゃうわよ〜！！`
+      ], 2);
+    }
+
+    label(
+      chosen.name, W * 0.48, Math.max(95, ground - 235),
+      chosenTypes.length === 2 ? "#a35aaf" : "#db6491", 1.1
+    );
+    updateHUD();
+  }
+
+  // ==================================================
+  // 出現・当たり判定
+  // ==================================================
+  function nextSkill() {
+    if (!skillBag.length) {
+      skillBag = [
+        "gummy", "beam", "barrier", "mole",
+        "gummy", "beam", "barrier", "mole"
+      ];
+      for (let i = skillBag.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [skillBag[i], skillBag[j]] = [skillBag[j], skillBag[i]];
+      }
+    }
+    return skillBag.pop();
+  }
+
+  function spawnPickup() {
+    let x = W + 50;
+    for (const h of hazards) {
+      if (
+        h.type === "pit" &&
+        x > h.x - 40 && x < h.x + h.width + 40
+      ) x = h.x + h.width + 70;
+    }
+
+    pickups.push({
+      x, type: nextSkill(),
+      phase: Math.random() * Math.PI * 2,
+      fullNotified: false, dead: false
+    });
+  }
+
+  function spawnEnemy() {
+    const roll = Math.random();
+    let altitude = 35;
+    if (elapsed > 10 && roll > 0.76) altitude = 168;
+    else if (elapsed > 5 && roll > 0.4) altitude = 100;
+
+    altitude = Math.min(altitude, Math.max(35, ground - 80));
+
+    enemies.push({
+      x: W + 65,
+      y: ground - altitude,
+      altitude,
+      phase: Math.random() * Math.PI * 2,
+      ownSpeed: rand(28, 72) + Math.min(elapsed * 0.2, 28),
+      rx: 22, ry: 20, dead: false
+    });
+  }
+
+  function spawnHazard() {
+    hazardCount++;
+    const type = hazardCount === 1
+      ? "spike" : Math.random() < 0.52 ? "pit" : "spike";
+    const progress = clamp(elapsed / 100, 0, 1);
+
+    hazards.push({
+      type, x: W + 90,
+      width: type === "pit"
+        ? rand(105, 140) + progress * 35
+        : rand(36, 58) + progress * 16,
+      height: 27
+    });
+  }
+
+  function overlapsPlayer(enemy) {
+    return (
+      Math.abs(enemy.x - player.x) <
+        enemy.rx + player.width / 2 - 7 &&
+      enemy.y + enemy.ry > player.y - player.height + 12 &&
+      enemy.y - enemy.ry < player.y - 4
+    );
+  }
+
+  function gummyHits(gummy, enemy) {
+    return (
+      Math.abs(gummy.x - enemy.x) < gummy.radius + enemy.rx &&
+      Math.abs(gummy.y - enemy.y) < gummy.radius + enemy.ry
+    );
+  }
+
+  function shieldCenterY() {
+    return digging ? player.y - 20 : player.y - 37;
+  }
+
+  function shieldHits(enemy) {
+    if (!isShielded()) return false;
+    const scale = isGiantShielded() ? CONFIG.giantShieldScale : 1;
+    const rx = 49 * scale + enemy.rx;
+    const ry = 59 * scale + enemy.ry;
+    const dx = enemy.x - player.x;
+    const dy = enemy.y - shieldCenterY();
+    return dx * dx / (rx * rx) + dy * dy / (ry * ry) <= 1;
+  }
+
+  function checkSpikes() {
+    if (digging || elapsed < invincibleUntil) return;
+
+    for (const h of hazards) {
+      if (h.type !== "spike") continue;
+
+      const overlapX =
+        player.x + 15 > h.x + 4 &&
+        player.x - 15 < h.x + h.width - 4;
+      const overlapY =
+        player.y > ground - h.height + 6 &&
+        player.y - player.height < ground + 5;
+
+      if (overlapX && overlapY) {
+        if (takeHit("spike") && state === "playing") {
+          player.vy = -390;
+          player.jumps = 1;
+        }
+        break;
+      }
+    }
+  }
+
+  // ==================================================
+  // 更新
+  // ==================================================
+  function update(dt) {
+    elapsed += dt;
+    speed = CONFIG.startSpeed + CONFIG.extraSpeed *
+      (1 - Math.exp(-elapsed / CONFIG.accelerationTime));
+    distance += speed * dt;
+
+    for (const h of hazards) h.x -= speed * dt;
+    hazards = hazards.filter(h => h.x + h.width > -80);
+
+    hazardTimer -= dt;
+    if (hazardTimer <= 0) {
+      spawnHazard();
+      hazardTimer = rand(3.5, 5.2) *
+        (1 - 0.2 * clamp(elapsed / 120, 0, 1));
+    }
+
+    if (digging && elapsed >= digUntil) exitMole(false);
+
+    let oldBottom = player.y;
+    const overHole = Boolean(holeAt(player.x));
+    const hasFloor = !overHole || hasHoleGuard() || isSuperMole();
+
+    if (digging && hasFloor && player.y <= ground + 2) {
+      player.y = ground;
+      player.vy = 0;
+      player.jumps = 0;
+    } else {
+      if (!hasFloor && player.y >= ground - 1 && player.jumps === 0) {
+        player.jumps = 1;
+        if (digging) {
+          say("ｷｬｰ‼︎‼︎ 穴よ！ すぐ解除して飛び出すのよ〜！！", 1.2);
+        }
+      }
+
+      player.vy += CONFIG.gravity * dt;
+      player.y += player.vy * dt;
+
+      const ceiling = player.height + 12;
+      if (!digging && player.y < ceiling) {
+        player.y = ceiling;
+        player.vy = Math.max(0, player.vy);
+      }
+
+      if (
+        hasFloor && player.vy >= 0 &&
+        oldBottom <= ground + 2 && player.y >= ground
+      ) {
+        player.y = ground;
+        player.vy = 0;
+        player.jumps = 0;
+      }
+
+      if ((hasHoleGuard() || isSuperMole()) && player.y > ground) {
+        player.y = ground;
+        player.vy = 0;
+        player.jumps = 0;
+      }
+
+      if (player.y > ground + 125) {
+        rescueFromFall();
+        if (state !== "playing") return;
+        oldBottom = player.y;
+      }
+    }
+
+    enemyTimer -= dt;
+    if (enemyTimer <= 0) {
+      spawnEnemy();
+      enemyTimer =
+        Math.max(0.75, 1.48 - elapsed * 0.006) * rand(0.92, 1.15);
+    }
+
+    skillTimer -= dt;
+    if (skillTimer <= 0) {
+      spawnPickup();
+      skillTimer = rand(CONFIG.skillIntervalMin, CONFIG.skillIntervalMax);
+    }
+
+    for (const item of pickups) {
+      item.x -= speed * dt;
+
+      if (
+        Math.abs(item.x - player.x) < CONFIG.pickupRange &&
+        player.y <= ground + 15
+      ) {
+        if (inventory.length < 2) {
+          inventory.push(item.type);
+          item.dead = true;
+
+          const samePair =
+            inventory.length === 2 && inventory[0] === inventory[1];
+
+          Sound.play(samePair ? "pair" : "pickup");
+          burst(item.x, ground - 43, SKILLS[item.type].color, 8);
+          label(
+            SKILLS[item.type].name + " GET♡",
+            player.x, player.y - 95, "#539778", 0.8
+          );
+
+          if (elapsed >= speechUntil) {
+            say(
+              samePair
+                ? "ｷｬｰ‼︎‼︎ 同じスキルがそろったわ♡ 超合体よ〜！！"
+                : inventory.length === 2
+                  ? "2つそろったわよ〜！！ 合体の出番かしら♡"
+                  : `${SKILLS[item.type].name}、いただいたわよ〜！！♡`,
+              1.8
+            );
+          }
+        } else if (!item.fullNotified) {
+          item.fullNotified = true;
+          if (elapsed >= speechUntil && elapsed >= fullNoticeUntil) {
+            say("あら、スキルがいっぱい♡ 使ったら次を拾えるわよ〜！！", 1.8);
+            fullNoticeUntil = elapsed + 5;
+          }
+        }
+      }
+
+      if (item.x < -70) item.dead = true;
+    }
+
+    for (const enemy of enemies) {
+      enemy.x -= (speed + enemy.ownSpeed) * dt;
+      enemy.y = ground - enemy.altitude +
+        Math.sin(elapsed * 5 + enemy.phase) * 7;
+      if (enemy.x < -90) enemy.dead = true;
+    }
+
+    for (const gummy of projectiles) {
+      gummy.life -= dt;
+      if (gummy.life <= 0) continue;
+
+      gummy.x += gummy.vx * dt;
+      gummy.vy += 400 * dt;
+      gummy.y += gummy.vy * dt;
+      gummy.angle += dt * 5;
+
+      if (gummy.y > ground - gummy.radius && !holeAt(gummy.x)) {
+        gummy.y = ground - gummy.radius;
+        gummy.vy = -Math.abs(gummy.vy) * 0.6;
+        gummy.bounces++;
+
+        if (gummy.bounces > 2) gummy.life = 0;
+        else if (gummy.x >= 0 && gummy.x <= W) Sound.play("bounce");
+      }
+
+      if (gummy.y > ground + 100) gummy.life = 0;
+
+      for (const enemy of enemies) {
+        if (enemy.dead || gummy.life <= 0) continue;
+        if (gummyHits(gummy, enemy)) {
+          defeat(enemy, "gummy");
+          gummy.life = 0;
+          burst(gummy.x, gummy.y, "#f38fba", 8);
+        }
+      }
+    }
+
+    for (const beam of beams) {
+      if (beam.life <= 0) continue;
+      const point = muzzle();
+
+      for (const enemy of enemies) {
+        if (enemy.dead) continue;
+
+        if (beam.fullscreen) {
+          if (
+            enemy.x + enemy.rx >= 0 && enemy.x - enemy.rx <= W &&
+            enemy.y + enemy.ry >= 0 && enemy.y - enemy.ry <= H
+          ) defeat(enemy, "beam");
+        } else if (
+          enemy.x + enemy.rx >= point.x &&
+          enemy.x - enemy.rx <= W &&
+          Math.abs(enemy.y - point.y) <= beam.width / 2 + enemy.ry
+        ) {
+          defeat(enemy, "beam");
+        }
+      }
+      beam.life -= dt;
+    }
+
+    for (const enemy of enemies) {
+      if (enemy.dead) continue;
+
+      if (shieldHits(enemy)) {
+        defeat(enemy, "shield");
+        continue;
+      }
+
+      if (digging || player.y > ground + 25) continue;
+
+      const stomp =
+        player.vy > 60 &&
+        Math.abs(enemy.x - player.x) < enemy.rx + 16 &&
+        oldBottom <= enemy.y - enemy.ry + 15 &&
+        player.y >= enemy.y - enemy.ry &&
+        player.y < enemy.y + enemy.ry;
+
+      if (stomp) {
+        defeat(enemy, "stomp");
+        player.y = enemy.y - enemy.ry;
+        player.vy = -490;
+        player.jumps = 1;
+        label("ふみっ♡", player.x, player.y - 85, "#568c6e", 0.65);
+
+        if (elapsed >= speechUntil) {
+          characterSay([
+            "ごめんあそばせ♡ 踏ませてもらったわよ〜！！",
+            "華麗な踏みつけよー！！♡",
+            "あら、足元にいたのね♡"
+          ], 1.6);
+        }
+        continue;
+      }
+
+      if (overlapsPlayer(enemy)) {
+        takeHit("cicada");
+        if (state !== "playing") return;
+      }
+    }
+
+    checkSpikes();
+    if (state !== "playing") return;
+
+    for (const p of particles) {
+      p.life -= dt;
+      if (!reducedMotion) {
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.vy += 300 * dt;
+      }
+    }
+
+    for (const item of labels) {
+      item.life -= dt;
+      if (!reducedMotion) item.y -= 22 * dt;
+    }
+
+    enemies = enemies.filter(e => !e.dead);
+    pickups = pickups.filter(p => !p.dead);
+    projectiles = projectiles.filter(p => p.life > 0 && p.x < W + 70);
+    beams = beams.filter(b => b.life > 0);
+    particles = particles.filter(p => p.life > 0);
+    labels = labels.filter(p => p.life > 0);
+    flash = Math.max(0, flash - dt);
+
+    if (speechUntil && elapsed >= speechUntil) {
+      $("speech").textContent = idleMessage();
+      speechUntil = 0;
+      nextIdleAt = elapsed + 6;
+    } else if (!speechUntil && elapsed >= nextIdleAt) {
+      $("speech").textContent = idleMessage();
+      nextIdleAt = elapsed + 6;
+    }
+
+    if (gameMode === "normal") {
+      const remaining = Math.ceil(CONFIG.normalSeconds - elapsed);
+      if (remaining > 0 && remaining <= 5 && remaining !== lastCountdown) {
+        lastCountdown = remaining;
+        Sound.play("countdown");
+        if (remaining === 5 && elapsed >= speechUntil) {
+          say("あと5秒よ〜！！ 最後まで華麗にいくわよー！！", 2);
+        }
+      }
+      if (elapsed >= CONFIG.normalSeconds - 0.000001) finish(true);
+    }
+  }
+
+  // ==================================================
+  // HUD
+  // ==================================================
+  function updateHUD() {
+    updateSkillGauges();
+    $("stage").classList.toggle("playing", state === "playing");
+
+    $("score").textContent = scoreValue().toLocaleString();
+    $("life").textContent =
+      "♥".repeat(Math.max(0, 3 - hits)) + "♡".repeat(hits);
+
+    const normal = gameMode === "normal";
+    $("timerLabel").textContent = normal ? "残り時間" : "生存時間";
+    $("timer").textContent = normal
+      ? Math.max(0, CONFIG.normalSeconds - elapsed).toFixed(1)
+      : elapsed.toFixed(1);
+    $("timer").style.color = normal && elapsed >= 50 ? "#df5c79" : "";
+
+    $("modeBadge").textContent = normal ? "NORMAL · 60秒" : "ENDLESS";
+    $("speedBadge").textContent =
+      `SPEED ${(speed / CONFIG.startSpeed).toFixed(2)}×`;
+    $("bestBadge").textContent = "BEST " + records[gameMode].toLocaleString();
+
+    $("progress").hidden = !normal;
+    $("progressFill").style.width =
+      clamp(elapsed / CONFIG.normalSeconds * 100, 0, 100) + "%";
+
+    $("moleHintBadge").hidden = !digging;
+    $("moleHintBadge").textContent = isSuperMole()
+      ? "🕳️ 穴も通過OK！" : "🕳️ 穴の前で解除！";
+
+    $("safeBadge").hidden = !hasHoleGuard();
+    $("safeBadge").textContent =
+      `⤴ 穴落下防止 ${Math.max(0, holeGuardUntil - elapsed).toFixed(1)}秒`;
+
+    const cooling = elapsed < cooldownUntil;
+    const stamp = inventory.join(",") + "|" + state + "|" + cooling;
+
+    if (stamp !== hudStamp) {
+      hudStamp = stamp;
+
+      for (let i = 0; i < 2; i++) {
+        const button = $("slot" + i);
+        const type = inventory[i];
+        button.disabled = state !== "playing" || !type || cooling;
+        button.classList.toggle("empty", !type);
+        button.style.background = type ? SKILLS[type].color : "";
+        button.innerHTML = type
+          ? `${SKILLS[type].icon} ${SKILLS[type].name}
+             <small>押すと単独使用 · ${i + 1}キー</small>`
+          : `スキル ${i + 1}<small>空きスロット</small>`;
+      }
+
+      const selected = inventory.length ? RECIPES[recipeKey(inventory)] : null;
+      const samePair = inventory.length === 2 && inventory[0] === inventory[1];
+
+      $("attackName").textContent = selected ? selected.name : "スキル待ち";
+      $("attackHint").textContent = samePair
+        ? "超合体、いくわよー！！ · Z"
+        : inventory.length === 2
+          ? "合体して使う！ · Z"
+          : inventory.length === 1
+            ? "使用 / もう1つで合体" : "拾って使おう";
+    }
+
+    $("attackButton").disabled =
+      state !== "playing" || !inventory.length || cooling;
+    $("pauseButton").disabled = state !== "playing";
+    $("cancelButton").disabled = state !== "playing" || !hasActiveSkill();
+    $("cancelName").textContent = digging ? "⤴ 解除！" : "✕ 解除";
+    $("cancelHint").textContent = digging ? "地上へ戻る · X" : "発動中スキル · X";
+  }
+
+  // ==================================================
+  // 描画ヘルパー
+  // ==================================================
+  function roundRect(g, x, y, width, height, radius, color) {
+    if (width <= 0 || height <= 0) return;
+    const r = Math.max(0, Math.min(radius, width / 2, height / 2));
+    g.fillStyle = color;
+    g.beginPath();
+    g.moveTo(x + r, y);
+    g.arcTo(x + width, y, x + width, y + height, r);
+    g.arcTo(x + width, y + height, x, y + height, r);
+    g.arcTo(x, y + height, x, y, r);
+    g.arcTo(x, y, x + width, y, r);
+    g.closePath();
+    g.fill();
+  }
+
+  function oval(g, x, y, rx, ry, color, angle = 0) {
+    g.fillStyle = color;
+    g.beginPath();
+    g.ellipse(x, y, Math.max(0, rx), Math.max(0, ry), angle, 0, Math.PI * 2);
+    g.fill();
+  }
+
+  const rounded = (x, y, w, h, r, color) =>
+    roundRect(ctx, x, y, w, h, r, color);
+  const ellipse = (x, y, rx, ry, color, angle = 0) =>
+    oval(ctx, x, y, rx, ry, color, angle);
+
+  function text(message, x, y, size, color = "#34483e") {
+    ctx.font = `900 ${size}px sans-serif`;
+    ctx.textAlign = "center";
+    ctx.fillStyle = color;
+    ctx.fillText(message, x, y);
+  }
+
+  // ==================================================
+  // むいぴ
+  // ==================================================
+  function drawMuipi(g, x, y, scale = 1, swing = 0) {
+    const rr = (a, b, c, d, r, color) =>
+      roundRect(g, a, b, c, d, r, color);
+    const el = (a, b, c, d, color) =>
+      oval(g, a, b, c, d, color);
+
+    g.save();
+    g.translate(x, y);
+    g.scale(scale, scale);
+
+    rr(-18, -15, 14, 16, 4, "#405346");
+    rr(4, -15, 14, 16, 4, "#405346");
+    rr(-20 + swing, -6, 18, 7, 3, "#514b3c");
+    rr(3 - swing, -6, 19, 7, 3, "#514b3c");
+
+    rr(-23, -39, 46, 30, 9, "#7e9260");
+    rr(-24, -33, 11, 21, 5, "#6b8051");
+    rr(14, -32, 12, 18, 5, "#6b8051");
+    el(23, -18, 6, 6, "#efbd99");
+
+    g.fillStyle = "#dbe2e2";
+    g.strokeStyle = "#697878";
+    g.lineWidth = 2.5;
+    g.beginPath();
+    g.moveTo(-25, -51);
+    g.lineTo(-31, -65);
+    g.lineTo(-20, -65);
+    g.lineTo(-21, -79);
+    g.lineTo(-8, -73);
+    g.lineTo(0, -86);
+    g.lineTo(9, -74);
+    g.lineTo(22, -78);
+    g.lineTo(22, -64);
+    g.lineTo(30, -59);
+    g.lineTo(24, -43);
+    g.closePath();
+    g.fill();
+    g.stroke();
+
+    rr(-24, -61, 48, 41, 15, "#edba97");
+    rr(-28, -67, 55, 14, 4, "#415c50");
+    rr(-23, -64, 18, 8, 2, "#b0cecb");
+    rr(5, -64, 17, 8, 2, "#b0cecb");
+
+    g.strokeStyle = "#393b30";
+    g.lineWidth = 3;
+    g.beginPath();
+    g.moveTo(-15, -45);
+    g.lineTo(-8, -44);
+    g.moveTo(6, -44);
+    g.lineTo(14, -45);
+    g.stroke();
+
+    el(-18, -37, 5, 3, "#e796a0");
+    el(17, -37, 5, 3, "#e796a0");
+
+    g.fillStyle = "#74513b";
+    g.beginPath();
+    g.moveTo(-23, -36);
+    g.lineTo(-10, -30);
+    g.lineTo(0, -24);
+    g.lineTo(12, -30);
+    g.lineTo(23, -36);
+    g.lineTo(18, -20);
+    g.lineTo(0, -13);
+    g.lineTo(-17, -21);
+    g.closePath();
+    g.fill();
+
+    el(0, -32, 10, 6, "#693948");
+    el(0, -30, 6, 3, "#e995a5");
+    g.restore();
+  }
+
+  // ==================================================
+  // 背景・地形
+  // ==================================================
+  function drawCloud(x, y, scale) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.scale(scale, scale);
+    ellipse(0, 0, 45, 15, "#ffffffa6");
+    ellipse(-18, -11, 23, 21, "#ffffffa6");
+    ellipse(15, -17, 28, 25, "#ffffffa6");
+    ctx.restore();
+  }
+
+  function drawBackground() {
+    const sky = ctx.createLinearGradient(0, 0, 0, H);
+    sky.addColorStop(0, "#c9f0ee");
+    sky.addColorStop(0.7, "#eef8d9");
+    sky.addColorStop(1, "#fff0cd");
+    ctx.fillStyle = sky;
+    ctx.fillRect(0, 0, W, H);
+
+    ellipse(W * 0.82, Math.max(72, ground * 0.18), 33, 33, "#fff6b2");
+
+    for (let i = 0; i < 5; i++) {
+      const loop = W + 270;
+      const x = ((i * 270 - distance * 0.1) % loop + loop) % loop - 100;
+      drawCloud(x, 75 + i % 3 * 55, 0.8 + i % 2 * 0.3);
+    }
+
+    for (let i = -1; i < 7; i++) {
+      ellipse(
+        i * 240 - distance * 0.15 % 240,
+        ground + 20, 185, Math.min(150, H * 0.27), "#b8ddb2"
+      );
+    }
+
+    for (let i = -1; i < W / 230 + 2; i++) {
+      const x = i * 230 - distance * 0.38 % 230;
+      rounded(x - 10, ground - 120, 20, 120, 4, "#a6b882");
+      ellipse(x, ground - 157, 56, 60, "#94c99d");
+      ellipse(x - 33, ground - 139, 32, 34, "#a4d4a9");
+      ellipse(x + 33, ground - 141, 32, 35, "#a4d4a9");
+    }
+
+    ctx.fillStyle = "#8eb978";
+    ctx.fillRect(0, ground, W, H - ground);
+    ctx.fillStyle = "#e1c594";
+    ctx.fillRect(0, ground + 8, W, H - ground);
+    ctx.fillStyle = "#f3dba5";
+    ctx.fillRect(0, ground + 8, W, 10);
+
+    for (let i = -1; i < W / 100 + 1; i++) {
+      const x = i * 100 - distance % 100;
+      rounded(x, ground + 30, 33, 5, 2, "#c1a77c");
+      rounded(x + 55, ground + 53, 14, 4, 2, "#cbb187");
+    }
+  }
+
+  function drawTerrain() {
+    for (const h of hazards) {
+      if (h.type === "pit") {
+        const x = h.x, width = h.width;
+
+        ctx.fillStyle = "#4d414f";
+        ctx.fillRect(x, ground - 1, width, H - ground + 2);
+        ctx.fillStyle = "#302c3a";
+        ctx.fillRect(x + 9, ground + 17, Math.max(1, width - 18), H - ground);
+        ctx.fillStyle = "#95704d";
+        ctx.fillRect(x, ground, 8, H - ground);
+        ctx.fillRect(x + width - 8, ground, 8, H - ground);
+        ctx.fillStyle = "#f4d793";
+        ctx.fillRect(x - 5, ground - 2, 14, 7);
+        ctx.fillRect(x + width - 9, ground - 2, 14, 7);
+
+        if (isSuperMole()) {
+          rounded(x + 5, ground + 8, Math.max(1, width - 10), 14, 7, "#ffd77255");
+          text("通過OK", x + width / 2, ground + 43, 12, "#ffe7a0");
+        } else {
+          text("落下注意", x + width / 2, ground + 38, 12, "#e8bf90");
+        }
+
+        text("!", x - 20, ground - 12, 24, "#cb8755");
+        if (hasHoleGuard()) {
+          rounded(x + 5, ground - 5, Math.max(1, width - 10), 10, 4, "#ffe8a5c9");
+        }
+      } else {
+        const count = Math.max(2, Math.ceil(h.width / 19));
+        const unit = h.width / count;
+        rounded(h.x - 3, ground - 5, h.width + 6, 9, 3, "#706777");
+
+        for (let i = 0; i < count; i++) {
+          const x = h.x + i * unit;
+          ctx.beginPath();
+          ctx.moveTo(x, ground);
+          ctx.lineTo(x + unit / 2, ground - h.height);
+          ctx.lineTo(x + unit, ground);
+          ctx.closePath();
+          ctx.fillStyle = "#dbe0e9";
+          ctx.fill();
+          ctx.strokeStyle = "#696073";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(x + unit / 2, ground - h.height + 3);
+          ctx.lineTo(x + unit / 2, ground - 2);
+          ctx.lineTo(x + unit - 2, ground - 2);
+          ctx.closePath();
+          ctx.fillStyle = "#a19eb1";
+          ctx.fill();
+        }
+      }
+    }
+  }
+
+  // ==================================================
+  // セミ
+  // ==================================================
+  function drawCicada(enemy) {
+    const flap = reducedMotion ? 0 : Math.sin(elapsed * 48 + enemy.phase);
+    ctx.save();
+    ctx.translate(enemy.x, enemy.y);
+
+    ellipse(-5, -17 - flap * 5, 33, 12, "#fffdf3d0", -0.35);
+    ellipse(10, 18 + flap * 4, 34, 11, "#fffdf3d0", 0.3);
+
+    ctx.strokeStyle = "#a5b6a3";
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(-26, -20);
+    ctx.lineTo(14, -10);
+    ctx.moveTo(-22, 19);
+    ctx.lineTo(21, 12);
+    ctx.stroke();
+
+    ellipse(5, 2, 23, 16, "#6b5b3e");
+    ellipse(-12, 0, 14, 17, "#8e8250");
+
+    ctx.strokeStyle = "#423d2a";
+    ctx.lineWidth = 2;
+    for (let i = 0; i < 3; i++) {
+      ctx.beginPath();
+      ctx.moveTo(4 + i * 6, -10);
+      ctx.lineTo(6 + i * 6, 13);
+      ctx.stroke();
+    }
+
+    ellipse(-19, -8, 6, 6, "#bd513c");
+    ellipse(-19, 8, 6, 6, "#bd513c");
+    ellipse(-21, -9, 2, 2, "#fff3d5");
+    ellipse(-21, 7, 2, 2, "#fff3d5");
+
+    ctx.beginPath();
+    ctx.moveTo(-23, -8);
+    ctx.lineTo(-32, -16);
+    ctx.moveTo(-23, 8);
+    ctx.lineTo(-32, 16);
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  // ==================================================
+  // バリア・モグラ・プレイヤー
+  // ==================================================
+  function drawShieldEffect() {
+    if (!isShielded()) return;
+
+    const centerY = shieldCenterY();
+    const giant = isGiantShielded();
+    const scale = giant ? CONFIG.giantShieldScale : 1;
+    const pulse = reducedMotion ? 0 : Math.sin(elapsed * 5) * (giant ? 5 : 3);
+    const rx = 49 * scale + pulse;
+    const ry = 59 * scale + pulse;
+
+    ctx.save();
+    const glow = ctx.createRadialGradient(
+      player.x, centerY, 0, player.x, centerY, ry
+    );
+    glow.addColorStop(0, "#eadfff08");
+    glow.addColorStop(0.65, "#cab1ff22");
+    glow.addColorStop(1, giant ? "#b58bff66" : "#b58bff35");
+    ellipse(player.x, centerY, rx, ry, glow);
+
+    ctx.strokeStyle = giant ? "#a477e5" : "#a98ee0";
+    ctx.lineWidth = giant ? 5 : 3;
+    ctx.beginPath();
+    ctx.ellipse(player.x, centerY, rx, ry, 0, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.strokeStyle = "#fff9ffcc";
+    ctx.lineWidth = giant ? 3 : 1.5;
+    ctx.beginPath();
+    ctx.ellipse(player.x, centerY, rx - 7, ry - 7, 0, 0, Math.PI * 2);
+    ctx.stroke();
+
+    if (giant) {
+      const rotation = reducedMotion ? 0 : elapsed * 0.65;
+      for (let i = 0; i < 12; i++) {
+        const angle = rotation + i / 12 * Math.PI * 2;
+        const x = player.x + Math.cos(angle) * rx;
+        const y = centerY + Math.sin(angle) * ry;
+        ellipse(x, y, 5, 5, "#fff5c8");
+        text("✦", x, y + 6, 21, "#fffdf4");
+      }
+      text("超巨大バリア", player.x, Math.max(96, centerY - ry - 15), 20, "#9363c9");
+    } else {
+      text("✦", player.x + 38, centerY - 38, 18, "#9673ce");
+    }
+    ctx.restore();
+  }
+
+  function drawSuperMoleEffect() {
+    const bob = reducedMotion ? 0 : Math.sin(elapsed * 10) * 2;
+    ctx.save();
+
+    for (let i = 0; i < 5; i++) {
+      ctx.globalAlpha = 0.55 * (1 - i / 5);
+      rounded(
+        player.x - 55 - i * 23,
+        ground + 12 + i % 2 * 8,
+        24, 5, 3, "#ffe19a"
+      );
+    }
+
+    ctx.globalAlpha = 1;
+    ellipse(player.x, ground + 5, 49, 23 + bob, "#ffd56c44");
+    ctx.strokeStyle = "#ffe9a2";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.ellipse(player.x, ground + 2, 45, 21 + bob, 0, 0, Math.PI * 2);
+    ctx.stroke();
+
+    text("✦", player.x - 42, ground - 24, 19, "#dca943");
+    text("✦", player.x + 42, ground - 32, 24, "#dca943");
+    text("穴も通過よ♡", player.x, ground - 47, 18, "#976621");
+    ctx.restore();
+  }
+
+  function drawPlayer() {
+    if (!holeAt(player.x)) {
+      ellipse(player.x, ground + 3, 28, 7, "#775d4730");
+    }
+
+    ctx.save();
+    if (player.y > ground + 2) {
+      const pit = holeAt(player.x);
+      ctx.beginPath();
+      if (pit) ctx.rect(pit.x + 8, 0, Math.max(1, pit.width - 16), H);
+      else ctx.rect(0, 0, W, ground);
+      ctx.clip();
+    }
+
+    if (digging) {
+      const wobble = reducedMotion ? 0 : Math.sin(elapsed * 22) * 2;
+      const y = player.y;
+      const superMole = isSuperMole();
+
+      ellipse(player.x, y + 3, 37, 17 + wobble, superMole ? "#c69b4d" : "#b38b5f");
+      ellipse(player.x, y - 1, 27, 10, superMole ? "#e1bc66" : "#c7a16d");
+      rounded(player.x - 21, y - 11, 42, 13, 4, "#475b4f");
+      rounded(player.x - 17, y - 9, 13, 8, 2, superMole ? "#fff2a8" : "#b6e5e2");
+      rounded(player.x + 4, y - 9, 13, 8, 2, superMole ? "#fff2a8" : "#b6e5e2");
+
+      text(
+        superMole ? "進むわよ♡" : y > ground + 10 ? "解除よー！！" : "もぐもぐ♡",
+        player.x, Math.min(y + 36, H - 8), 13, "#795e42"
+      );
+      if (superMole) drawSuperMoleEffect();
+    } else {
+      if (
+        elapsed < invincibleUntil &&
+        Math.floor(elapsed * 12) % 2 === 0 &&
+        !reducedMotion
+      ) ctx.globalAlpha = 0.4;
+
+      const running = Math.abs(player.y - ground) < 1 && !holeAt(player.x);
+      const swing = running && !reducedMotion ? Math.sin(elapsed * 18) * 6 : 0;
+      drawMuipi(ctx, player.x, player.y, 1, swing);
+      ctx.globalAlpha = 1;
+
+      if (hasHoleGuard()) {
+        ellipse(player.x, player.y + 8, 35, 7, "#ffeab2ba");
+        text("✦", player.x - 38, player.y - 28, 18, "#c1943e");
+        text("✦", player.x + 36, player.y - 55, 14, "#c1943e");
+      }
+    }
+
+    ctx.restore();
+    drawShieldEffect();
+  }
+
+  // ==================================================
+  // アイテム・ビーム
+  // ==================================================
+  function drawPickup(item) {
+    const bob = reducedMotion ? 0 : Math.sin(elapsed * 4 + item.phase) * 5;
+    const y = ground - 42 + bob;
+    const skill = SKILLS[item.type];
+
+    if (!holeAt(item.x)) ellipse(item.x, ground + 1, 19, 4, "#846c4325");
+
+    rounded(item.x - 23, y - 24, 46, 46, 12, "#fffdf4");
+    rounded(item.x - 19, y - 20, 38, 38, 9, skill.color);
+    text(skill.icon, item.x, y + 9, 27);
+    text(skill.name, item.x, y - 32, 13, "#546b53");
+    text("✦", item.x + 29, y - 13, 15, "#c69547");
+  }
+
+  function drawGummy(gummy) {
+    ctx.save();
+    ctx.translate(gummy.x, gummy.y);
+    ctx.rotate(gummy.angle);
+    rounded(-11, -14, 22, 28, 7, "#b54a7d");
+    rounded(-8, -11, 16, 21, 5, "#fa88b9");
+    rounded(-5, -8, 4, 9, 2, "#ffdeec");
+    ctx.restore();
+  }
+
+  function drawBeams() {
+    const point = muzzle();
+
+    for (const beam of beams) {
+      if (beam.life <= 0) continue;
+
+      if (beam.fullscreen) {
+        const age = beam.maxLife - beam.life;
+        const strength = Math.min(
+          clamp(age / 0.12, 0, 1),
+          clamp(beam.life / 0.25, 0, 1)
+        );
+
+        ctx.save();
+        ctx.globalAlpha = strength;
+
+        const glow = ctx.createLinearGradient(0, 0, W, 0);
+        glow.addColorStop(0, "#e7fdff77");
+        glow.addColorStop(0.35, "#8ee7ff66");
+        glow.addColorStop(1, "#cbb4ff55");
+        ctx.fillStyle = glow;
+        ctx.fillRect(0, 0, W, H);
+
+        const bandHeight = H / 12;
+        for (let i = 0; i < 12; i++) {
+          const y = (i + 0.5) * bandHeight;
+          const thickness = bandHeight * 1.12;
+          ctx.fillStyle = i % 2 === 0 ? "#91e8ff55" : "#c5aaff44";
+          ctx.fillRect(0, y - thickness / 2, W, thickness);
+          ctx.fillStyle = "#ffffff66";
+          ctx.fillRect(
+            0, y - Math.max(2, bandHeight * 0.08),
+            W, Math.max(4, bandHeight * 0.16)
+          );
+
+          const travel = reducedMotion ? 0 : age * 850;
+          const x = (travel + i * 157) % (W + 220) - 220;
+          rounded(x, y - 2, 160, 4, 2, "#fffdeccc");
+        }
+
+        ellipse(point.x, point.y, 42, 65, "#efffff77");
+
+        const captionY = Math.max(135, H * 0.43);
+        ctx.font = "900 29px sans-serif";
+        ctx.textAlign = "center";
+        ctx.lineWidth = 6;
+        ctx.strokeStyle = "#ffffffdd";
+        ctx.strokeText("全画面ビームよー！！", W / 2, captionY, W - 40);
+        ctx.fillStyle = "#588bb6";
+        ctx.fillText("全画面ビームよー！！", W / 2, captionY, W - 40);
+        ctx.restore();
+      } else {
+        const width = beam.width * clamp(beam.life / 0.12, 0, 1);
+        const length = Math.max(1, W - point.x);
+
+        ctx.save();
+        ctx.globalAlpha = 0.85;
+        rounded(point.x, point.y - width * 0.8, length, width * 1.6, width / 2, "#8bdfff66");
+        rounded(point.x, point.y - width / 2, length, width, width / 2, "#79e1f0");
+        rounded(point.x, point.y - width * 0.2, length, width * 0.4, width / 4, "#fffef0");
+        ellipse(point.x + 3, point.y, width * 0.7, width * 0.7, "#fff6bd");
+        ctx.restore();
+      }
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    drawBackground();
+    drawTerrain();
+
+    for (const item of pickups) if (!item.dead) drawPickup(item);
+    for (const enemy of enemies) if (!enemy.dead) drawCicada(enemy);
+
+    drawPlayer();
+    for (const gummy of projectiles) if (gummy.life > 0) drawGummy(gummy);
+    drawBeams();
+
+    for (const p of particles) {
+      ctx.globalAlpha = clamp(p.life * 3, 0, 1);
+      rounded(p.x, p.y, p.size, p.size, 2, p.color);
+    }
+    ctx.globalAlpha = 1;
+
+    for (const item of labels) {
+      ctx.save();
+      ctx.globalAlpha = clamp(item.life / item.max * 1.7, 0, 1);
+      ctx.font = "900 22px sans-serif";
+      ctx.textAlign = "center";
+      ctx.lineWidth = 5;
+      ctx.strokeStyle = "#fffdf4";
+      ctx.strokeText(item.message, item.x, item.y, W - 30);
+      ctx.fillStyle = item.color;
+      ctx.fillText(item.message, item.x, item.y, W - 30);
+      ctx.restore();
+    }
+
+    if (flash > 0 && !reducedMotion) {
+      ctx.fillStyle = `rgba(227,80,105,${flash * 0.7})`;
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    if (state === "playing" && gameMode === "normal" && elapsed >= 50) {
+      const remaining = Math.max(1, Math.ceil(CONFIG.normalSeconds - elapsed));
+      ctx.save();
+      ctx.globalAlpha = 0.65;
+      text(String(remaining), W * 0.42, 120, 56, "#d87091");
+      ctx.restore();
+    }
+  }
+
+  // ==================================================
+  // Xシェア
+  // ==================================================
+  function getShareUrl() {
+    if (CONFIG.shareUrl) {
+      try {
+        const url = new URL(CONFIG.shareUrl);
+        if (["http:", "https:"].includes(url.protocol)) return url.href;
+      } catch (_) {}
+    }
+
+    const publicProtocol = ["http:", "https:"].includes(location.protocol);
+    const localHost = ["localhost", "127.0.0.1", "[::1]"].includes(location.hostname);
+
+    return publicProtocol && !localHost
+      ? location.origin + location.pathname : "";
+  }
+
+  function shareText(result) {
+    const mode = result.mode === "normal" ? "ノーマル60秒" : "エンドレス";
+    const status = result.cleared
+      ? "クリアしたわよー！！"
+      : `${result.seconds.toFixed(1)}秒生き残ったわよ〜！！`;
+
+    return [
+      GAME_TITLE,
+      `${mode}で${status}`,
+      `SCORE ${result.score.toLocaleString()}点`,
+      `BEST ${result.best.toLocaleString()}点`,
+      `セミ撃破 ${result.kills}匹 ／ ${result.meters}m`,
+      result.newBest
+        ? "ｷｬｰ‼︎‼︎ 自己ベスト更新よ♡"
+        : "次はもっと遠くまで行くわよー！！♡"
+    ].join("\n");
+  }
+
+  function shareToX() {
+    if (!lastResult) return;
+
+    const params = new URLSearchParams({
+      text: shareText(lastResult),
+      hashtags: `${GAME_HASHTAG},ブラウザゲーム`
+    });
+
+    const url = getShareUrl();
+    if (url) params.set("url", url);
+
+    const link = document.createElement("a");
+    link.href = "https://twitter.com/intent/tweet?" + params.toString();
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    $("shareStatus").textContent =
+      "投稿画面で確認してね♡ カード画像は保存してから添付できるわよ！";
+  }
+
+  // ==================================================
+  // スコアカード
+  // ==================================================
+  function makeScoreCard(result) {
+    const card = document.createElement("canvas");
+    card.width = 1080;
+    card.height = 1350;
+
+    const g = card.getContext("2d");
+    if (!g) throw new Error("Canvas unavailable");
+
+    const rr = (x, y, w, h, r, color) =>
+      roundRect(g, x, y, w, h, r, color);
+
+    function write(
+      message, x, y, size,
+      color = "#34483e", weight = 900, maxWidth = 930
+    ) {
+      g.font = `${weight} ${size}px "Yu Gothic", "Hiragino Kaku Gothic ProN", sans-serif`;
+      g.textAlign = "center";
+      g.textBaseline = "alphabetic";
+      g.fillStyle = color;
+      g.fillText(message, x, y, maxWidth);
+    }
+
+    const bg = g.createLinearGradient(0, 0, 1080, 1350);
+    bg.addColorStop(0, "#d8f4e8");
+    bg.addColorStop(0.5, "#fff8dc");
+    bg.addColorStop(1, "#f8dce8");
+    g.fillStyle = bg;
+    g.fillRect(0, 0, 1080, 1350);
+
+    for (let i = 0; i < 36; i++) {
+      const size = 8 + i % 3 * 3;
+      oval(
+        g, (i * 173 + 45) % 1080, (i * 227 + 70) % 1350,
+        size, size, "#ffffff7a"
+      );
+    }
+
+    rr(42, 42, 996, 1266, 42, "#34483e");
+    rr(50, 50, 980, 1250, 35, "#fffdf4");
+
+    write("MUIPI VS CICADA ARMY", 540, 111, 24, "#789788");
+    write(GAME_TITLE, 540, 177, 60);
+
+    rr(255, 207, 570, 54, 27, "#e5f1e8");
+    write(
+      result.mode === "normal" ? "NORMAL / 60 SECONDS" : "ENDLESS / SURVIVAL",
+      540, 243, 25, "#5c7d67"
+    );
+
+    write(
+      result.cleared
+        ? result.life === 3 ? "PERFECT CLEAR!" : "STAGE CLEAR!"
+        : "NICE RUN!",
+      540, 318, 38, result.cleared ? "#d66e98" : "#78927d"
+    );
+
+    oval(g, 540, 563, 98, 17, "#d9e8d8");
+    drawMuipi(g, 540, 552, 2.35, 3);
+
+    rr(223, 405, 69, 88, 22, "#efa3c5");
+    rr(235, 417, 17, 32, 7, "#ffe1ee");
+    rr(785, 413, 66, 18, 9, "#91deec");
+    rr(769, 441, 98, 18, 9, "#91deec");
+    rr(794, 469, 58, 18, 9, "#91deec");
+
+    write("MY SCORE", 540, 619, 26, "#bd7091");
+    write(result.score.toLocaleString(), 540, 733, 108, "#34483e", 900, 850);
+
+    rr(190, 770, 700, 58, 29, result.newBest ? "#ffe5a1" : "#f5e5ec");
+    write(
+      result.newBest
+        ? "NEW PERSONAL BEST!"
+        : `PERSONAL BEST  ${result.best.toLocaleString()}`,
+      540, 809, 29, result.newBest ? "#95702a" : "#9b6380", 900, 650
+    );
+
+    rr(95, 858, 890, 215, 24, "#edf4e9");
+    write("生存時間", 250, 909, 24, "#7a9481");
+    write("セミ撃破", 540, 909, 24, "#7a9481");
+    write("走行距離", 830, 909, 24, "#7a9481");
+
+    write(result.seconds.toFixed(1) + "秒", 250, 970, 39, "#34483e", 900, 250);
+    write(result.kills + "匹", 540, 970, 39, "#34483e", 900, 250);
+    write(result.meters.toLocaleString() + "m", 830, 970, 39, "#34483e", 900, 250);
+
+    write(
+      `合体 ${result.combos}回  /  解除 ${result.cancels}回  /  LIFE ${result.life}`,
+      540, 1035, 25, "#718774", 700, 820
+    );
+    write(
+      `NORMAL BEST  ${result.normalBest.toLocaleString()}`,
+      540, 1121, 25, "#8b6c7c", 900, 870
+    );
+    write(
+      `ENDLESS BEST  ${result.endlessBest.toLocaleString()}`,
+      540, 1163, 25, "#8b6c7c", 900, 870
+    );
+
+    write(
+      result.cleared
+        ? "「クリアしたわよー！！♡」"
+        : "「まだまだ行けるわよ〜！！♡」",
+      540, 1224, 29, "#d4759a"
+    );
+
+    const d = result.date;
+    const dateText = [
+      d.getFullYear(),
+      String(d.getMonth() + 1).padStart(2, "0"),
+      String(d.getDate()).padStart(2, "0")
+    ].join(".");
+
+    write(
+      `#${GAME_HASHTAG}  ·  ${dateText}`,
+      540, 1271, 20, "#8b9b8c", 700
+    );
+
+    return card;
+  }
+
+  function canvasToBlob(card) {
+    return new Promise((resolve, reject) => {
+      card.toBlob(blob => {
+        if (blob) resolve(blob);
+        else reject(new Error("PNG creation failed"));
+      }, "image/png");
+    });
+  }
+
+  async function openScoreCard() {
+    if (!lastResult || cardBusy) return;
+
+    if (cardObjectUrl) {
+      Sound.gesture("click");
+      showPanel("cardPanel");
+      return;
+    }
+
+    Sound.gesture("click");
+    cardBusy = true;
+    $("saveCardButton").disabled = true;
+    $("shareStatus").textContent = "かわいいカードを作ってるわよ♡";
+
+    const serial = resultSerial;
+    const result = lastResult;
+
+    try {
+      if (document.fonts && document.fonts.ready) await document.fonts.ready;
+
+      const card = makeScoreCard(result);
+      const blob = await canvasToBlob(card);
+
+      if (
+        serial !== resultSerial ||
+        state !== "result" ||
+        lastResult !== result
+      ) return;
+
+      resetCard();
+      cardObjectUrl = URL.createObjectURL(blob);
+
+      const fileName = `muipi-${result.mode}-${result.score}.png`;
+      $("cardPreview").src = cardObjectUrl;
+      $("cardDownload").href = cardObjectUrl;
+      $("cardDownload").download = fileName;
+
+      try {
+        cardFile = new File([blob], fileName, { type: "image/png" });
+      } catch (_) {
+        cardFile = null;
+      }
+
+      let canShareImage = false;
+      try {
+        canShareImage = Boolean(
+          cardFile && navigator.share && navigator.canShare &&
+          navigator.canShare({ files: [cardFile] })
+        );
+      } catch (_) {}
+
+      $("nativeShareButton").hidden = !canShareImage;
+      $("nativeShareButton").disabled = nativeShareBusy;
+
+      $("cardStatus").textContent =
+        "PNG画像を保存してちょうだい♡ 保存できない場合は画像を長押し。" +
+        " X投稿には保存した画像を添付できるわよ！";
+
+      $("shareStatus").textContent = "カードができたわよ〜！！♡";
+      Sound.play("save");
+      showPanel("cardPanel");
+    } catch (_) {
+      if (serial === resultSerial) {
+        $("shareStatus").textContent =
+          "画像を作成できませんでした。もう一度お試しください。";
+      }
+    } finally {
+      cardBusy = false;
+      $("saveCardButton").disabled = false;
+    }
+  }
+
+  async function shareCardFile() {
+    if (!cardFile || !navigator.share || nativeShareBusy) return;
+
+    const file = cardFile;
+    const serial = resultSerial;
+    nativeShareBusy = true;
+    $("nativeShareButton").disabled = true;
+
+    try {
+      await navigator.share({
+        files: [file],
+        title: `${GAME_TITLE} スコアカード`
+      });
+      if (serial === resultSerial) {
+        $("cardStatus").textContent = "共有操作が完了しました♡";
+      }
+    } catch (error) {
+      if (serial === resultSerial) {
+        $("cardStatus").textContent =
+          error && error.name === "AbortError"
+            ? "共有をキャンセルしました。PNG保存も使えます。"
+            : "共有できませんでした。PNG保存か画像の長押しをお試しください。";
+      }
+    } finally {
+      nativeShareBusy = false;
+      $("nativeShareButton").disabled = false;
+    }
+  }
+
+  // ==================================================
+  // 入力
+  // ==================================================
+
+  // ゲーム画面だけをタップしてジャンプ。
+  // ボタンはcanvasの外にあるため、スキル操作で誤ジャンプしない。
+  canvas.addEventListener("pointerdown", event => {
+    if (state !== "playing" || !$("overlay").hidden) return;
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    if (event.isPrimary === false) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    focusElement(canvas);
+    Sound.unlock();
+    jump();
+  }, { passive: false });
+
+  // 支援技術などによる、pointerdownを伴わないクリック。
+  canvas.addEventListener("click", event => {
+    if (
+      event.detail === 0 &&
+      state === "playing" &&
+      $("overlay").hidden
+    ) {
+      Sound.unlock();
+      jump();
+    }
+  });
+
+  function bindAction(id, action) {
+    const button = $(id);
+
+    button.addEventListener("pointerdown", event => {
+      if (button.disabled) return;
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      Sound.unlock();
+      action();
+    });
+
+    button.addEventListener("click", event => {
+      event.stopPropagation();
+      if (event.detail === 0 && !button.disabled) {
+        Sound.unlock();
+        action();
+      }
+    });
+  }
+
+  bindAction("attackButton", () => useSkills());
+  bindAction("cancelButton", cancelSkills);
+  bindAction("slot0", () => useSkills(0));
+  bindAction("slot1", () => useSkills(1));
+
+  for (const id of [
+    "soundButton", "startSoundButton", "pauseSoundButton"
+  ]) {
+    $(id).addEventListener("click", Sound.toggle);
+  }
+
+  $("normalSelect").addEventListener("click", () => {
+    Sound.gesture("click");
+    selectMode("normal");
+  });
+  $("endlessSelect").addEventListener("click", () => {
+    Sound.gesture("click");
+    selectMode("endless");
+  });
+
+  $("startButton").addEventListener("click", () => start(selectedMode));
+  $("retryButton").addEventListener("click", () => start(gameMode));
+  $("pauseButton").addEventListener("click", pause);
+  $("resumeButton").addEventListener("click", resume);
+  $("homeButton").addEventListener("click", goHome);
+  $("pauseHomeButton").addEventListener("click", goHome);
+
+  $("tweetButton").addEventListener("click", shareToX);
+  $("saveCardButton").addEventListener("click", openScoreCard);
+  $("nativeShareButton").addEventListener("click", shareCardFile);
+
+  $("cardBackButton").addEventListener("click", () => {
+    if (state === "result") {
+      Sound.gesture("click");
+      showPanel("resultPanel");
+    }
+  });
+
+  $("cardDownload").addEventListener("click", () => {
+    Sound.gesture("save");
+    $("cardStatus").textContent =
+      "保存先はブラウザによって異なります。" +
+      " ダウンロードされない場合は画像を長押ししてください。";
+  });
+
+  window.addEventListener("keydown", event => {
+    if (event.ctrlKey || event.metaKey || event.altKey) return;
+
+    const target = event.target instanceof Element ? event.target : null;
+    if (target && target.closest("input, textarea, select, [contenteditable]")) {
+      return;
+    }
+
+    // モーダル表示中のTab移動をパネル内に保つ。
+    if (event.code === "Tab" && !$("overlay").hidden) {
+      const panel = document.querySelector(".panel:not([hidden])");
+      const controls = panel
+        ? [...panel.querySelectorAll(
+            "button:not(:disabled), a[href], summary, [tabindex='0']"
+          )].filter(el => el.getClientRects().length > 0)
+        : [];
+
+      if (controls.length) {
+        const first = controls[0];
+        const last = controls[controls.length - 1];
+
+        if (event.shiftKey && (document.activeElement === first ||
+            !panel.contains(document.activeElement))) {
+          event.preventDefault();
+          focusElement(last);
+        } else if (!event.shiftKey && (document.activeElement === last ||
+            !panel.contains(document.activeElement))) {
+          event.preventDefault();
+          focusElement(first);
+        }
+      }
+      return;
+    }
+
+    if (event.code === "KeyM") {
+      event.preventDefault();
+      if (!event.repeat) Sound.toggle();
+      return;
+    }
+
+    if (event.code === "Escape") {
+      event.preventDefault();
+      if (!event.repeat) {
+        if (state === "playing") pause();
+        else if (state === "paused") resume();
+        else if (state === "result" && !$("cardPanel").hidden) {
+          showPanel("resultPanel");
+        }
+      }
+      return;
+    }
+
+    if (state !== "playing") return;
+
+    // Spaceでフォーカス中のボタンを押す場合はボタン操作を優先。
+    if (
+      event.code === "Space" &&
+      target && target.closest("button, a, summary")
+    ) return;
+
+    const actions = {
+      Space: jump,
+      ArrowUp: jump,
+      KeyZ: () => useSkills(),
+      KeyX: cancelSkills,
+      Digit1: () => useSkills(0),
+      Digit2: () => useSkills(1),
+      Numpad1: () => useSkills(0),
+      Numpad2: () => useSkills(1)
+    };
+
+    const action = actions[event.code];
+    if (!action) return;
+
+    event.preventDefault();
+    if (!event.repeat) {
+      Sound.unlock();
+      action();
+    }
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      pause();
+      Sound.stopAll();
+    }
+    lastFrame = performance.now();
+  });
+
+  window.addEventListener("blur", () => {
+    pause();
+    Sound.stopAll();
+  });
+
+  window.addEventListener("pagehide", () => {
+    pause();
+    Sound.stopAll();
+  });
+
+  canvas.addEventListener("contextmenu", event => event.preventDefault());
+
+  // ==================================================
+  // メインループ
+  // ==================================================
+  function frame(now) {
+    const dt = lastFrame ? Math.max(0, (now - lastFrame) / 1000) : 0;
+    lastFrame = now;
+
+    if (state === "playing" && !document.hidden) {
+      if (dt > 0.75) {
+        pause();
+      } else {
+        let rest = dt;
+
+        // 高速時の当たり判定抜けを防ぐため細かく更新。
+        while (rest > 0.000001 && state === "playing") {
+          let step = Math.min(rest, 1 / 120);
+
+          if (gameMode === "normal") {
+            const remaining = CONFIG.normalSeconds - elapsed;
+            if (remaining <= 0.000001) {
+              finish(true);
+              break;
+            }
+            step = Math.min(step, remaining);
+          }
+
+          update(step);
+          rest -= step;
+        }
+        updateHUD();
+      }
+    }
+
+    draw();
+    requestAnimationFrame(frame);
+  }
+
+  resize();
+  resetGame();
+  selectMode("normal");
+  showPanel("startPanel");
+  updateHUD();
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
