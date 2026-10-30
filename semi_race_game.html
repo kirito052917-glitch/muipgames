@@ -453,6 +453,73 @@ summary { cursor: pointer; font-weight: 900; }
   line-height: 1.9;
 }
 .result-box strong { display: block; font-size: 38px; }
+
+/* ゲーム終了画面のYouTubeリンク */
+.youtube-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 78px;
+  margin: 16px 0 20px;
+  padding: 14px 12px;
+  border: 2px solid var(--ink);
+  border-radius: 15px;
+  background: #fff0f2;
+  color: var(--ink);
+  box-shadow: 0 4px #d9a4af;
+  text-decoration: none;
+  text-align: left;
+  touch-action: manipulation;
+}
+.youtube-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 46px;
+  height: 34px;
+  border-radius: 10px;
+  background: #e93043;
+}
+.youtube-icon svg {
+  display: block;
+  width: 19px;
+  height: 19px;
+  fill: #fff;
+}
+.youtube-text {
+  flex: 1;
+  min-width: 0;
+}
+.youtube-title {
+  display: block;
+  font-size: clamp(12px, 3.6vw, 16px);
+  font-weight: 900;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.youtube-subtext {
+  display: block;
+  margin-top: 4px;
+  color: #b34567;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.5;
+}
+.youtube-arrow {
+  flex: none;
+  color: #b34567;
+  font-size: 21px;
+  font-weight: 900;
+}
+.youtube-link:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px #d9a4af;
+}
+@media (hover: hover) {
+  .youtube-link:hover { background: #ffe0e7; }
+}
+
 .share-buttons {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -502,6 +569,9 @@ summary { cursor: pointer; font-weight: 900; }
   .action small { font-size: 8px; }
   .pill { padding: 4px 6px; font-size: 9px; }
   .skill-gauge-head { font-size: 9px; }
+  .youtube-link { gap: 8px; padding: 12px 9px; }
+  .youtube-icon { width: 38px; height: 29px; }
+  .youtube-subtext { font-size: 11px; }
 }
 @media (max-height: 680px) {
   .app { gap: 5px; }
@@ -654,7 +724,7 @@ summary { cursor: pointer; font-weight: 900; }
     <div class="sound-setting">
       <div>
         ♪ かわいい効果音
-        <small>ぽよっ・きらん♪ </small>
+        <small>ぽよっ・きらん♪</small>
       </div>
       <button id="startSoundButton" class="mini-button sound-on"
               aria-label="効果音" aria-pressed="true">♪ ON</button>
@@ -681,8 +751,7 @@ summary { cursor: pointer; font-weight: 900; }
       ノーマル：クリア＋1,000点、残りライフ1個につき＋500点。<br>
       ハイスコアと効果音設定は、このブラウザへ保存します。<br>
       解除しても使用済みスキルは戻りません。<br>
-      グミのゲージは最大残り時間。命中などで早く消えます。<br>
-      
+      グミのゲージは最大残り時間。命中などで早く消えます。
     </p>
   </section>
 
@@ -704,6 +773,25 @@ summary { cursor: pointer; font-weight: 900; }
     <h2 id="resultTitle"></h2>
     <p class="lead" id="resultMessage"></p>
     <div class="result-box" id="resultStats"></div>
+
+    <!-- クリア・ゲームオーバー共通のYouTubeリンク -->
+    <a class="youtube-link"
+       id="youtubeLink"
+       href="https://youtube.com/@muipgames?si=7Mn76x9hBf6SMTAm"
+       target="_blank"
+       rel="noopener noreferrer">
+      <span class="youtube-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" focusable="false">
+          <path d="M8 4v16l13-8z"></path>
+        </svg>
+      </span>
+      <span class="youtube-text">
+        <span class="youtube-title">VtuberむいぴーのYouTube</span>
+        <span class="youtube-subtext">遊びに来るのよ〜！</span>
+      </span>
+      <span class="youtube-arrow" aria-hidden="true">↗</span>
+      <span class="sr-only">（新しいタブで開きます）</span>
+    </a>
 
     <div class="share-buttons">
       <button class="share-button x" id="tweetButton">𝕏 Xでシェア</button>
@@ -3603,6 +3691,7 @@ summary { cursor: pointer; font-weight: 900; }
     }
 
     // モーダル表示中のTab移動をパネル内に保つ。
+    // YouTubeリンクも a[href] として対象になる。
     if (event.code === "Tab" && !$("overlay").hidden) {
       const panel = document.querySelector(".panel:not([hidden])");
       const controls = panel
