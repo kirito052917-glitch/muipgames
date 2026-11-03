@@ -3,694 +3,735 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#f7efe3">
+      content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f6efe4">
 <title>むいぴーのおへや</title>
 
 <style>
 :root {
-  --ink: #463d44;
-  --muted: #8d7b83;
-  --paper: #fffaf3;
-  --line: #e5d4c4;
-  --pink: #ee81a6;
+  --ink:#493f45;
+  --muted:#94818a;
+  --line:#e1cfbf;
+  --paper:#fffaf4;
+  --pink:#ed9fba;
 }
 
-* { box-sizing: border-box; }
+* { box-sizing:border-box; }
 
-html, body {
-  margin: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  overscroll-behavior: none;
+html,body {
+  width:100%;
+  height:100%;
+  margin:0;
+  overflow:hidden;
+  overscroll-behavior:none;
 }
 
 body {
-  color: var(--ink);
-  background: #eaddcc;
-  font-family: system-ui, -apple-system, "Noto Sans JP", sans-serif;
-  -webkit-tap-highlight-color: transparent;
+  background:#e8ddce;
+  color:var(--ink);
+  font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;
+  -webkit-tap-highlight-color:transparent;
 }
 
-button, input { font: inherit; }
-
-button {
-  color: inherit;
-  cursor: pointer;
-  touch-action: manipulation;
+button,input,select { font:inherit; }
+button { color:inherit; cursor:pointer; touch-action:manipulation; }
+button:disabled { opacity:.5; cursor:default; }
+button:focus-visible,select:focus-visible {
+  outline:3px solid #a375b9;
+  outline-offset:2px;
 }
-
-button:focus-visible, [tabindex]:focus-visible {
-  outline: 3px solid #ad7bbc;
-  outline-offset: 2px;
-}
-
-button:disabled { opacity: .5; }
-
-button:active:not(:disabled) { transform: scale(.97); }
-
-[hidden] { display: none !important; }
-
-button, .pet, .room {
-  -webkit-user-select: none;
-  user-select: none;
-}
+[hidden] { display:none !important; }
 
 .app {
-  width: 100%;
-  max-width: 520px;
-  height: 100vh;
-  height: 100dvh;
-  margin: auto;
+  width:100%;
+  max-width:540px;
+  height:100vh;
+  height:100dvh;
+  margin:auto;
   padding:
-    max(8px, env(safe-area-inset-top))
+    max(8px,env(safe-area-inset-top))
     10px
-    max(8px, env(safe-area-inset-bottom));
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  overflow: hidden;
-  background: #f7efe3;
+    max(8px,env(safe-area-inset-bottom));
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  overflow:hidden;
+  background:#f6efe4;
 }
 
 .header {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  flex:none;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
 }
 
-.brand { font-size: 18px; font-weight: 900; }
-.subtitle { font-size: 10px; color: var(--muted); }
-
-.header-buttons { display: flex; gap: 6px; }
+.brand { font-size:19px; font-weight:900; }
+.subtitle { margin-top:2px; font-size:10px; color:var(--muted); }
+.header-actions { display:flex; gap:6px; }
 
 .icon-button {
-  width: 44px;
-  height: 44px;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: var(--paper);
-  font-size: 20px;
+  width:43px;
+  height:43px;
+  border:1px solid var(--line);
+  border-radius:15px;
+  background:var(--paper);
+  font-size:21px;
 }
 
 .profile {
-  flex: 0 0 auto;
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 10px 12px;
+  flex:none;
+  padding:10px 12px;
+  border:1px solid var(--line);
+  border-radius:19px;
+  background:var(--paper);
 }
 
-.profile-line {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+.profile-top {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
 }
 
 #petName {
-  font-weight: 900;
-  font-size: clamp(13px, 4vw, 18px);
+  font-size:clamp(12px,4vw,18px);
+  font-weight:900;
 }
 
-#stageText {
-  white-space: nowrap;
-  font-size: 10px;
-  color: var(--muted);
-}
+#stageText { white-space:nowrap; font-size:10px; color:var(--muted); }
 
 .growth {
-  height: 6px;
-  margin-top: 7px;
-  border-radius: 10px;
-  overflow: hidden;
-  background: #eadfe1;
+  margin-top:7px;
+  height:6px;
+  overflow:hidden;
+  border-radius:10px;
+  background:#e9dfe2;
 }
 
 #growthFill {
-  height: 100%;
-  width: 0;
-  background: linear-gradient(90deg, #f6b782, #ee81a6);
-  transition: width .3s;
+  height:100%;
+  background:linear-gradient(90deg,#efb17e,#e78eb0);
+  transition:width .25s;
 }
 
-#growthText {
-  margin-top: 4px;
-  font-size: 10px;
-  color: var(--muted);
-}
+#growthText { margin-top:4px; font-size:10px; color:var(--muted); }
 
 .room {
-  flex: 1 1 0;
-  min-height: 100px;
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  border: 2px solid #d9c2a9;
-  border-radius: 23px;
+  position:relative;
+  isolation:isolate;
+  flex:1 1 0;
+  min-height:0;
+  overflow:hidden;
+  border:2px solid #d6c0a5;
+  border-radius:24px;
   background:
     linear-gradient(
       transparent 75%,
-      #d9b78e 75%,
-      #e2c39e 77%,
-      #eed5b2 77%
+      #d5b68d 75%,
+      #d5b68d 77%,
+      #ecd6b3 77%
     ),
     repeating-linear-gradient(
-      90deg,
-      #fff0d9 0 28px,
-      #fae5c7 28px 56px
+      90deg,#fff0d6 0 28px,#f7e6c8 28px 56px
     );
+  -webkit-user-select:none;
+  user-select:none;
 }
 
 .window {
-  position: absolute;
-  right: 7%;
-  top: 13%;
-  width: clamp(45px, 17vw, 80px);
-  height: clamp(48px, 18vw, 85px);
-  display: grid;
-  place-items: center;
-  border: 6px solid #fffaf2;
-  border-radius: 17px;
-  background: #b9e4ed;
-  box-shadow: 0 4px 0 #c4a47d;
-  font-size: 30px;
+  position:absolute;
+  right:7%;
+  top:19%;
+  width:clamp(48px,16vw,78px);
+  height:clamp(53px,18vw,84px);
+  display:grid;
+  place-items:center;
+  border:6px solid #fffaf1;
+  border-radius:20px;
+  background:#bfe3ec;
+  box-shadow:0 4px 0 #bea17c;
+  font-size:30px;
 }
 
 .frame {
-  position: absolute;
-  top: 16%;
-  left: 7%;
-  padding: 4px 8px;
-  border: 5px solid #c29670;
-  background: #fffaf0;
-  transform: rotate(-7deg);
-  font-size: 25px;
+  position:absolute;
+  left:8%;
+  top:23%;
+  padding:5px 9px;
+  border:5px solid #bf9672;
+  background:#fffaf1;
+  font-size:24px;
+  transform:rotate(-7deg);
 }
 
 .rug {
-  position: absolute;
-  bottom: 5%;
-  left: 10%;
-  width: 80%;
-  height: 20%;
-  border: 4px solid #ebc0ac;
-  border-radius: 50%;
-  background: #f8daca;
+  position:absolute;
+  left:13%;
+  bottom:10%;
+  width:75%;
+  height:19%;
+  border:4px solid #e7bca7;
+  border-radius:50%;
+  background:#f5d9c8;
 }
 
 .bubble {
-  position: absolute;
-  z-index: 6;
-  top: 9px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: max-content;
-  max-width: calc(100% - 20px);
-  padding: 8px 12px;
-  border: 1px solid #e4d4c5;
-  border-radius: 16px;
-  background: #fffffff2;
-  text-align: center;
-  font-size: clamp(11px, 3vw, 13px);
-  line-height: 1.45;
-  pointer-events: none;
+  position:absolute;
+  top:10px;
+  left:50%;
+  z-index:8;
+  width:max-content;
+  max-width:calc(100% - 20px);
+  transform:translateX(-50%);
+  padding:9px 13px;
+  border:1px solid #dfcfd1;
+  border-radius:18px;
+  background:#fffdfbf5;
+  font-size:clamp(11px,3vw,13px);
+  line-height:1.5;
+  text-align:center;
+  pointer-events:none;
 }
 
+/*
+  画像には背景除去、drop-shadow、回転、拡縮アニメをかけない。
+  アップロードした元画像の透明度をそのまま表示する。
+*/
 .pet {
-  position: absolute;
-  z-index: 3;
-  width: min(53%, 235px);
-  height: 70%;
-  max-height: 285px;
-  bottom: 9%;
-  left: 50%;
-  transform: translateX(-50%);
-  transition: left 2s ease-in-out;
-  cursor: pointer;
-  touch-action: none;
+  position:absolute;
+  z-index:4;
+  left:23%;
+  bottom:13%;
+  width:57%;
+  height:64%;
+  max-height:330px;
+  margin:0;
+  padding:0;
+  border:0;
+  background:transparent;
+  touch-action:manipulation;
 }
 
-.shadow {
-  position: absolute;
-  bottom: -2px;
-  left: 20%;
-  width: 60%;
-  height: 7%;
-  border-radius: 50%;
-  background: #765b3b38;
+.pet::before {
+  content:"";
+  position:absolute;
+  left:15%;
+  right:15%;
+  bottom:-3px;
+  height:9%;
+  border-radius:50%;
+  background:#795a3530;
 }
 
-.aura {
-  position: absolute;
-  inset: 15% -8% -4%;
-  border-radius: 50%;
-  background: radial-gradient(ellipse, var(--aura, #ffd0b3), transparent 67%);
-  opacity: .75;
-}
-
-.pet-body { position: absolute; inset: 0; }
-
-.visual {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  transform-origin: 50% 90%;
-  animation: breathe 2.8s ease-in-out infinite;
+.pet-visual {
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
 }
 
 #petImage {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: center bottom;
-  image-rendering: pixelated;
-  pointer-events: none;
-  filter: drop-shadow(0 3px 0 #00000015);
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center bottom;
+  image-rendering:auto;
+  pointer-events:none;
+  -webkit-user-drag:none;
 }
 
+#petImage.pixel { image-rendering:pixelated; }
+
 #fallback {
-  font-size: clamp(55px, 22vw, 120px);
-  line-height: 1.15;
+  font-size:clamp(65px,24vw,125px);
+  line-height:1.1;
+  pointer-events:none;
 }
 
 #badge {
-  position: absolute;
-  right: -2%;
-  top: 20%;
-  font-size: clamp(23px, 7vw, 35px);
-  filter: drop-shadow(0 2px 0 white);
-  pointer-events: none;
+  position:absolute;
+  top:24%;
+  right:-7%;
+  font-size:clamp(24px,7vw,35px);
+  pointer-events:none;
 }
 
-.pet.jump .pet-body { animation: jump .65s ease; }
-.pet.happy .visual { animation: happy .45s ease 2; }
-.pet.evolve .pet-body { animation: evolve 1.3s ease; }
-
-@keyframes breathe {
-  50% { transform: translateY(-3px) scaleY(1.02); }
+.pet.drop-target::after {
+  content:"ここで はなしてね";
+  position:absolute;
+  left:50%;
+  top:38%;
+  transform:translateX(-50%);
+  white-space:nowrap;
+  padding:8px 11px;
+  border:2px solid #e98aad;
+  border-radius:14px;
+  background:#fff5fadf;
+  color:#a53d69;
+  font-size:12px;
+  font-weight:800;
+  pointer-events:none;
 }
+
+.pet.jumping .pet-visual { animation:jump .6s ease; }
+
 @keyframes jump {
-  40% { transform: translateY(-40px) rotate(-6deg); }
-  75% { transform: scaleY(.92); }
-}
-@keyframes happy {
-  25% { transform: rotate(-6deg); }
-  75% { transform: rotate(6deg); }
-}
-@keyframes evolve {
-  35% { transform: scale(.85); filter: brightness(4); }
-  70% { transform: scale(1.12); filter: brightness(2); }
+  45% { translate:0 -22px; }
 }
 
-.poop {
-  position: absolute;
-  z-index: 5;
-  bottom: 2%;
-  min-width: 44px;
-  min-height: 44px;
-  padding: 0;
-  background: transparent;
-  border: 0;
-  font-size: 30px;
+.basket {
+  position:absolute;
+  z-index:6;
+  left:9px;
+  bottom:9px;
+  width:88px;
+  height:86px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
 }
 
-.particle {
-  position: absolute;
-  z-index: 7;
-  font-size: 27px;
-  pointer-events: none;
-  animation: float 1s ease-out forwards;
+.basket-body {
+  position:absolute;
+  bottom:17px;
+  width:83px;
+  height:35px;
+  border:3px solid #ad7950;
+  border-radius:7px 7px 20px 20px;
+  background:
+    repeating-linear-gradient(
+      0deg,transparent 0 8px,#af7c4c60 8px 10px
+    ),
+    repeating-linear-gradient(
+      90deg,#dca76d 0 10px,#c18a54 10px 12px
+    );
+  pointer-events:none;
 }
 
-@keyframes float {
-  to { transform: translateY(-75px) rotate(15deg); opacity: 0; }
+.basket-body::before {
+  content:"";
+  position:absolute;
+  left:7px;
+  right:7px;
+  top:-21px;
+  height:28px;
+  border:4px solid #b27f52;
+  border-bottom:0;
+  border-radius:30px 30px 0 0;
+}
+
+.gum-source {
+  position:absolute;
+  z-index:2;
+  bottom:33px;
+  left:19px;
+  width:52px;
+  height:45px;
+  display:grid;
+  place-items:center;
+  padding:0;
+  border:0;
+  border-radius:15px;
+  background:transparent;
+  touch-action:none;
+  cursor:grab;
+}
+
+.gum-source.armed {
+  background:#fff3cddc;
+  outline:2px dashed #e1a54e;
+}
+
+.gum-shape {
+  position:relative;
+  display:block;
+  width:29px;
+  height:32px;
+  border:2px solid #c34872;
+  border-radius:11px 13px 10px 12px;
+  background:linear-gradient(145deg,#ffa6bb,#ec628d);
+  box-shadow:inset 0 -4px 0 #bd365d38;
+  pointer-events:none;
+}
+
+.gum-shape::before {
+  content:"";
+  position:absolute;
+  left:5px;
+  top:4px;
+  width:7px;
+  height:12px;
+  border-radius:8px;
+  background:#ffffff87;
+}
+
+.basket-label {
+  position:absolute;
+  bottom:0;
+  white-space:nowrap;
+  font-size:9px;
+  color:#8b6a48;
+  pointer-events:none;
+}
+
+.drag-ghost {
+  position:fixed;
+  z-index:1000;
+  display:grid;
+  place-items:center;
+  width:48px;
+  height:48px;
+  pointer-events:none;
+  transform:translate(-50%,-68%);
+}
+
+.drag-ghost .gum-shape {
+  width:34px;
+  height:37px;
+  box-shadow:0 5px 10px #42262b35,inset 0 -4px 0 #bd365d38;
 }
 
 .room-label {
-  position: absolute;
-  left: 10px;
-  bottom: 7px;
-  color: #927555;
-  font-size: 10px;
-  pointer-events: none;
+  position:absolute;
+  bottom:9px;
+  right:10px;
+  font-size:9px;
+  color:#977951;
+  pointer-events:none;
+}
+
+.poop {
+  position:absolute;
+  z-index:5;
+  bottom:5%;
+  width:44px;
+  height:44px;
+  border:0;
+  padding:0;
+  background:transparent;
+  font-size:29px;
+}
+
+.particle {
+  position:absolute;
+  z-index:9;
+  font-size:25px;
+  pointer-events:none;
+  animation:float 1s ease-out forwards;
+}
+
+@keyframes float {
+  to { translate:0 -65px; opacity:0; }
 }
 
 .status {
-  flex: 0 0 auto;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 7px;
-  padding: 9px;
-  border: 1px solid var(--line);
-  border-radius: 15px;
-  background: var(--paper);
+  flex:none;
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+  padding:10px;
+  border:1px solid var(--line);
+  border-radius:17px;
+  background:var(--paper);
 }
 
 .stat-title {
-  display: flex;
-  justify-content: space-between;
-  gap: 2px;
-  font-size: 10px;
-  margin-bottom: 5px;
-  white-space: nowrap;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:2px;
+  margin-bottom:5px;
+  font-size:10px;
+  white-space:nowrap;
 }
 
 .stat-track {
-  height: 6px;
-  border-radius: 10px;
-  overflow: hidden;
-  background: #eadfe1;
+  height:6px;
+  overflow:hidden;
+  border-radius:10px;
+  background:#e9dfe2;
 }
 
 .stat-fill {
-  height: 100%;
-  background: var(--bar, #f0ac7d);
-  transition: width .3s;
+  height:100%;
+  width:0;
+  background:var(--bar);
+  transition:width .25s;
 }
 
 .commands {
-  flex: 0 0 auto;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 7px;
+  flex:none;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
 }
 
 .command {
-  min-width: 0;
-  min-height: 66px;
-  padding: 7px 2px;
-  border: 1px solid #dfc9b9;
-  border-bottom-width: 4px;
-  border-radius: 17px;
-  background: var(--paper);
-  font-size: 12px;
-  font-weight: 800;
+  min-height:51px;
+  border:1px solid #ddc7b5;
+  border-bottom-width:4px;
+  border-radius:17px;
+  background:var(--paper);
+  font-size:13px;
+  font-weight:800;
 }
 
-.command span {
-  display: block;
-  margin-bottom: 3px;
-  font-size: 25px;
-  line-height: 1.15;
+.command span { margin-right:7px; font-size:23px; vertical-align:middle; }
+.command.alert { background:#e6f5ff; border-color:#9dc8db; }
+
+.footer {
+  flex:none;
+  display:flex;
+  justify-content:space-between;
+  gap:7px;
+  font-size:9px;
+  color:var(--muted);
 }
 
-.command.primary {
-  background: #ffe5ee;
-  border-color: #e6b1c3;
-}
-
-.command.alert {
-  background: #e5f4ff;
-  border-color: #98c8e2;
-}
-
-.bottom-line {
-  flex: 0 0 auto;
-  display: flex;
-  justify-content: space-between;
-  gap: 6px;
-  font-size: 9px;
-  color: var(--muted);
-  min-height: 12px;
-}
-
-/* 選択肢は部屋の中に表示 */
 .event-layer {
-  position: absolute;
-  inset: 0;
-  z-index: 20;
-  background: #3d2d3e60;
-  display: flex;
-  align-items: flex-end;
-  padding: 9px;
+  position:absolute;
+  inset:0;
+  z-index:20;
+  display:flex;
+  align-items:flex-end;
+  padding:9px;
+  background:#493a4359;
 }
 
 .event-card {
-  width: 100%;
-  max-height: 100%;
-  padding: 12px;
-  border: 2px solid #ecc0d1;
-  border-radius: 19px;
-  background: #fff8f9;
-  box-shadow: 0 7px 25px #47313b25;
+  width:100%;
+  max-height:100%;
+  padding:12px;
+  border:2px solid #e8becf;
+  border-radius:20px;
+  background:#fff9fb;
+  box-shadow:0 8px 24px #3f2f3820;
 }
 
-.event-title { margin: 0 0 5px; font-size: 16px; }
-.event-text { margin: 0 0 9px; font-size: 12px; line-height: 1.5; }
-
-.choices { display: grid; gap: 6px; }
+.event-title { margin:0 0 5px; font-size:16px; }
+.event-text { margin:0 0 10px; font-size:12px; line-height:1.6; }
+.choices { display:grid; gap:6px; }
 
 .choice {
-  width: 100%;
-  min-height: 40px;
-  padding: 8px 10px;
-  border: 1px solid #e5c6d2;
-  border-radius: 12px;
-  background: white;
-  text-align: left;
-  font-size: 12px;
+  width:100%;
+  min-height:40px;
+  padding:8px 10px;
+  border:1px solid #e1c2d0;
+  border-radius:12px;
+  background:#fff;
+  font-size:12px;
+  text-align:left;
 }
 
-/* 設定と図鑑も別ページに移動せず重ねて表示 */
+.result-button {
+  width:100%;
+  min-height:40px;
+  border:1px solid #dba5be;
+  border-radius:12px;
+  background:#ffe4ef;
+  font-size:13px;
+  font-weight:800;
+}
+
 dialog {
-  width: min(94vw, 470px);
-  max-height: 90vh;
-  max-height: 90dvh;
-  overflow: hidden;
-  padding: 0;
-  border: 1px solid var(--line);
-  border-radius: 22px;
-  background: var(--paper);
-  color: var(--ink);
+  width:min(94vw,460px);
+  max-height:92vh;
+  max-height:92dvh;
+  padding:0;
+  border:1px solid var(--line);
+  border-radius:21px;
+  color:var(--ink);
+  background:var(--paper);
+  overflow:auto;
+  overscroll-behavior:contain;
 }
 
-dialog::backdrop { background: #352c3b85; }
+dialog::backdrop { background:#372d3980; }
+.dialog-inner { padding:15px; }
 
-.dialog-inner {
-  padding: 17px;
-  max-height: 88vh;
-  max-height: 88dvh;
-  overflow-y: auto;
-  overscroll-behavior: contain;
+.dialog-head {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:10px;
 }
 
-.dialog-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.dialog-header h2 { margin: 0; font-size: 19px; }
+.dialog-head h2 { margin:0; font-size:18px; }
 
 .close {
-  width: 40px;
-  height: 40px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: white;
+  width:40px;
+  height:40px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:white;
 }
 
-.tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+.tabs { display:flex; gap:6px; margin-bottom:10px; }
 
 .tab {
-  flex: 1;
-  padding: 9px 4px;
-  border: 1px solid var(--line);
-  border-radius: 11px;
-  background: white;
-  font-size: 12px;
+  flex:1;
+  min-height:39px;
+  padding:5px;
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:white;
+  font-size:12px;
 }
 
-.tab.active { background: #ffe5ee; border-color: #e5b6c9; }
-
-.note { font-size: 12px; line-height: 1.6; color: #84727a; }
+.tab.active { background:#ffe6ef; border-color:#dca9bf; }
+.note { margin:8px 0; font-size:12px; line-height:1.65; color:#88717e; }
 
 .image-row {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  margin: 12px 0;
-  padding: 10px;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: white;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:10px 0;
+  padding:9px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:white;
 }
 
 .preview {
-  width: 70px;
-  height: 76px;
-  flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  border-radius: 10px;
+  flex:none;
+  display:grid;
+  place-items:center;
+  width:65px;
+  height:73px;
+  overflow:hidden;
+  border-radius:9px;
   background:
-    conic-gradient(#e9e2dc 25%, #faf7f4 0 50%, #e9e2dc 0 75%, #faf7f4 0)
+    conic-gradient(#e5deda 25%,#fcfaf8 0 50%,#e5deda 0 75%,#fcfaf8 0)
     0 0 / 14px 14px;
-  font-size: 35px;
+  font-size:30px;
 }
 
-.preview img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  image-rendering: pixelated;
-}
-
-.image-details { flex: 1; min-width: 0; }
-.image-details strong { font-size: 13px; }
+.preview img { width:100%; height:100%; object-fit:contain; }
+.image-info { flex:1; min-width:0; font-size:12px; }
 
 .file-label {
-  display: block;
-  position: relative;
-  margin-top: 7px;
-  padding: 9px;
-  text-align: center;
-  font-size: 12px;
-  border: 1px solid #e5b6c9;
-  border-radius: 10px;
-  background: #ffeaf1;
-  overflow: hidden;
-  cursor: pointer;
+  position:relative;
+  display:block;
+  margin-top:7px;
+  padding:9px;
+  border:1px solid #dfb1c3;
+  border-radius:10px;
+  background:#ffedf4;
+  text-align:center;
+  font-size:12px;
+  overflow:hidden;
 }
 
 .file-label input {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  opacity:0;
+  cursor:pointer;
 }
 
-.check-row {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 12px;
-  margin: 12px 0;
+.field {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-top:12px;
+  font-size:12px;
 }
 
-#imageMessage {
-  min-height: 2.5em;
-  font-size: 12px;
-  line-height: 1.5;
+.field select {
+  max-width:60%;
+  min-height:37px;
+  border:1px solid var(--line);
+  border-radius:9px;
+  background:white;
+  color:var(--ink);
 }
 
 .wide {
-  width: 100%;
-  min-height: 43px;
-  padding: 10px;
-  margin-top: 8px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: white;
-  font-size: 13px;
+  width:100%;
+  min-height:42px;
+  margin-top:8px;
+  padding:9px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:white;
+  font-size:12px;
 }
 
-.danger { color: #b14f6b; }
+.danger { color:#ae4b65; }
+#imageMessage { min-height:2.8em; margin-top:10px; font-size:12px; line-height:1.5; }
 
-.book-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 7px;
-}
+.book-grid { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
 
 .book-item {
-  min-height: 57px;
-  padding: 9px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: white;
-  font-size: 11px;
-  display: flex;
-  align-items: center;
+  display:flex;
+  align-items:center;
+  min-height:55px;
+  padding:9px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:white;
+  font-size:11px;
 }
 
-.book-item.found { background: #ffebf3; }
+.book-item.found { background:#ffe9f2; }
+.book-nav { display:flex; justify-content:space-between; align-items:center; margin-top:12px; font-size:12px; }
+.book-nav button { width:65px; min-height:40px; border:1px solid var(--line); border-radius:10px; background:white; }
+#diary { padding-left:19px; font-size:12px; line-height:1.7; }
+#diary li { margin-bottom:8px; }
 
-.book-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 13px;
-  font-size: 12px;
+@media(max-height:670px) {
+  .app { gap:5px; }
+  .brand { font-size:16px; }
+  .subtitle { display:none; }
+  .icon-button { width:37px; height:37px; }
+  .profile { padding:7px 10px; }
+  .status { padding:7px 9px; }
+  .command { min-height:44px; }
+  .event-card { padding:9px; }
+  .event-title { font-size:14px; }
+  .event-text { font-size:11px; margin-bottom:6px; line-height:1.45; }
+  .choice { min-height:35px; padding:6px 8px; font-size:11px; }
+  .choices { gap:4px; }
+  .basket { scale:.9; transform-origin:left bottom; }
 }
 
-.book-nav button {
-  min-width: 64px;
-  min-height: 40px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: white;
-}
-
-#diary {
-  padding-left: 20px;
-  font-size: 12px;
-  line-height: 1.7;
-}
-#diary li { margin-bottom: 8px; }
-
-@media (max-height: 650px) {
-  .app { gap: 5px; }
-  .header .icon-button { width: 38px; height: 38px; }
-  .brand { font-size: 16px; }
-  .subtitle { display: none; }
-  .profile { padding: 7px 10px; }
-  .status { padding: 7px; }
-  .command { min-height: 57px; font-size: 11px; }
-  .command span { font-size: 22px; }
-  .event-card { padding: 9px; }
-  .event-title { font-size: 14px; }
-  .event-text { font-size: 11px; margin-bottom: 5px; }
-  .choices { gap: 4px; }
-  .choice { min-height: 35px; padding: 6px 8px; font-size: 11px; }
-}
-
-/* 横向きなど、高さが非常に小さいとき */
-@media (max-height: 480px) {
+/* 横向きでもゲーム本体はスクロールさせない */
+@media(max-height:480px) {
   .app {
-    max-width: 850px;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 210px;
-    grid-template-rows: auto auto 1fr auto;
-    gap: 6px;
+    max-width:900px;
+    display:grid;
+    grid-template-columns:minmax(0,1fr) 185px;
+    grid-template-rows:auto auto 1fr auto;
+    gap:6px;
   }
-  .header { grid-column: 1 / 3; }
-  .profile { grid-column: 2; grid-row: 2; }
-  .room { grid-column: 1; grid-row: 2 / 5; min-height: 0; }
-  .status {
-    grid-column: 2;
-    grid-row: 3;
-    grid-template-columns: 1fr 1fr;
-    align-content: center;
-  }
-  .commands {
-    grid-column: 2;
-    grid-row: 4;
-    grid-template-columns: 1fr 1fr;
-  }
-  .bottom-line { display: none; }
-  .command { min-height: 47px; padding: 4px; }
-  .command span { display: inline; font-size: 19px; }
-  .event-text { display: none; }
+  .header { grid-column:1/3; }
+  .profile { grid-column:2; grid-row:2; }
+  .room { grid-column:1; grid-row:2/5; }
+  .status { grid-column:2; grid-row:3; grid-template-columns:1fr 1fr; align-content:center; }
+  .commands { grid-column:2; grid-row:4; grid-template-columns:1fr; gap:5px; }
+  .footer { display:none; }
+  .command { min-height:39px; }
+  .event-card { padding:8px; }
+  .choices { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .choice { text-align:center; }
+  .event-title { font-size:13px; }
+  .event-text { font-size:11px; }
+  .bubble { font-size:11px; padding:6px 10px; }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: .01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: .01ms !important;
+@media(prefers-reduced-motion:reduce) {
+  *,*::before,*::after {
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
   }
 }
 </style>
@@ -701,16 +742,16 @@ dialog::backdrop { background: #352c3b85; }
   <header class="header">
     <div>
       <div class="brand">🌱 むいぴーのおへや</div>
-      <div class="subtitle">なでて、あそんで、ちょっと変になる。</div>
+      <div class="subtitle">なでたり、おやつを渡したり。</div>
     </div>
-    <div class="header-buttons">
+    <div class="header-actions">
       <button class="icon-button" id="bookButton" aria-label="進化図鑑">📚</button>
       <button class="icon-button" id="settingsButton" aria-label="設定">⚙️</button>
     </div>
   </header>
 
   <section class="profile">
-    <div class="profile-line">
+    <div class="profile-top">
       <div id="petName">ちびむいぴー</div>
       <div id="stageText">ちび期</div>
     </div>
@@ -718,137 +759,140 @@ dialog::backdrop { background: #352c3b85; }
     <div id="growthText"></div>
   </section>
 
-  <section class="room" id="room" aria-label="ゲーム画面">
+  <section class="room" id="room" aria-label="むいぴーの部屋">
     <div class="window">☀️</div>
     <div class="frame">🍬</div>
     <div class="rug"></div>
 
-    <div class="bubble" id="bubble" aria-live="polite">なでてくれる？</div>
-
-    <div class="pet" id="pet" role="button" tabindex="0" aria-label="むいぴーをなでる">
-      <div class="shadow"></div>
-      <div class="aura" id="aura"></div>
-      <div class="pet-body">
-        <div class="visual">
-          <img id="petImage" alt="むいぴー" draggable="false" hidden>
-          <div id="fallback">🧑🏻‍🚀</div>
-        </div>
-        <div id="badge">🌱</div>
-      </div>
+    <div class="bubble" id="bubble" aria-live="polite">
+      来てくれた！ なでてくれる？
     </div>
 
+    <button class="pet" id="pet" aria-label="むいぴーをなでる">
+      <span class="pet-visual">
+        <img id="petImage" alt="むいぴー" draggable="false" hidden>
+        <span id="fallback">🧑🏻‍🚀</span>
+      </span>
+      <span id="badge">🌱</span>
+    </button>
+
     <div id="poops"></div>
+
+    <div class="basket">
+      <div class="basket-body"></div>
+      <button class="gum-source" id="gumSource"
+              aria-label="グミを持つ。むいぴーへドラッグ、または選んでからむいぴーをタップ">
+        <span class="gum-shape"></span>
+      </button>
+      <span class="basket-label">グミを手渡し</span>
+    </div>
+
     <div class="room-label">MUIPI ROOM</div>
 
     <div class="event-layer" id="eventLayer" hidden>
       <section class="event-card" aria-labelledby="eventTitle">
         <h2 class="event-title" id="eventTitle"></h2>
-        <p class="event-text" id="eventText"></p>
+        <p class="event-text" id="eventText" aria-live="polite"></p>
         <div class="choices" id="choices"></div>
+        <button class="result-button" id="eventDone" hidden>ふふっ、つづける</button>
       </section>
     </div>
   </section>
 
   <section class="status" id="status" aria-label="ステータス"></section>
 
-  <nav class="commands" aria-label="ゲームのコマンド">
-    <button class="command primary" data-command="gummy">
-      <span>🍬</span>グミ
-    </button>
-    <button class="command" data-command="play">
-      <span>🎮</span>あそぶ
-    </button>
-    <button class="command" data-command="pet">
-      <span>💖</span>なでる
-    </button>
-    <button class="command" data-command="toilet" id="toiletButton">
-      <span>🚽</span>トイレ
-    </button>
+  <nav class="commands" aria-label="コマンド">
+    <button class="command" id="playButton"><span>🎮</span>あそぶ</button>
+    <button class="command" id="toiletButton"><span>🚽</span>トイレ</button>
   </nav>
 
-  <div class="bottom-line">
-    <span id="hint">キャラを指でなでてもOK</span>
+  <footer class="footer">
+    <span id="hint">タップでなでる・カゴからグミを手渡し</span>
     <span id="saveText">自動セーブ</span>
-  </div>
+  </footer>
 </main>
+
+<div class="drag-ghost" id="dragGhost" hidden aria-hidden="true">
+  <span class="gum-shape"></span>
+</div>
 
 <dialog id="settingsDialog">
   <div class="dialog-inner">
-    <div class="dialog-header">
+    <div class="dialog-head">
       <h2>⚙️ 設定</h2>
       <button class="close" data-close="settingsDialog" aria-label="閉じる">✕</button>
     </div>
 
     <div class="tabs">
-      <button class="tab active" data-tab="images">キャラ画像</button>
+      <button class="tab active" data-tab="images">画像</button>
       <button class="tab" data-tab="data">データ</button>
       <button class="tab" data-tab="diary">日記</button>
     </div>
 
     <section id="tab-images">
       <p class="note">
-        端末に保存した画像を選んでください。画像は外部に送信しません。
-        PNG・JPEG・WebP推奨です。
+        透過PNG・WebPは、透明度を変えずにそのまま表示します。
+        背景除去や縮小保存は行いません。
       </p>
-
-      <label class="check-row">
-        <input type="checkbox" id="removeBlack" checked>
-        読み込み時、外側につながる黒背景を透過
-      </label>
 
       <div class="image-row">
         <div class="preview" id="normalPreview">🧑🏻‍🚀</div>
-        <div class="image-details">
+        <div class="image-info">
           <strong>通常のむいぴー</strong>
           <label class="file-label">
-            画像を選ぶ
-            <input type="file" id="normalFile" accept="image/*">
+            元画像を選ぶ
+            <input type="file" id="normalFile"
+                   accept="image/png,image/jpeg,image/webp">
           </label>
         </div>
       </div>
 
       <div class="image-row">
         <div class="preview" id="happyPreview">💖</div>
-        <div class="image-details">
+        <div class="image-info">
           <strong>うれしいむいぴー</strong>
           <label class="file-label">
-            画像を選ぶ
-            <input type="file" id="happyFile" accept="image/*">
+            元画像を選ぶ
+            <input type="file" id="happyFile"
+                   accept="image/png,image/jpeg,image/webp">
           </label>
         </div>
       </div>
 
+      <label class="field">
+        画像の表示
+        <select id="renderMode">
+          <option value="smooth">なめらか</option>
+          <option value="pixel">ドットをくっきり</option>
+        </select>
+      </label>
+
       <div id="imageMessage" role="status">
-        まずは通常画像を選んでね。1枚だけでも遊べます。
+        前の版で輪郭が欠けた画像は、元画像を選び直してください。
       </div>
 
-      <button class="wide" id="testHappy">うれしい表情を試す</button>
-      <button class="wide danger" id="clearImages">登録画像を解除</button>
+      <button class="wide" id="testHappy">うれしい表情を確認</button>
+      <button class="wide danger" id="clearImages">画像登録を解除</button>
 
       <p class="note">
-        黒背景透過で輪郭も消える場合は、チェックを外して読み込み直してください。
-        HEICなどを読み込めない場合は、PNGかJPEGに変換してください。
+        PNG・JPEG・WebP、1枚8MBまで。黒背景の画像は黒背景のまま表示します。
+        元から画像に付いている縁や汚れを除去する機能ではありません。
       </p>
     </section>
 
     <section id="tab-data" hidden>
       <p class="note">
-        育成と画像はこのブラウザーに保存します。
-        サイトデータの削除に備えてバックアップできます。
+        育成データと画像はこのブラウザーに保存します。
+        大切なデータはバックアップしてください。
       </p>
-
       <button class="wide" id="exportButton">💾 バックアップを書き出す</button>
-
       <label class="file-label">
         バックアップを読み込む
         <input type="file" id="importFile" accept=".json,application/json">
       </label>
-
       <button class="wide danger" id="restartButton">🥚 図鑑を残して育て直す</button>
-
       <p class="note">
-        進化は3回。最終形態は5系統×4タイプ×5個性の100種類。
-        今回は共通画像に名前・色・飾りを付ける試作品です。
+        最終形態は100種類。キャラ画像は共通で、名前と飾りが変わる仕組みです。
       </p>
     </section>
 
@@ -860,7 +904,7 @@ dialog::backdrop { background: #352c3b85; }
 
 <dialog id="bookDialog">
   <div class="dialog-inner">
-    <div class="dialog-header">
+    <div class="dialog-head">
       <h2>📚 進化図鑑</h2>
       <button class="close" data-close="bookDialog" aria-label="閉じる">✕</button>
     </div>
@@ -878,884 +922,986 @@ dialog::backdrop { background: #352c3b85; }
 "use strict";
 
 const $ = id => document.getElementById(id);
-const clamp = (n, min = 0, max = 100) => Math.max(min, Math.min(max, n));
-const pick = list => list[Math.floor(Math.random() * list.length)];
+const clamp = (n,min=0,max=100) => Math.max(min,Math.min(max,n));
+const pick = list => list[Math.floor(Math.random()*list.length)];
 
+/* 前の版の育成・画像保存先を引き継ぐ */
 const SAVE_KEY = "muipi-screen-v2";
-const OLD_SAVE_KEY = "muipi-prototype-v1";
-const OLD_IMAGE_KEY = "muipi-prototype-images-v1";
-const IMAGE_FALLBACK_KEY = "muipi-screen-images-v2";
-
-const thresholds = [0, 12, 30, 55];
+const IMAGE_KEY = "muipi-screen-images-v2";
+const PREF_KEY = "muipi-image-render-mode";
+const LIMITS = [0,12,30,55];
 
 const families = [
-  { name: "もちもち", icon: "🍬", color: "#ffabd0" },
-  { name: "なかよし", icon: "💖", color: "#ffb4b9" },
-  { name: "のんびり", icon: "☁️", color: "#b6dcff" },
-  { name: "はいしん", icon: "🎮", color: "#c7baff" },
-  { name: "ふしぎ", icon: "🪐", color: "#b3ead7" }
+  {name:"もちもち",icon:"🍬"},
+  {name:"なかよし",icon:"💖"},
+  {name:"のんびり",icon:"☁️"},
+  {name:"はいしん",icon:"🎮"},
+  {name:"ふしぎ",icon:"🪐"}
 ];
 
 const branches = [
-  ["グミ", "プリン", "おもち", "ゼリー"],
-  ["アイドル", "おうじ", "応援団", "お世話係"],
-  ["おふとん", "ゆめ", "ひなた", "くも"],
-  ["ゲーマー", "回線", "司会者", "分身"],
-  ["宇宙", "きのこ", "妖精", "未確認生命体"]
+  ["グミ","プリン","おもち","ゼリー"],
+  ["アイドル","おうじ","応援団","お世話係"],
+  ["おふとん","ゆめ","ひなた","くも"],
+  ["ゲーマー","回線","司会者","分身"],
+  ["宇宙","きのこ","妖精","未確認生命体"]
 ];
 
 const traits = [
-  { name: "甘えんぼ", icon: "💕" },
-  { name: "わんぱく", icon: "⚡" },
-  { name: "おっとり", icon: "🌙" },
-  { name: "きれい好き", icon: "✨" },
-  { name: "伝説の", icon: "👑" }
+  {name:"甘えんぼ",icon:"💕"},
+  {name:"わんぱく",icon:"⚡"},
+  {name:"おっとり",icon:"🌙"},
+  {name:"きれい好き",icon:"✨"},
+  {name:"伝説の",icon:"👑"}
 ];
 
+/*
+  choice:
+  [選択肢, 結果, 系統, タイプ, 個性]
+*/
 const events = [
   {
-    title: "🎮 指示が飛んできた！",
-    text: "「右！ 左！ ジャンプ！」いまグミを食べてるだけなのに。",
-    choices: [
-      {
-        text: "自分のペースで食べる",
-        f: [0,2,2,0,0], b: [0,0,3,0], t: [0,0,3,1,0],
-        result: "のんびりもぐもぐ。これが自分のペース。"
-      },
-      {
-        text: "全部同時にやる",
-        f: [0,0,0,4,2], b: [0,0,0,4], t: [0,3,0,0,1],
-        result: "一瞬、むいぴーが2人に見えた。"
-      },
-      {
-        text: "グミに返事を任せる",
-        f: [4,0,0,0,3], b: [3,0,0,0], t: [1,0,0,0,3],
-        result: "グミ「まず落ち着いてください」"
-      }
+    title:"📷 写真を撮ろう",
+    text:"むいぴーが「かっこよく撮って」とポーズを決めている。どう撮る？",
+    choices:[
+      ["そのまま撮る",
+       "真剣な顔で撮れた。でも口の横にグミがついていた。本人は「これがベスト」と満足そう。",
+       1,0,0],
+      ["笑ってもらう",
+       "「自然な笑顔で」と頼んだら、歯医者さんに見せるくらい大きく口を開けてくれた。",
+       1,2,1],
+      ["何枚か続けて撮る",
+       "10枚撮った。10枚とも同じ顔。目をつぶっていないか確認するのも、一瞬で終わった。",
+       3,2,2]
     ]
   },
   {
-    title: "💩 うんちがしゃべった！",
-    text: "「片づける前に、ひとつだけ聞いてほしい」",
-    choices: [
-      {
-        text: "お話を聞く",
-        f: [0,3,0,0,2], b: [0,0,0,3], t: [3,0,2,0,0],
-        result: "夢はソフトクリームになることらしい。"
-      },
-      {
-        text: "丁寧にお別れする",
-        f: [0,2,2,0,0], b: [0,0,3,0], t: [0,0,1,4,0],
-        result: "「ありがとう」と、きらりと光った。"
-      },
-      {
-        text: "配信デビューさせる",
-        f: [0,0,0,4,3], b: [0,0,4,0], t: [0,2,0,0,3],
-        result: "コメント欄が「運がつく」で埋まった。"
-      }
+    title:"🍬 あとひとつだけ",
+    text:"おやつを食べたむいぴーが、カゴを見て「あとひとつだけ」とお願いしている。",
+    choices:[
+      ["次のおやつまで取っておく",
+       "むいぴーはカゴに「あとで食べる分」と書いた。全部のグミが予約済みになった。",
+       0,0,2],
+      ["半分こを提案する",
+       "半分に分けて、大きいほうを渡してくれた。そのあと、ほんの少しだけ見つめていた。",
+       1,3,0],
+      ["何味が好きか聞く",
+       "「いちご！ ぶどう！ りんごも！」好きな味を聞いたはずが、ほぼ商品紹介になった。",
+       0,1,1]
     ]
   },
   {
-    title: "🍬 最後のグミと目が合った",
-    text: "袋の中から、じっとこちらを見つめている。",
-    choices: [
-      {
-        text: "おいしく食べる",
-        f: [5,0,0,0,0], b: [4,0,0,0], t: [0,3,0,0,0],
-        result: "いつもより、もちもちしてきた。"
-      },
-      {
-        text: "グミぴーと名づける",
-        f: [0,4,0,0,3], b: [0,0,0,4], t: [4,0,0,0,1],
-        result: "グミぴーが仲間になった。気がする。"
-      },
-      {
-        text: "一緒に日なたぼっこ",
-        f: [1,0,5,0,1], b: [0,1,4,0], t: [0,0,4,0,0],
-        result: "ぽかぽか。ちょっと溶けそう。"
-      }
+    title:"🎮 ゲームで負けちゃった",
+    text:"むいぴーが惜しいところで負けて、「今のは練習」と言っている。これで3回目。",
+    choices:[
+      ["もう一回つきあう",
+       "次は勝てた！ むいぴーは「本番に強いんだよね」とうなずいた。練習の回数は内緒にした。",
+       3,0,1],
+      ["一緒に作戦を考える",
+       "まず説明を読んだ。走るボタンが見つかった。今まで、ずっと歩いてがんばっていた。",
+       3,1,3],
+      ["ひと休みしようと言う",
+       "すぐに座った。「休憩なら得意だよ」そこは練習なしで上手だった。",
+       2,2,2]
     ]
   },
   {
-    title: "🛜 頭から電波が出ている",
-    text: "むいぴーの近くに行くと、通信が速い。",
-    choices: [
-      {
-        text: "配信を始める",
-        f: [0,0,0,5,0], b: [0,5,0,0], t: [0,2,0,0,3],
-        result: "本日の配信は、本人が回線です。"
-      },
-      {
-        text: "宇宙に話しかける",
-        f: [0,0,0,1,5], b: [4,0,0,0], t: [0,0,0,0,4],
-        result: "宇宙「グミありますか？」"
-      },
-      {
-        text: "そっと見守る",
-        f: [0,2,4,0,0], b: [0,3,0,0], t: [2,0,4,0,0],
-        result: "電波も、のんびりになった。"
-      }
+    title:"🧦 くつ下が見つからない",
+    text:"片方のくつ下を探しているむいぴー。見つからないほうは、もう足にはいている。",
+    choices:[
+      ["足元を指さす",
+       "足を見て「あった！」と喜んだ。それから小さな声で「今の、見てた？」と聞かれた。",
+       1,3,0],
+      ["鏡を持ってくる",
+       "鏡の中の足を見て気づいた。なぜか鏡に向かって「ありがとう」とお礼を言っていた。",
+       4,2,2],
+      ["「もう出かけられそう」と言う",
+       "「まだ片方が……あっ」むいぴーは何もなかった顔で、もう片方をはき始めた。",
+       2,3,3]
     ]
   },
   {
-    title: "🌱 頭に芽が生えた",
-    text: "水をあげるか、グミをあげるか。それが問題だ。",
-    choices: [
-      {
-        text: "水をあげる",
-        f: [0,2,3,0,2], b: [0,0,0,4], t: [0,0,2,3,0],
-        result: "小さな葉っぱが、ぴょこん。"
-      },
-      {
-        text: "グミをあげる",
-        f: [5,0,0,0,2], b: [0,3,0,0], t: [0,2,0,0,3],
-        result: "グミのなる木を目指し始めた。"
-      },
-      {
-        text: "観察配信をする",
-        f: [0,0,0,5,1], b: [0,0,4,0], t: [2,1,0,0,1],
-        result: "視聴者3人。全員、植物だった。"
-      }
+    title:"🧹 お片づけしたよ",
+    text:"むいぴーが机を片づけてくれた。ただ、小物が全部ひとつの箱に入っている。",
+    choices:[
+      ["まずはお礼を言う",
+       "うれしそうにうなずいたあと、「必要なものがあったら、この箱を探してね」と案内された。",
+       1,3,0],
+      ["一緒に箱の中も分ける",
+       "「使うもの」と「大事なもの」に分けた。グミの空き袋は、本人の希望で大事なものになった。",
+       0,0,3],
+      ["箱に名前をつける",
+       "「いろいろ箱」と書いた。むいぴーは「わかりやすい！」と満足そう。中身はまだ、いろいろ。",
+       4,3,2]
+    ]
+  },
+  {
+    title:"🎤 配信のあいさつ練習",
+    text:"むいぴーが「こんばんは！」を練習している。まだ朝だけど、とてもいい声。",
+    choices:[
+      ["「おはよう」も練習する",
+       "「おはよう、こんばんは！」と続けて言った。一回で一日分のあいさつが終わった。",
+       3,2,1],
+      ["いい声だねとほめる",
+       "照れて、次はものすごく小さな声になった。配信より、内緒話に向いていそう。",
+       1,0,0],
+      ["録音して聞いてみる",
+       "自分の声を聞いて「この人、ちょっと緊張してるね」と言った。その人は、あなたです。",
+       3,1,2]
+    ]
+  },
+  {
+    title:"🌦️ おでかけの準備",
+    text:"少し雨が降りそう。むいぴーは傘より先に、おやつをバッグへ入れている。",
+    choices:[
+      ["傘も入れようと伝える",
+       "傘を入れてから、おやつがぬれないか確認していた。自分の心配は、その次らしい。",
+       0,0,3],
+      ["おやつの量を確認する",
+       "近所へ行くだけなのに、遠足くらい入っていた。「帰りの分もあるからね」と説明された。",
+       0,1,1],
+      ["今日は部屋で遊ぶ",
+       "バッグからおやつだけ取り出した。準備は無駄にならなかった、という顔をしている。",
+       2,2,2]
+    ]
+  },
+  {
+    title:"🎁 プレゼントをくれた",
+    text:"むいぴーがリボンをかけた箱を持ってきた。中には、お気に入りのグミがひとつ。",
+    choices:[
+      ["ありがとう、と受け取る",
+       "うれしそうにしている。「どんな味だったか教えてね」と言われた。自分も気になるらしい。",
+       1,0,0],
+      ["一緒に食べようと誘う",
+       "半分こする前から、隣に座って待っていた。お皿まで用意してある。準備がいい。",
+       1,3,2],
+      ["先に写真を撮る",
+       "グミを撮ろうとしたら、むいぴーも隣でポーズを決めた。贈り主つきの記念写真になった。",
+       3,2,4]
     ]
   }
 ];
 
-function fresh(book = []) {
+function fresh(book=[]) {
   return {
-    version: 2,
-    updated: Date.now(),
-    stage: 0,
-    xp: 0,
-    family: -1,
-    branch: -1,
-    trait: -1,
-    f: [0,0,0,0,0],
-    b: [0,0,0,0],
-    t: [0,0,0,0,0],
-    hunger: 70,
-    mood: 75,
-    bond: 15,
-    bowel: 20,
-    poops: [],
-    book: [...book],
-    logs: ["ちびむいぴーがやってきた！"],
-    acts: 0,
-    event: null,
-    lastEvent: Date.now(),
-    lastXP: 0
+    version:3,
+    updated:Date.now(),
+    stage:0,
+    xp:0,
+    family:-1,
+    branch:-1,
+    trait:-1,
+    f:[0,0,0,0,0],
+    b:[0,0,0,0],
+    t:[0,0,0,0,0],
+    hunger:65,
+    mood:75,
+    bond:15,
+    bowel:20,
+    poops:[],
+    book:[...book],
+    logs:["ちびむいぴーがやってきた！"],
+    acts:0,
+    event:null,
+    result:"",
+    lastEvent:Date.now(),
+    lastEventId:-1,
+    lastXP:0
   };
 }
 
 function normalize(raw) {
-  if (!raw || typeof raw !== "object") throw Error("データ形式が違います");
-  const out = fresh();
+  if (!raw || typeof raw!=="object") throw Error("育成データが不正です");
+  const s=fresh();
 
   for (const key of ["updated","xp","acts","lastEvent","lastXP"]) {
-    if (typeof raw[key] !== "number" || !Number.isFinite(raw[key]) ||
-        raw[key] < 0 || raw[key] > 1e15) {
-      throw Error("数値が不正です");
-    }
-    out[key] = raw[key];
+    const n=raw[key];
+    if (typeof n!=="number" || !Number.isFinite(n) || n<0 || n>1e15)
+      throw Error("育成の数値が不正です");
+    s[key]=n;
   }
 
-  if (!Number.isInteger(raw.stage) || raw.stage < 0 || raw.stage > 3)
+  if (!Number.isInteger(raw.stage) || raw.stage<0 || raw.stage>3)
     throw Error("進化段階が不正です");
-  out.stage = raw.stage;
+  s.stage=raw.stage;
 
-  for (const [key, max, required] of [
-    ["family",4,1], ["branch",3,2], ["trait",4,3]
+  for (const [key,max,required] of [
+    ["family",4,1],["branch",3,2],["trait",4,3]
   ]) {
-    const n = raw[key];
-    if (!Number.isInteger(n) || n < -1 || n > max ||
-        (out.stage >= required && n < 0))
+    const n=raw[key];
+    if (!Number.isInteger(n) || n < -1 || n>max ||
+        (s.stage>=required && n<0))
       throw Error("進化情報が不正です");
-    out[key] = n;
+    s[key]=n;
   }
 
-  for (const [key, size] of [["f",5],["b",4],["t",5]]) {
-    const a = raw[key];
-    if (!Array.isArray(a) || a.length !== size ||
-        a.some(n => typeof n !== "number" || !Number.isFinite(n) ||
-          n < 0 || n > 1e9)) throw Error("育成値が不正です");
-    out[key] = [...a];
+  for (const [key,size] of [["f",5],["b",4],["t",5]]) {
+    if (!Array.isArray(raw[key]) || raw[key].length!==size ||
+        raw[key].some(n=>typeof n!=="number" ||
+          !Number.isFinite(n) || n<0 || n>1e9))
+      throw Error("育成値が不正です");
+    s[key]=[...raw[key]];
   }
 
   for (const key of ["hunger","mood","bond","bowel"]) {
-    if (typeof raw[key] !== "number" || !Number.isFinite(raw[key]))
+    if (typeof raw[key]!=="number" || !Number.isFinite(raw[key]))
       throw Error("状態が不正です");
-    out[key] = clamp(raw[key]);
+    s[key]=clamp(raw[key]);
   }
 
-  if (!Array.isArray(raw.book) ||
-      raw.book.length > 100 ||
-      raw.book.some(n => !Number.isInteger(n) || n < 0 || n > 99))
+  if (!Array.isArray(raw.book) || raw.book.length>100 ||
+      raw.book.some(n=>!Number.isInteger(n)||n<0||n>99))
     throw Error("図鑑が不正です");
-  out.book = [...new Set(raw.book)];
 
-  out.poops = Array.isArray(raw.poops)
-    ? raw.poops.filter(n => typeof n === "number" &&
-        Number.isFinite(n) && n >= 5 && n <= 85).slice(0,4)
+  s.book=[...new Set(raw.book)];
+  s.poops=Array.isArray(raw.poops)
+    ? raw.poops.filter(n=>Number.isFinite(n)&&n>=5&&n<=85).slice(0,4)
+    : [];
+  s.logs=Array.isArray(raw.logs)
+    ? raw.logs.filter(x=>typeof x==="string").slice(0,15).map(x=>x.slice(0,300))
     : [];
 
-  out.logs = Array.isArray(raw.logs)
-    ? raw.logs.filter(s => typeof s === "string").slice(0,12).map(s => s.slice(0,250))
-    : [];
+  /* 旧イベントの番号は新イベントへ流用しない */
+  if (raw.version===3) {
+    if (Number.isInteger(raw.event) && raw.event>=0 && raw.event<events.length)
+      s.event=raw.event;
 
-  if (raw.version === 2 && Number.isInteger(raw.event) &&
-      raw.event >= 0 && raw.event < events.length) out.event = raw.event;
+    s.result=typeof raw.result==="string" ? raw.result.slice(0,500) : "";
+    if (s.event===null) s.result="";
 
-  return out;
+    if (Number.isInteger(raw.lastEventId) &&
+        raw.lastEventId>=0 && raw.lastEventId<events.length)
+      s.lastEventId=raw.lastEventId;
+  }
+
+  return s;
 }
 
-let state = fresh();
-let loadNotice = "";
+let state=fresh();
+let startupMessage="";
 
 try {
-  const raw = localStorage.getItem(SAVE_KEY);
-  const old = raw ? null : localStorage.getItem(OLD_SAVE_KEY);
-  if (raw || old) {
-    state = normalize(JSON.parse(raw || old));
-    if (old) loadNotice = "前の育成データを引き継いだよ！";
-  }
+  const raw=localStorage.getItem(SAVE_KEY);
+  if (raw) state=normalize(JSON.parse(raw));
 } catch {
-  loadNotice = "保存データを読み込めませんでした。設定から復元できます。";
+  startupMessage="保存データを読み込めませんでした。バックアップがあれば設定から復元できます。";
 }
 
-let images = { normal: "", happy: "" };
-let shownImage = "";
-const failedImages = new Set();
-let happyUntil = 0;
-let lastAction = 0;
-let pointer = null;
-let lastStroke = null;
-let eventSignature = "";
-let poopSignature = "";
-let bookPage = 0;
-let animationTimers = {};
-let imageBusy = false;
-let imagesReady = false;
-let imageWriteQueue = Promise.resolve();
-let saveOK = true;
+let images={normal:"",happy:""};
+let renderMode="smooth";
+try {
+  if (localStorage.getItem(PREF_KEY)==="pixel") renderMode="pixel";
+} catch {}
 
-function say(text) { $("bubble").textContent = text; }
+let imagesReady=false;
+let imageBusy=false;
+let currentSrc="";
+let brokenImages=new Set();
+let happyUntil=0;
+let lastAction=0;
+let resultFocusNeeded=false;
+let bookPage=0;
+let poopSignature="";
+let eventSignature="";
+let drag=null;
+let armed=false;
+let saveOK=true;
+let jumpTimer;
+
+function say(text) { $("bubble").textContent=text; }
 
 function log(text) {
   state.logs.unshift(text);
-  state.logs = state.logs.slice(0,12);
+  state.logs=state.logs.slice(0,15);
 }
 
-function score(f, b, t) {
-  f.forEach((n,i) => state.f[i] += n);
-  b.forEach((n,i) => state.b[i] += n);
-  t.forEach((n,i) => state.t[i] += n);
-}
-
-function best(list) {
-  return list.indexOf(Math.max(...list));
+function blocked() {
+  return state.event!==null ||
+    $("settingsDialog").open || $("bookDialog").open;
 }
 
 function petName() {
-  if (state.stage === 0) return "ちびむいぴー";
-  if (state.stage === 1) return families[state.family].name + "むいぴー";
-  const base = branches[state.family][state.branch] + "むいぴー";
-  return state.stage === 2 ? base : traits[state.trait].name + base;
+  if (!state.stage) return "ちびむいぴー";
+  if (state.stage===1) return families[state.family].name+"むいぴー";
+  const base=branches[state.family][state.branch]+"むいぴー";
+  return state.stage===2 ? base : traits[state.trait].name+base;
 }
 
 function fullName(id) {
-  const f = Math.floor(id / 20);
-  const b = Math.floor(id % 20 / 5);
-  const t = id % 5;
-  return traits[t].name + branches[f][b] + "むいぴー";
+  const f=Math.floor(id/20);
+  const b=Math.floor(id%20/5);
+  const t=id%5;
+  return traits[t].name+branches[f][b]+"むいぴー";
 }
 
-function animate(name) {
-  const pet = $("pet");
-  clearTimeout(animationTimers[name]);
-  pet.classList.remove(name);
-  void pet.offsetWidth;
-  pet.classList.add(name);
-  animationTimers[name] = setTimeout(
-    () => pet.classList.remove(name),
-    name === "evolve" ? 1400 : 950
-  );
+function addScore(f,b,t,amount=3) {
+  state.f[f]+=amount;
+  state.b[b]+=amount;
+  state.t[t]+=amount;
+}
+
+function best(a) { return a.indexOf(Math.max(...a)); }
+
+function gainXP(amount=1) {
+  const now=Date.now();
+  if (state.stage>=3 || now-state.lastXP<4000) return "";
+  state.lastXP=now;
+  state.xp+=amount;
+
+  if (state.xp<LIMITS[state.stage+1]) return "";
+
+  state.stage++;
+  if (state.stage===1) state.family=best(state.f);
+  if (state.stage===2) state.branch=best(state.b);
+  if (state.stage===3) {
+    state.trait=best(state.t);
+    const id=state.family*20+state.branch*5+state.trait;
+    if (!state.book.includes(id)) state.book.push(id);
+  }
+
+  const message="✨ "+petName()+"に進化した！";
+  log(message);
+  particle("✨");
+  return message;
 }
 
 function particle(symbol) {
-  if ($("room").querySelectorAll(".particle").length >= 10) return;
-  const room = $("room").getBoundingClientRect();
-  const pet = $("pet").getBoundingClientRect();
-  const el = document.createElement("span");
-  el.className = "particle";
-  el.textContent = symbol;
-  el.style.left = (pet.left - room.left + pet.width * (.3 + Math.random() * .4)) + "px";
-  el.style.top = (pet.top - room.top + pet.height * .3) + "px";
+  if ($("room").querySelectorAll(".particle").length>=8) return;
+  const room=$("room").getBoundingClientRect();
+  const pet=$("pet").getBoundingClientRect();
+  const el=document.createElement("span");
+  el.className="particle";
+  el.textContent=symbol;
+  el.style.left=(pet.left-room.left+pet.width*(.3+Math.random()*.4))+"px";
+  el.style.top=(pet.top-room.top+pet.height*.35)+"px";
   $("room").append(el);
-  setTimeout(() => el.remove(), 1100);
+  setTimeout(()=>el.remove(),1050);
 }
 
-function happy(symbol = "💖") {
-  happyUntil = Date.now() + 1800;
+function happy(symbol="💖") {
+  happyUntil=Date.now()+2000;
   particle(symbol);
-  animate("happy");
 }
 
-function gainXP(amount = 1) {
-  const now = Date.now();
-  if (now - state.lastXP < 4000 || state.stage >= 3) return;
-  state.lastXP = now;
-  state.xp += amount;
-
-  if (state.xp >= thresholds[state.stage + 1]) {
-    state.stage++;
-    if (state.stage === 1) state.family = best(state.f);
-    if (state.stage === 2) state.branch = best(state.b);
-    if (state.stage === 3) {
-      state.trait = best(state.t);
-      const id = state.family * 20 + state.branch * 5 + state.trait;
-      if (!state.book.includes(id)) state.book.push(id);
-    }
-    const text = "✨ " + petName() + "に進化した！";
-    log(text);
-    say(text);
-    happyUntil = Date.now() + 2200;
-    animate("evolve");
-    particle("✨");
-  }
-}
-
-function maybeEvent() {
-  if (state.event !== null || state.acts < 5) return;
-  const elapsed = Date.now() - state.lastEvent;
-  if (elapsed < 45000) return;
-
-  if (Math.random() < .28 || elapsed > 110000) {
-    state.event = Math.floor(Math.random() * events.length);
-    state.lastEvent = Date.now();
-    log("📮 ちょっと変な出来事が起きた！");
-  }
-}
-
-function canAct() {
-  if (state.event !== null) return false;
-  const now = Date.now();
-  if (now - lastAction < 850) return false;
-  lastAction = now;
-  return true;
-}
-
-function finishAction() {
-  for (const key of ["hunger","mood","bond","bowel"])
-    state[key] = clamp(state[key]);
-  state.acts++;
-  gainXP();
-  maybeEvent();
-  save();
-  render();
-}
-
-function command(type) {
-  tick();
-  if (!canAct()) return;
-
-  if (type === "pet") {
-    state.bond += 3;
-    state.mood += 4;
-    score([0,3,1,0,0], [0,0,0,2], [3,0,1,0,0]);
-    say(pick(["えへへ、もっとなでて！","そこそこ〜！","いま、しあわせ。"]));
-    happy();
-  }
-
-  if (type === "gummy") {
-    if (state.hunger >= 96) {
-      say("おなかいっぱい！ あとで食べよう");
-      return;
-    }
-    state.hunger += 18;
-    state.mood += 8;
-    state.bowel += 17;
-    score([4,0,0,0,0], [3,1,0,0], [1,2,0,0,0]);
-    say("グミ！ もちもち、おいしい！");
-    happy("🍬");
-    log("🍬 グミを食べた。ちょっと弾力が増した。");
-  }
-
-  if (type === "play") {
-    state.hunger -= 7;
-    state.mood += 11;
-    state.bond += 2;
-    state.bowel += 4;
-    score([0,1,0,4,0], [0,2,1,1], [0,4,0,0,0]);
-    say(pick(["ジャンプ！","いまの見てた！？","次は一緒に配信しよう！"]));
-    animate("jump");
-    particle("⭐");
-    happyUntil = Date.now() + 1600;
-    log("🎮 一緒に遊んだ！");
-  }
-
-  if (type === "toilet") {
-    if (state.bowel < 60) {
-      say("まだトイレは大丈夫みたい");
-      return;
-    }
-    state.bowel = 0;
-    state.mood += 6;
-    score([0,2,1,0,0], [0,0,4,0], [0,0,0,4,0]);
-    say("トイレ成功！ すっきり！");
-    happy("✨");
-    log("🚽 トイレに間に合った！");
-  }
-
-  finishAction();
-}
-
-function cleanPoop(index) {
-  tick();
-  if (!canAct() || index >= state.poops.length) return;
-  state.poops.splice(index,1);
-  state.mood = clamp(state.mood + 3);
-  score([0,1,0,0,0], [0,0,1,0], [0,0,0,2,0]);
-  say("片づけてくれて、ありがとう！");
-  particle("🫧");
-  log("💩 うんちをタップで片づけた。");
-  finishAction();
-}
-
-function choose(index) {
-  if (state.event === null) return;
-  const choice = events[state.event].choices[index];
-  if (!choice) return;
-
-  state.event = null;
-  state.lastEvent = Date.now();
-  score(choice.f, choice.b, choice.t);
-  state.mood = clamp(state.mood + 6);
-  say(choice.result);
-  log(choice.result);
-  happy("✨");
-  gainXP(2);
-  save();
-  render();
-}
-
-function simulate(seconds) {
-  const dt = clamp(seconds, 0, 1800);
-  if (!dt) return;
-
-  state.hunger = clamp(state.hunger - dt * .028);
-  state.mood = clamp(state.mood - dt * (.008 + state.poops.length * .006));
-  state.bowel += dt * .13;
-
-  while (state.bowel >= 100) {
-    state.bowel -= 100;
-    if (state.poops.length < 4) {
-      state.poops.push(6 + Math.random() * 73);
-      log("💩 うんちが出た。タップで片づけてね！");
-      if (seconds < 10 && state.event === null) say("……でちゃった！");
-    }
-  }
+function jump() {
+  clearTimeout(jumpTimer);
+  $("pet").classList.remove("jumping");
+  void $("pet").offsetWidth;
+  $("pet").classList.add("jumping");
+  jumpTimer=setTimeout(()=>$("pet").classList.remove("jumping"),650);
 }
 
 function tick() {
-  const now = Date.now();
-  simulate((now - state.updated) / 1000);
-  state.updated = now;
+  const now=Date.now();
+  const seconds=clamp((now-state.updated)/1000,0,600);
+  state.updated=now;
+
+  /* 選択中や設定中にトイレ事故が起きないようにする */
+  if (blocked()) return;
+
+  state.hunger=clamp(state.hunger-seconds*.03);
+  state.mood=clamp(state.mood-seconds*(.008+state.poops.length*.006));
+  state.bowel+=seconds*.12;
+
+  while (state.bowel>=100) {
+    state.bowel-=100;
+    if (state.poops.length<4) {
+      state.poops.push(30+Math.random()*43);
+      log("💩 うんちが出た。タップで片づけられるよ。");
+      if (seconds<5) say("……間に合わなかった。片づけてもらえる？");
+    }
+  }
 }
 
 function save() {
   try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify(state));
-    saveOK = true;
+    localStorage.setItem(SAVE_KEY,JSON.stringify(state));
+    saveOK=true;
   } catch {
-    saveOK = false;
+    saveOK=false;
   }
-  $("saveText").textContent = saveOK ? "✓ 自動セーブ" : "⚠ 保存不可・設定から書き出し";
+  $("saveText").textContent=saveOK ? "✓ 自動セーブ" : "⚠ 保存できません";
 }
 
-/* ---------- キャラ画像の保存 ----------
-   IndexedDBを優先。使えない場合のみlocalStorage。
-   保存に失敗しても、現在のゲーム画面では表示を続ける。
--------------------------------------- */
+function canAct() {
+  if (blocked()) return false;
+  const now=Date.now();
+  if (now-lastAction<650) return false;
+  lastAction=now;
+  return true;
+}
 
-let dbPromise = null;
+function maybeEvent() {
+  if (state.event!==null || state.acts<5 || drag || armed) return;
+  const elapsed=Date.now()-state.lastEvent;
+  if (elapsed<65000) return;
+  if (Math.random()>.3 && elapsed<130000) return;
+
+  const candidates=events.map((_,i)=>i).filter(i=>i!==state.lastEventId);
+  state.event=pick(candidates);
+  state.lastEventId=state.event;
+  state.lastEvent=Date.now();
+  state.result="";
+  log(events[state.event].title);
+}
+
+function finishAction(message) {
+  for (const key of ["hunger","mood","bond","bowel"])
+    state[key]=clamp(state[key]);
+  state.acts++;
+  const evolution=gainXP();
+  say(evolution || message);
+
+  /* 進化の直後はイベントでメッセージを隠さない */
+  if (!evolution) maybeEvent();
+
+  save();
+  render();
+}
+
+function petAction() {
+  tick();
+  if (!canAct()) return;
+  state.mood+=4;
+  state.bond+=3;
+  addScore(1,3,0);
+  happy();
+  finishAction(pick([
+    "えへへ。もうちょっとだけ。",
+    "そこ、ちょうどいい〜。",
+    "なでられる準備は、いつでもできてる。",
+    "今のなで方、かなり好き。"
+  ]));
+}
+
+function feed() {
+  tick();
+  if (!canAct()) return;
+
+  if (state.hunger>=95) {
+    say("ありがとう！ 今はおなかいっぱい。またあとでね。");
+    render();
+    return;
+  }
+
+  state.hunger+=17;
+  state.mood+=7;
+  state.bond+=2;
+  state.bowel+=15;
+  addScore(0,0,0);
+  happy("💕");
+  log("🍬 グミを手渡してもらった。");
+  finishAction(pick([
+    "あーん。……うん、これ好き！",
+    "ありがとう。手渡しだと、ちょっとうれしい。",
+    "もぐもぐ。次のひと口は、あとでね。",
+    "ゆっくり食べるつもりだった。もうない。"
+  ]));
+}
+
+function play() {
+  tick();
+  if (!canAct()) return;
+  state.mood+=10;
+  state.bond+=2;
+  state.hunger-=7;
+  state.bowel+=3;
+  addScore(3,0,1);
+  happy("⭐");
+  jump();
+  log("🎮 一緒に遊んだ。");
+  finishAction(pick([
+    "今の見てた？ 見てたって言って。",
+    "もう一回！ ……水を飲んでから。",
+    "できた！ ちょっとだけ、得意げ。",
+    "いい勝負だったね。たぶん。"
+  ]));
+}
+
+function toilet() {
+  tick();
+  if (!canAct()) return;
+  if (state.bowel<60) {
+    say("まだ大丈夫。行きたくなったら、もじもじするね。");
+    return;
+  }
+
+  state.bowel=0;
+  state.mood+=6;
+  addScore(2,2,3);
+  happy("✨");
+  log("🚽 トイレに間に合った！");
+  finishAction("間に合った！ 何もなかった顔で帰ってきた。");
+}
+
+function cleanPoop(index) {
+  tick();
+  if (!canAct() || index>=state.poops.length) return;
+  state.poops.splice(index,1);
+  state.mood+=3;
+  addScore(1,3,3,2);
+  particle("🫧");
+  finishAction("ありがとう。次は早めにトイレへ行くね。");
+}
+
+function choose(index) {
+  if (state.event===null || state.result) return;
+  const choice=events[state.event].choices[index];
+  if (!choice) return;
+
+  addScore(choice[2],choice[3],choice[4],4);
+  state.mood=clamp(state.mood+6);
+  const evolution=gainXP(2);
+
+  state.result=choice[1]+(evolution ? "\n\n"+evolution : "");
+  log(choice[1]);
+  happy();
+  resultFocusNeeded=true;
+  save();
+  render();
+}
+
+function closeEvent() {
+  if (!state.result) return;
+  state.event=null;
+  state.result="";
+  state.lastEvent=Date.now();
+  state.updated=Date.now();
+  say("さて、次は何して遊ぶ？");
+  save();
+  render();
+  $("pet").focus({preventScroll:true});
+}
+
+/* ---------- グミのドラッグ ---------- */
+
+function isOnPet(x,y) {
+  const r=$("pet").getBoundingClientRect();
+  return x>=r.left && x<=r.right && y>=r.top && y<=r.bottom;
+}
+
+function setArmed(value) {
+  armed=value;
+  $("gumSource").classList.toggle("armed",value);
+  $("gumSource").setAttribute("aria-pressed",String(value));
+  $("pet").setAttribute("aria-label",
+    value ? "むいぴーにグミを渡す" : "むいぴーをなでる");
+}
+
+function clearDrag() {
+  const previous=drag;
+  drag=null;
+  $("dragGhost").hidden=true;
+  $("pet").classList.remove("drop-target");
+
+  if (previous) {
+    try {
+      if ($("gumSource").hasPointerCapture(previous.id))
+        $("gumSource").releasePointerCapture(previous.id);
+    } catch {}
+  }
+}
+
+function cancelGummy() {
+  clearDrag();
+  setArmed(false);
+}
+
+$("gumSource").addEventListener("pointerdown",event=>{
+  if (blocked() || drag ||
+      (event.pointerType==="mouse" && event.button!==0)) return;
+
+  event.preventDefault();
+  setArmed(false);
+  drag={
+    id:event.pointerId,
+    x:event.clientX,
+    y:event.clientY,
+    moved:false
+  };
+
+  try { $("gumSource").setPointerCapture(event.pointerId); } catch {}
+});
+
+$("gumSource").addEventListener("pointermove",event=>{
+  if (!drag || event.pointerId!==drag.id) return;
+  event.preventDefault();
+
+  if (Math.hypot(event.clientX-drag.x,event.clientY-drag.y)>7)
+    drag.moved=true;
+
+  if (!drag.moved) return;
+
+  $("dragGhost").hidden=false;
+  $("dragGhost").style.left=event.clientX+"px";
+  $("dragGhost").style.top=event.clientY+"px";
+  $("pet").classList.toggle("drop-target",
+    isOnPet(event.clientX,event.clientY));
+});
+
+$("gumSource").addEventListener("pointerup",event=>{
+  if (!drag || event.pointerId!==drag.id) return;
+  event.preventDefault();
+
+  const moved=drag.moved;
+  const hit=isOnPet(event.clientX,event.clientY);
+  clearDrag();
+
+  if (blocked()) return;
+
+  if (moved) {
+    if (hit) feed();
+    else say("グミはカゴに戻したよ。キャラの上ではなしてね。");
+  } else {
+    /* ドラッグが難しい人は、カゴ→キャラのタップでも渡せる */
+    setArmed(true);
+    say("グミを持ったよ。むいぴーをタップして渡してね。");
+    render();
+  }
+});
+
+$("gumSource").addEventListener("pointercancel",cancelGummy);
+$("gumSource").addEventListener("lostpointercapture",()=>{
+  if (drag) clearDrag();
+});
+
+$("gumSource").addEventListener("keydown",event=>{
+  if ((event.key==="Enter" || event.key===" ") && !blocked()) {
+    event.preventDefault();
+    setArmed(!armed);
+    say(armed
+      ? "グミを持ったよ。むいぴーに渡してね。"
+      : "グミをカゴに戻したよ。");
+    render();
+  }
+});
+
+$("pet").onclick=()=>{
+  if (armed) {
+    setArmed(false);
+    feed();
+  } else {
+    petAction();
+  }
+};
+
+document.addEventListener("keydown",event=>{
+  if (event.key==="Escape") {
+    cancelGummy();
+    render();
+  }
+});
+
+window.addEventListener("resize",cancelGummy);
+
+/* ---------- 画像：元ファイルを保持 ---------- */
+
+function validateImages(raw) {
+  if (!raw || typeof raw!=="object") throw Error("画像データが不正です");
+  const out={normal:"",happy:""};
+
+  for (const key of ["normal","happy"]) {
+    const value=raw[key] || "";
+    if (typeof value!=="string" || value.length>12000000 ||
+        (value && !/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=\r\n]+$/.test(value)))
+      throw Error("画像はPNG・JPEG・WebPを使用してください");
+    out[key]=value;
+  }
+  return out;
+}
+
+function readFile(file) {
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onload=()=>resolve(reader.result);
+    reader.onerror=()=>reject(Error("ファイルを読み取れませんでした"));
+    reader.onabort=()=>reject(Error("読み込みが中止されました"));
+    reader.readAsDataURL(file);
+  });
+}
+
+function decodeImage(src) {
+  return new Promise((resolve,reject)=>{
+    const image=new Image();
+    const timer=setTimeout(()=>{
+      image.onload=image.onerror=null;
+      reject(Error("読み込みに時間がかかっています。小さい画像で試してください"));
+    },15000);
+
+    image.onload=()=>{
+      clearTimeout(timer);
+      if (!image.naturalWidth || !image.naturalHeight)
+        reject(Error("画像サイズを取得できません"));
+      else resolve(image);
+    };
+    image.onerror=()=>{
+      clearTimeout(timer);
+      reject(Error("画像を表示できません。PNG・JPEG・WebPで試してください"));
+    };
+    image.src=src;
+  });
+}
+
+let dbPromise;
 
 function openDB() {
   if (dbPromise) return dbPromise;
 
-  dbPromise = new Promise((resolve, reject) => {
+  dbPromise=new Promise((resolve,reject)=>{
     if (!window.indexedDB) {
-      reject(Error("IndexedDB非対応"));
+      reject(Error("画像保存に非対応です"));
       return;
     }
 
-    const req = indexedDB.open("muipi-image-store", 1);
-    const timer = setTimeout(() => reject(Error("画像保存の応答待ち")), 4500);
+    let done=false;
+    const req=indexedDB.open("muipi-image-store",1);
+    const timer=setTimeout(()=>{
+      done=true;
+      reject(Error("画像保存の応答待ち"));
+    },5000);
 
-    req.onupgradeneeded = () => {
-      const db = req.result;
-      if (!db.objectStoreNames.contains("assets")) db.createObjectStore("assets");
+    req.onupgradeneeded=()=>{
+      if (!req.result.objectStoreNames.contains("assets"))
+        req.result.createObjectStore("assets");
     };
 
-    req.onsuccess = () => {
+    req.onsuccess=()=>{
       clearTimeout(timer);
+      if (done) { req.result.close(); return; }
+      done=true;
       resolve(req.result);
     };
 
-    req.onerror = () => {
+    req.onerror=req.onblocked=()=>{
       clearTimeout(timer);
-      reject(req.error);
-    };
-
-    req.onblocked = () => {
-      clearTimeout(timer);
-      reject(Error("画像保存がブロックされています"));
+      if (!done) {
+        done=true;
+        reject(Error("画像保存を開始できません"));
+      }
     };
   });
 
   return dbPromise;
 }
 
-async function dbRead() {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction("assets", "readonly");
-    const req = tx.objectStore("assets").get("characters");
-    const timer = setTimeout(() => reject(Error("読込タイムアウト")), 4500);
+async function assetTransaction(write,record) {
+  const db=await openDB();
+  return new Promise((resolve,reject)=>{
+    const tx=db.transaction("assets",write ? "readwrite" : "readonly");
+    const store=tx.objectStore("assets");
     let result;
 
-    req.onsuccess = () => { result = req.result; };
-    tx.oncomplete = () => { clearTimeout(timer); resolve(result); };
-    tx.onabort = tx.onerror = () => {
-      clearTimeout(timer);
-      reject(tx.error || Error("画像読込失敗"));
-    };
-  });
-}
-
-async function dbWrite(record) {
-  const db = await openDB();
-  return new Promise((resolve, reject) => {
-    const tx = db.transaction("assets", "readwrite");
-    tx.objectStore("assets").put(record, "characters");
-    const timer = setTimeout(() => {
+    const timer=setTimeout(()=>{
       try { tx.abort(); } catch {}
-      reject(Error("保存タイムアウト"));
-    }, 4500);
+      reject(Error("画像保存のタイムアウト"));
+    },5000);
 
-    tx.oncomplete = () => { clearTimeout(timer); resolve(); };
-    tx.onabort = tx.onerror = () => {
+    const request=write
+      ? store.put(record,"characters")
+      : store.get("characters");
+
+    request.onsuccess=()=>{ result=request.result; };
+
+    tx.oncomplete=()=>{
       clearTimeout(timer);
-      reject(tx.error || Error("画像保存失敗"));
+      resolve(result);
+    };
+
+    tx.onabort=tx.onerror=()=>{
+      clearTimeout(timer);
+      reject(Error("画像データにアクセスできません"));
     };
   });
 }
 
-function validateImages(raw) {
-  if (!raw || typeof raw !== "object") throw Error("画像データがありません");
-  const out = { normal: "", happy: "" };
-
-  for (const key of ["normal","happy"]) {
-    const v = raw[key] || "";
-    if (typeof v !== "string" || v.length > 2500000 ||
-        (v && !/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=\r\n]+$/.test(v))) {
-      throw Error("対応していない画像データです");
+async function persistImages() {
+  const record={at:Date.now(),images:{...images}};
+  try {
+    await assetTransaction(true,record);
+    try { localStorage.removeItem(IMAGE_KEY); } catch {}
+    return true;
+  } catch {
+    try {
+      localStorage.setItem(IMAGE_KEY,JSON.stringify(record));
+      return true;
+    } catch {
+      return false;
     }
-    out[key] = v;
   }
-  return out;
 }
 
 async function restoreImages() {
-  const records = [];
-
+  const records=[];
   try {
-    const record = await dbRead();
+    const record=await assetTransaction(false);
     if (record) records.push(record);
   } catch {}
 
   try {
-    const raw = localStorage.getItem(IMAGE_FALLBACK_KEY);
+    const raw=localStorage.getItem(IMAGE_KEY);
     if (raw) records.push(JSON.parse(raw));
   } catch {}
 
-  records.sort((a,b) => (b.at || 0) - (a.at || 0));
-
-  let restored = false;
-
+  records.sort((a,b)=>(b.at||0)-(a.at||0));
   for (const record of records) {
     try {
-      images = validateImages(record.images);
-      restored = true;
+      images=validateImages(record.images);
       break;
     } catch {}
   }
 
-  if (!restored) {
-    try {
-      const old = localStorage.getItem(OLD_IMAGE_KEY);
-      if (old) images = validateImages(JSON.parse(old));
-    } catch {}
-  }
-
-  imagesReady = true;
-  updateImageControls();
+  imagesReady=true;
+  imageControls();
   updatePreviews();
   renderImage();
 }
 
-function persistImages() {
-  const record = {
-    at: Date.now(),
-    images: { ...images }
-  };
-
-  const job = imageWriteQueue.then(async () => {
-    try {
-      await dbWrite(record);
-      try { localStorage.removeItem(IMAGE_FALLBACK_KEY); } catch {}
-      return true;
-    } catch {
-      try {
-        localStorage.setItem(IMAGE_FALLBACK_KEY, JSON.stringify(record));
-        return true;
-      } catch {
-        return false;
-      }
-    }
-  });
-
-  imageWriteQueue = job.catch(() => {});
-  return job;
-}
-
-function updateImageControls() {
-  const disabled = imageBusy || !imagesReady;
-  $("normalFile").disabled = disabled;
-  $("happyFile").disabled = disabled;
-  $("clearImages").disabled = disabled;
-  $("importFile").disabled = disabled;
-  $("exportButton").disabled = disabled;
-}
-
-function readAsDataURL(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(Error("画像ファイルを読み取れませんでした"));
-    reader.onabort = () => reject(Error("読み込みが中止されました"));
-    reader.readAsDataURL(file);
-  });
-}
-
-function decodeImage(src) {
-  return new Promise((resolve, reject) => {
-    const image = new Image();
-    const timer = setTimeout(() => {
-      image.onload = image.onerror = null;
-      reject(Error("画像の読み込みに時間がかかっています。小さいPNG/JPEGで試してください"));
-    }, 15000);
-
-    image.onload = () => {
-      clearTimeout(timer);
-      if (!image.naturalWidth) {
-        reject(Error("画像のサイズを取得できません"));
-        return;
-      }
-      resolve(image);
-    };
-
-    image.onerror = () => {
-      clearTimeout(timer);
-      reject(Error("この画像形式を表示できません。PNGかJPEGで試してください"));
-    };
-
-    image.src = src;
-  });
-}
-
-/* 外周からつながっている黒いピクセルだけを透過。
-   内部の目・口など、背景とつながっていない黒は残す。 */
-function removeConnectedBlack(ctx, width, height) {
-  const frame = ctx.getImageData(0,0,width,height);
-  const p = frame.data;
-  const count = width * height;
-  const visited = new Uint8Array(count);
-  const queue = new Int32Array(count);
-  let head = 0;
-  let tail = 0;
-
-  function offer(index) {
-    if (visited[index]) return;
-    visited[index] = 1;
-    const i = index * 4;
-    const isDark = p[i] < 32 && p[i+1] < 32 && p[i+2] < 32;
-    if (isDark || p[i+3] < 20) queue[tail++] = index;
-  }
-
-  for (let x = 0; x < width; x++) {
-    offer(x);
-    offer((height-1) * width + x);
-  }
-  for (let y = 0; y < height; y++) {
-    offer(y * width);
-    offer(y * width + width - 1);
-  }
-
-  while (head < tail) {
-    const index = queue[head++];
-    p[index * 4 + 3] = 0;
-    const x = index % width;
-    const y = Math.floor(index / width);
-    if (x > 0) offer(index-1);
-    if (x < width-1) offer(index+1);
-    if (y > 0) offer(index-width);
-    if (y < height-1) offer(index+width);
-  }
-
-  ctx.putImageData(frame,0,0);
-}
-
-function cropTransparent(canvas) {
-  const ctx = canvas.getContext("2d");
-  const w = canvas.width;
-  const h = canvas.height;
-  const pixels = ctx.getImageData(0,0,w,h).data;
-  let minX = w, minY = h, maxX = -1, maxY = -1;
-
-  for (let y = 0; y < h; y++) {
-    for (let x = 0; x < w; x++) {
-      if (pixels[(y*w+x)*4+3] > 20) {
-        minX = Math.min(minX,x);
-        minY = Math.min(minY,y);
-        maxX = Math.max(maxX,x);
-        maxY = Math.max(maxY,y);
-      }
-    }
-  }
-
-  if (maxX < 0) throw Error("透過で画像が消えました。黒背景透過をオフにしてください");
-
-  minX = Math.max(0,minX-3);
-  minY = Math.max(0,minY-3);
-  maxX = Math.min(w-1,maxX+3);
-  maxY = Math.min(h-1,maxY+3);
-
-  const out = document.createElement("canvas");
-  out.width = maxX-minX+1;
-  out.height = maxY-minY+1;
-  out.getContext("2d").drawImage(
-    canvas,
-    minX,minY,out.width,out.height,
-    0,0,out.width,out.height
-  );
-  return out;
-}
-
-async function uploadImage(file, key) {
-  if (!file || imageBusy || !imagesReady) return;
-
-  if (file.size > 20 * 1024 * 1024) {
-    $("imageMessage").textContent = "画像は20MB以下にしてください。";
-    return;
-  }
-
-  imageBusy = true;
-  updateImageControls();
-  $("imageMessage").textContent = "画像を読み込み中…";
-
-  try {
-    const src = await readAsDataURL(file);
-    const img = await decodeImage(src);
-    const scale = Math.min(1, 600 / Math.max(img.naturalWidth,img.naturalHeight));
-
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.max(1,Math.round(img.naturalWidth*scale));
-    canvas.height = Math.max(1,Math.round(img.naturalHeight*scale));
-
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
-    if (!ctx) throw Error("画像処理を開始できませんでした");
-    ctx.drawImage(img,0,0,canvas.width,canvas.height);
-
-    if ($("removeBlack").checked)
-      removeConnectedBlack(ctx,canvas.width,canvas.height);
-
-    const processed = cropTransparent(canvas).toDataURL("image/png");
-    await decodeImage(processed);
-
-    /* 保存より先に画面へ反映する */
-    images[key] = processed;
-    failedImages.delete(processed);
-    shownImage = "";
-    if (key === "happy") happyUntil = Date.now()+2500;
-    updatePreviews();
-    renderImage();
-    say("新しい姿になったよ！");
-    $("imageMessage").textContent = "表示できました。端末に保存中…";
-
-    const saved = await persistImages();
-    $("imageMessage").textContent = saved
-      ? "✓ 画像を表示・保存しました！"
-      : "表示はできましたが保存できません。データタブからバックアップしてください。";
-  } catch (error) {
-    $("imageMessage").textContent = "⚠ " + error.message;
-  } finally {
-    imageBusy = false;
-    updateImageControls();
-  }
+function imageControls() {
+  const disabled=!imagesReady || imageBusy;
+  for (const id of [
+    "normalFile","happyFile","clearImages","importFile","exportButton"
+  ]) $(id).disabled=disabled;
 }
 
 function updatePreviews() {
   for (const key of ["normal","happy"]) {
-    const box = $(key+"Preview");
+    const box=$(key+"Preview");
     box.replaceChildren();
-
     if (images[key]) {
-      const img = document.createElement("img");
-      img.src = images[key];
-      img.alt = key === "normal" ? "通常画像" : "うれしい画像";
+      const img=document.createElement("img");
+      img.src=images[key];
+      img.alt=key==="normal" ? "通常画像" : "うれしい画像";
+      img.style.imageRendering=renderMode==="pixel" ? "pixelated" : "auto";
       box.append(img);
     } else {
-      box.textContent = key === "normal" ? "🧑🏻‍🚀" : "💖";
+      box.textContent=key==="normal" ? "🧑🏻‍🚀" : "💖";
     }
   }
 }
 
 function renderImage() {
-  const preferred = Date.now() < happyUntil
-    ? images.happy || images.normal
-    : images.normal || images.happy;
+  const list=Date.now()<happyUntil
+    ? [images.happy,images.normal]
+    : [images.normal,images.happy];
 
-  const src = preferred && !failedImages.has(preferred) ? preferred : "";
+  const src=list.find(value=>value && !brokenImages.has(value)) || "";
 
-  if (src !== shownImage) {
-    shownImage = src;
-    if (src) $("petImage").src = src;
+  if (src!==currentSrc) {
+    currentSrc=src;
+    if (src) $("petImage").src=src;
     else $("petImage").removeAttribute("src");
   }
 
-  $("petImage").hidden = !src;
-  $("fallback").hidden = !!src;
+  $("petImage").hidden=!src;
+  $("fallback").hidden=!!src;
+  $("petImage").classList.toggle("pixel",renderMode==="pixel");
 }
 
-$("petImage").addEventListener("error", () => {
-  if (shownImage) failedImages.add(shownImage);
-  $("imageMessage").textContent = "画像を表示できません。画像を選び直してください。";
+$("petImage").addEventListener("error",()=>{
+  if (currentSrc) brokenImages.add(currentSrc);
+  $("imageMessage").textContent="画像を表示できません。元画像を選び直してください。";
   renderImage();
 });
 
-/* ---------- UI ---------- */
+async function upload(file,key) {
+  if (!file || imageBusy || !imagesReady) return;
+  if (file.size>8*1024*1024) {
+    $("imageMessage").textContent="1枚8MB以下の画像を選んでください。";
+    return;
+  }
 
-const statDefinitions = [
-  ["hunger","🍬 おなか","#efa776"],
-  ["mood","😊 ごきげん","#ed94b3"],
-  ["bond","💖 なかよし","#c095d8"],
-  ["bowel","🚽 トイレ","#8cc4d9"]
+  imageBusy=true;
+  imageControls();
+  $("imageMessage").textContent="元画像を読み込み中…";
+
+  try {
+    const src=await readFile(file);
+    validateImages({...images,[key]:src});
+    await decodeImage(src);
+
+    /*
+      Canvasへ描き直さない。
+      背景の削除・縁の加工・透明ピクセルの切り取り・縮小をしない。
+    */
+    images[key]=src;
+    brokenImages.delete(src);
+    currentSrc="";
+    if (key==="happy") happyUntil=Date.now()+2500;
+
+    updatePreviews();
+    renderImage();
+
+    $("imageMessage").textContent="元画像のまま表示できました。保存中…";
+    const saved=await persistImages();
+
+    $("imageMessage").textContent=saved
+      ? "✓ 元画像をそのまま保存しました。透明度も変更していません。"
+      : "表示できましたが保存できません。データタブからバックアップしてください。";
+  } catch(error) {
+    $("imageMessage").textContent="⚠ "+error.message;
+  } finally {
+    imageBusy=false;
+    imageControls();
+  }
+}
+
+for (const key of ["normal","happy"]) {
+  $(key+"File").onchange=async event=>{
+    await upload(event.target.files[0],key);
+    event.target.value="";
+  };
+}
+
+$("renderMode").value=renderMode;
+$("renderMode").onchange=event=>{
+  renderMode=event.target.value;
+  try { localStorage.setItem(PREF_KEY,renderMode); } catch {}
+  updatePreviews();
+  renderImage();
+};
+
+$("testHappy").onclick=()=>{
+  happyUntil=Date.now()+3500;
+  $("settingsDialog").close();
+  say(images.happy ? "えへへ。こんな顔になるよ。" : "うれしい画像は、まだ登録されていないよ。");
+  renderImage();
+};
+
+$("clearImages").onclick=async()=>{
+  if (!imagesReady || imageBusy ||
+      !confirm("登録した画像を解除しますか？ 元の画像ファイルは削除されません。")) return;
+
+  imageBusy=true;
+  imageControls();
+  images={normal:"",happy:""};
+  brokenImages.clear();
+  currentSrc="";
+  updatePreviews();
+  renderImage();
+
+  const ok=await persistImages();
+  $("imageMessage").textContent=ok
+    ? "画像登録を解除しました。"
+    : "表示は解除しましたが、保存できませんでした。";
+
+  imageBusy=false;
+  imageControls();
+};
+
+/* ---------- 画面描画 ---------- */
+
+const stats=[
+  ["hunger","🍬 おなか","#e8ac7d"],
+  ["mood","😊 ごきげん","#e795b3"],
+  ["bond","💖 なかよし","#b391d0"],
+  ["bowel","🚽 トイレ","#8bbfd2"]
 ];
 
-for (const [key,title,color] of statDefinitions) {
-  const box = document.createElement("div");
-  box.innerHTML = `
+for (const [key,label,color] of stats) {
+  const box=document.createElement("div");
+  box.innerHTML=`
     <div class="stat-title">
-      <span>${title}</span><span id="${key}Value"></span>
+      <span>${label}</span><span id="${key}Value"></span>
     </div>
     <div class="stat-track">
       <div class="stat-fill" id="${key}Fill" style="--bar:${color}"></div>
@@ -1764,90 +1910,96 @@ for (const [key,title,color] of statDefinitions) {
 }
 
 function renderPoops() {
-  const signature = state.poops.join(",");
-  if (signature === poopSignature) return;
-  poopSignature = signature;
-  $("poops").replaceChildren();
-
-  state.poops.forEach((x,index) => {
-    const button = document.createElement("button");
-    button.className = "poop";
-    button.textContent = "💩";
-    button.style.left = x+"%";
-    button.setAttribute("aria-label","うんちを片づける");
-    button.onclick = () => cleanPoop(index);
-    $("poops").append(button);
+  const signature=state.poops.join(",");
+  if (signature!==poopSignature) {
+    poopSignature=signature;
+    $("poops").replaceChildren();
+    state.poops.forEach((position,index)=>{
+      const button=document.createElement("button");
+      button.className="poop";
+      button.textContent="💩";
+      button.style.left=position+"%";
+      button.setAttribute("aria-label","うんちを片づける");
+      button.onclick=()=>cleanPoop(index);
+      $("poops").append(button);
+    });
+  }
+  $("poops").querySelectorAll("button").forEach(button=>{
+    button.disabled=state.event!==null;
   });
 }
 
 function renderEvent() {
-  const active = state.event !== null;
-  const signature = String(state.event);
+  const active=state.event!==null;
+  $("eventLayer").hidden=!active;
 
-  $("eventLayer").hidden = !active;
-  $("pet").tabIndex = active ? -1 : 0;
-  $("pet").setAttribute("aria-disabled", String(active));
+  for (const id of ["pet","gumSource","playButton","toiletButton"])
+    $(id).disabled=active;
 
-  document.querySelectorAll("[data-command]").forEach(button => {
-    button.disabled = active;
-  });
+  const signature=JSON.stringify([state.event,state.result]);
+  if (signature===eventSignature) return;
+  eventSignature=signature;
 
-  document.querySelectorAll(".poop").forEach(button => {
-    button.disabled = active;
-  });
-
-  if (signature === eventSignature) return;
-  eventSignature = signature;
   $("choices").replaceChildren();
   if (!active) return;
 
-  const event = events[state.event];
-  $("eventTitle").textContent = event.title;
-  $("eventText").textContent = event.text;
+  const event=events[state.event];
+  const isResult=!!state.result;
+  $("eventTitle").textContent=isResult ? "むいぴーのようす" : event.title;
+  $("eventText").textContent=isResult ? state.result : event.text;
+  $("eventText").style.whiteSpace="pre-line";
+  $("eventDone").hidden=!isResult;
+  $("choices").hidden=isResult;
 
-  event.choices.forEach((choice,index) => {
-    const button = document.createElement("button");
-    button.className = "choice";
-    button.textContent = choice.text;
-    button.onclick = () => choose(index);
-    $("choices").append(button);
-  });
+  if (!isResult) {
+    event.choices.forEach((choice,index)=>{
+      const button=document.createElement("button");
+      button.className="choice";
+      button.textContent=choice[0];
+      button.onclick=()=>choose(index);
+      $("choices").append(button);
+    });
+  }
+
+  if (resultFocusNeeded) {
+    resultFocusNeeded=false;
+    $("eventDone").focus({preventScroll:true});
+  }
 }
 
 function render() {
-  $("petName").textContent = petName();
-  $("stageText").textContent = ["ちび期","進化 1 / 3","進化 2 / 3","最終形態"][state.stage];
+  $("petName").textContent=petName();
+  $("stageText").textContent=["ちび期","進化 1 / 3","進化 2 / 3","最終形態"][state.stage];
 
-  const start = thresholds[state.stage];
-  const next = thresholds[state.stage+1];
-  const progress = state.stage === 3
-    ? 100 : clamp((state.xp-start)/(next-start)*100);
+  const start=LIMITS[state.stage];
+  const next=LIMITS[state.stage+1];
+  const progress=state.stage===3 ? 100 : clamp((state.xp-start)/(next-start)*100);
 
-  $("growthFill").style.width = progress+"%";
-  $("growthText").textContent = state.stage === 3
-    ? "最終進化！ 発見 " + state.book.length + " / 100種類"
-    : "次の進化まで " + Math.max(0,next-state.xp) + " ポイント";
+  $("growthFill").style.width=progress+"%";
+  $("growthText").textContent=state.stage===3
+    ? "最終進化！ 発見 "+state.book.length+" / 100種類"
+    : "次の進化まで "+Math.max(0,next-state.xp)+" ポイント";
 
-  for (const [key] of statDefinitions) {
-    $(key+"Value").textContent = Math.round(state[key]);
-    $(key+"Fill").style.width = clamp(state[key])+"%";
+  for (const [key] of stats) {
+    $(key+"Value").textContent=Math.round(state[key]);
+    $(key+"Fill").style.width=clamp(state[key])+"%";
   }
 
-  const family = state.family >= 0 ? families[state.family] : null;
-  $("aura").style.setProperty("--aura",family ? family.color : "#ffd3b5");
-  $("badge").textContent = state.stage === 3
+  $("badge").textContent=state.stage===3
     ? traits[state.trait].icon
-    : family ? family.icon : "🌱";
+    : state.family>=0 ? families[state.family].icon : "🌱";
 
-  $("toiletButton").classList.toggle("alert",state.bowel >= 60);
+  $("toiletButton").classList.toggle("alert",state.bowel>=60);
 
-  $("hint").textContent = state.event !== null
-    ? "画面の選択肢を選んでね"
-    : state.bowel >= 60
-      ? "🚽 もじもじ…トイレのタイミング！"
-      : state.poops.length
-        ? "💩 うんちはタップで片づけられるよ"
-        : "キャラを指でなでてもOK";
+  $("hint").textContent=state.event!==null
+    ? "お話も選択肢も、この画面で"
+    : armed
+      ? "むいぴーをタップしてグミを渡す"
+      : state.bowel>=60
+        ? "🚽 もじもじ…トイレに行きたいみたい"
+        : state.poops.length
+          ? "💩 うんちはタップで片づけられるよ"
+          : "タップでなでる・カゴからグミを手渡し";
 
   renderImage();
   renderPoops();
@@ -1856,273 +2008,208 @@ function render() {
 
 function renderDiary() {
   $("diary").replaceChildren();
-  state.logs.forEach(text => {
-    const li = document.createElement("li");
-    li.textContent = text;
+  state.logs.forEach(text=>{
+    const li=document.createElement("li");
+    li.textContent=text;
     $("diary").append(li);
   });
 }
 
 function renderBook() {
-  $("bookSummary").textContent = state.book.length+" / 100種類を発見";
+  $("bookSummary").textContent=state.book.length+" / 100種類を発見";
   $("bookGrid").replaceChildren();
 
-  for (let id = bookPage*8; id < Math.min(100,bookPage*8+8); id++) {
-    const found = state.book.includes(id);
-    const box = document.createElement("div");
-    box.className = "book-item" + (found ? " found" : "");
-    box.textContent = String(id+1).padStart(3,"0")+" "+
+  for (let id=bookPage*8;id<Math.min(100,bookPage*8+8);id++) {
+    const found=state.book.includes(id);
+    const item=document.createElement("div");
+    item.className="book-item"+(found ? " found" : "");
+    item.textContent=String(id+1).padStart(3,"0")+" "+
       (found ? families[Math.floor(id/20)].icon+" "+fullName(id) : "❔ 未発見");
-    $("bookGrid").append(box);
+    $("bookGrid").append(item);
   }
 
-  $("pageText").textContent = (bookPage+1)+" / 13";
-  $("prevPage").disabled = bookPage === 0;
-  $("nextPage").disabled = bookPage === 12;
+  $("pageText").textContent=(bookPage+1)+" / 13";
+  $("prevPage").disabled=bookPage===0;
+  $("nextPage").disabled=bookPage===12;
 }
 
 function selectTab(name) {
-  for (const tab of ["images","data","diary"])
-    $("tab-"+tab).hidden = tab !== name;
+  for (const key of ["images","data","diary"])
+    $("tab-"+key).hidden=key!==name;
 
-  document.querySelectorAll("[data-tab]").forEach(button => {
-    button.classList.toggle("active",button.dataset.tab === name);
+  document.querySelectorAll("[data-tab]").forEach(button=>{
+    button.classList.toggle("active",button.dataset.tab===name);
   });
-
-  if (name === "diary") renderDiary();
+  if (name==="diary") renderDiary();
 }
 
-document.querySelectorAll("[data-tab]").forEach(button => {
-  button.onclick = () => selectTab(button.dataset.tab);
-});
+$("playButton").onclick=()=>{ cancelGummy(); play(); };
+$("toiletButton").onclick=()=>{ cancelGummy(); toilet(); };
+$("eventDone").onclick=closeEvent;
 
-document.querySelectorAll("[data-command]").forEach(button => {
-  button.onclick = () => command(button.dataset.command);
-});
-
-document.querySelectorAll("[data-close]").forEach(button => {
-  button.onclick = () => $(button.dataset.close).close();
-});
-
-$("settingsButton").onclick = () => {
+$("settingsButton").onclick=()=>{
+  cancelGummy();
+  tick();
   selectTab("images");
   $("settingsDialog").showModal();
 };
 
-$("bookButton").onclick = () => {
+$("bookButton").onclick=()=>{
+  cancelGummy();
+  tick();
   renderBook();
   $("bookDialog").showModal();
 };
 
-$("prevPage").onclick = () => { bookPage--; renderBook(); };
-$("nextPage").onclick = () => { bookPage++; renderBook(); };
+$("prevPage").onclick=()=>{ bookPage--; renderBook(); };
+$("nextPage").onclick=()=>{ bookPage++; renderBook(); };
 
-$("pet").addEventListener("pointerdown", event => {
-  if (event.pointerType === "mouse" && event.button !== 0) return;
-  if (state.event !== null) return;
-  event.preventDefault();
-  pointer = event.pointerId;
-  lastStroke = { x:event.clientX, y:event.clientY };
-  $("pet").setPointerCapture(event.pointerId);
-  command("pet");
+document.querySelectorAll("[data-close]").forEach(button=>{
+  button.onclick=()=>$(button.dataset.close).close();
 });
 
-$("pet").addEventListener("pointermove", event => {
-  if (pointer !== event.pointerId || !lastStroke) return;
-  const distance = Math.hypot(
-    event.clientX-lastStroke.x,
-    event.clientY-lastStroke.y
-  );
-  if (distance >= 15) {
-    lastStroke = { x:event.clientX, y:event.clientY };
-    command("pet");
-  }
+document.querySelectorAll("[data-tab]").forEach(button=>{
+  button.onclick=()=>selectTab(button.dataset.tab);
 });
 
-function releasePointer() {
-  pointer = null;
-  lastStroke = null;
-}
-
-$("pet").addEventListener("pointerup",releasePointer);
-$("pet").addEventListener("pointercancel",releasePointer);
-$("pet").addEventListener("lostpointercapture",releasePointer);
-
-$("pet").addEventListener("keydown", event => {
-  if (event.key === "Enter" || event.key === " ") {
-    event.preventDefault();
-    command("pet");
-  }
-});
-
-for (const key of ["normal","happy"]) {
-  $(key+"File").addEventListener("change", async event => {
-    const file = event.target.files[0];
-    await uploadImage(file,key);
-    event.target.value = "";
+for (const id of ["settingsDialog","bookDialog"]) {
+  $(id).addEventListener("close",()=>{
+    state.updated=Date.now();
+    render();
   });
 }
 
-$("testHappy").onclick = () => {
-  happyUntil = Date.now()+3500;
-  $("settingsDialog").close();
-  say("えへへ！");
-  animate("happy");
-  particle("💖");
-  renderImage();
-};
-
-$("clearImages").onclick = async () => {
-  if (imageBusy || !imagesReady) return;
-  if (!confirm("登録した画像を解除しますか？")) return;
-
-  imageBusy = true;
-  updateImageControls();
-  images = { normal:"", happy:"" };
-  failedImages.clear();
-  shownImage = "";
-  updatePreviews();
-  renderImage();
-
-  const ok = await persistImages();
-  $("imageMessage").textContent = ok
-    ? "画像を解除しました。"
-    : "画面から解除しましたが、保存できませんでした。";
-
-  imageBusy = false;
-  updateImageControls();
-};
-
 /* ---------- バックアップ ---------- */
 
-$("exportButton").onclick = () => {
+$("exportButton").onclick=()=>{
   tick();
   save();
 
-  const payload = {
-    format: "muipi-screen-backup-2",
+  const data={
+    format:"muipi-screen-backup-3",
     state,
-    images
+    images,
+    renderMode
   };
 
-  const blob = new Blob([JSON.stringify(payload)],{ type:"application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "muipi-"+new Date().toISOString().slice(0,10)+".json";
+  const blob=new Blob([JSON.stringify(data)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement("a");
+  a.href=url;
+  a.download="muipi-"+new Date().toISOString().slice(0,10)+".json";
   document.body.append(a);
   a.click();
   a.remove();
-  setTimeout(() => URL.revokeObjectURL(url),10000);
+  setTimeout(()=>URL.revokeObjectURL(url),15000);
 };
 
-$("importFile").onchange = async event => {
-  const file = event.target.files[0];
+$("importFile").onchange=async event=>{
+  const file=event.target.files[0];
   if (!file || imageBusy || !imagesReady) return;
 
-  imageBusy = true;
-  updateImageControls();
+  imageBusy=true;
+  imageControls();
 
   try {
-    if (file.size > 8*1024*1024) throw Error("ファイルが大きすぎます");
+    if (file.size>26*1024*1024) throw Error("ファイルが大きすぎます");
 
-    const data = JSON.parse(await file.text());
+    const data=JSON.parse(await file.text());
+    if (![
+      "muipi-screen-backup-3",
+      "muipi-screen-backup-2",
+      "muipi-backup-1"
+    ].includes(data.format)) throw Error("対応していないバックアップです");
 
-    if (!["muipi-screen-backup-2","muipi-backup-1"].includes(data.format))
-      throw Error("対応していないバックアップです");
-
-    const nextState = normalize(data.state);
-    const nextImages = validateImages(data.images || {});
+    const nextState=normalize(data.state);
+    const nextImages=validateImages(data.images || {});
 
     for (const src of Object.values(nextImages))
       if (src) await decodeImage(src);
 
     if (!confirm("現在の育成データと画像を置き換えますか？")) return;
 
-    state = nextState;
-    state.updated = Date.now();
-    images = nextImages;
-    failedImages.clear();
-    shownImage = "";
-    eventSignature = "";
-    poopSignature = "reset";
-    happyUntil = 0;
+    cancelGummy();
+    state=nextState;
+    state.updated=Date.now();
+    images=nextImages;
+    happyUntil=0;
+    currentSrc="";
+    brokenImages.clear();
+    poopSignature="reset";
+    eventSignature="";
+    renderMode=data.renderMode==="pixel" ? "pixel" : "smooth";
+    $("renderMode").value=renderMode;
+    try { localStorage.setItem(PREF_KEY,renderMode); } catch {}
 
     updatePreviews();
     render();
     save();
-    say("おかえり！ データを読み込んだよ");
 
-    const ok = await persistImages();
-    if (!ok || !saveOK)
-      alert("読み込みは完了しましたが、端末への保存に失敗しました。バックアップを保管してください。");
+    const saved=await persistImages();
+    if (!saved || !saveOK)
+      alert("復元しましたが、端末に保存できませんでした。バックアップを保管してください。");
 
     $("settingsDialog").close();
-  } catch (error) {
+    say("おかえり！ 続きから遊ぼう。");
+  } catch(error) {
     alert("読み込めませんでした："+error.message);
   } finally {
-    imageBusy = false;
-    updateImageControls();
-    event.target.value = "";
+    imageBusy=false;
+    imageControls();
+    event.target.value="";
   }
 };
 
-$("restartButton").onclick = () => {
-  if (!confirm("今の育成を終了して、新しい子を育てますか？ 図鑑と画像は残ります。")) return;
-  state = fresh(state.book);
-  happyUntil = 0;
-  eventSignature = "";
-  poopSignature = "reset";
-  $("pet").style.left = "50%";
+$("restartButton").onclick=()=>{
+  if (!confirm("図鑑と画像を残して、新しいむいぴーを育てますか？")) return;
+  cancelGummy();
+  state=fresh(state.book);
+  happyUntil=0;
+  poopSignature="reset";
+  eventSignature="";
   say("はじめまして！ なでてくれる？");
   save();
   render();
   $("settingsDialog").close();
 };
 
-/* ---------- ゲームループ ---------- */
+/* ---------- 起動 ---------- */
 
 tick();
 render();
 save();
-
-if (loadNotice) say(loadNotice);
-
-updateImageControls();
+imageControls();
 restoreImages();
 
-setInterval(() => {
+if (startupMessage) say(startupMessage);
+
+setInterval(()=>{
   if (document.hidden) return;
   tick();
   render();
-}, 500);
+},500);
 
-setInterval(() => {
+setInterval(()=>{
   if (document.hidden) return;
   tick();
   save();
-}, 5000);
+},5000);
 
-setInterval(() => {
-  if (document.hidden ||
-      state.event !== null ||
-      pointer !== null ||
-      $("settingsDialog").open ||
-      $("bookDialog").open) return;
-
-  $("pet").style.left = (36+Math.random()*28)+"%";
-}, 5500);
-
-document.addEventListener("visibilitychange", () => {
+document.addEventListener("visibilitychange",()=>{
+  cancelGummy();
   tick();
   save();
   if (!document.hidden) render();
 });
 
-window.addEventListener("pagehide", () => {
+window.addEventListener("pagehide",()=>{
+  cancelGummy();
   tick();
   save();
 });
 </script>
+
+<!-- GitHubの形態別画像・待ち時間ゲージ・記念カード -->
+<script src="./muipi-custom.js"></script>
 </body>
 </html>
