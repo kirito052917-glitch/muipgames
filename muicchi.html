@@ -1,0 +1,2128 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f7efe3">
+<title>むいぴーのおへや</title>
+
+<style>
+:root {
+  --ink: #463d44;
+  --muted: #8d7b83;
+  --paper: #fffaf3;
+  --line: #e5d4c4;
+  --pink: #ee81a6;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  color: var(--ink);
+  background: #eaddcc;
+  font-family: system-ui, -apple-system, "Noto Sans JP", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, input { font: inherit; }
+
+button {
+  color: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+button:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid #ad7bbc;
+  outline-offset: 2px;
+}
+
+button:disabled { opacity: .5; }
+
+button:active:not(:disabled) { transform: scale(.97); }
+
+[hidden] { display: none !important; }
+
+button, .pet, .room {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.app {
+  width: 100%;
+  max-width: 520px;
+  height: 100vh;
+  height: 100dvh;
+  margin: auto;
+  padding:
+    max(8px, env(safe-area-inset-top))
+    10px
+    max(8px, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+  background: #f7efe3;
+}
+
+.header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.brand { font-size: 18px; font-weight: 900; }
+.subtitle { font-size: 10px; color: var(--muted); }
+
+.header-buttons { display: flex; gap: 6px; }
+
+.icon-button {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper);
+  font-size: 20px;
+}
+
+.profile {
+  flex: 0 0 auto;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 10px 12px;
+}
+
+.profile-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+#petName {
+  font-weight: 900;
+  font-size: clamp(13px, 4vw, 18px);
+}
+
+#stageText {
+  white-space: nowrap;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.growth {
+  height: 6px;
+  margin-top: 7px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #eadfe1;
+}
+
+#growthFill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #f6b782, #ee81a6);
+  transition: width .3s;
+}
+
+#growthText {
+  margin-top: 4px;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.room {
+  flex: 1 1 0;
+  min-height: 100px;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 2px solid #d9c2a9;
+  border-radius: 23px;
+  background:
+    linear-gradient(
+      transparent 75%,
+      #d9b78e 75%,
+      #e2c39e 77%,
+      #eed5b2 77%
+    ),
+    repeating-linear-gradient(
+      90deg,
+      #fff0d9 0 28px,
+      #fae5c7 28px 56px
+    );
+}
+
+.window {
+  position: absolute;
+  right: 7%;
+  top: 13%;
+  width: clamp(45px, 17vw, 80px);
+  height: clamp(48px, 18vw, 85px);
+  display: grid;
+  place-items: center;
+  border: 6px solid #fffaf2;
+  border-radius: 17px;
+  background: #b9e4ed;
+  box-shadow: 0 4px 0 #c4a47d;
+  font-size: 30px;
+}
+
+.frame {
+  position: absolute;
+  top: 16%;
+  left: 7%;
+  padding: 4px 8px;
+  border: 5px solid #c29670;
+  background: #fffaf0;
+  transform: rotate(-7deg);
+  font-size: 25px;
+}
+
+.rug {
+  position: absolute;
+  bottom: 5%;
+  left: 10%;
+  width: 80%;
+  height: 20%;
+  border: 4px solid #ebc0ac;
+  border-radius: 50%;
+  background: #f8daca;
+}
+
+.bubble {
+  position: absolute;
+  z-index: 6;
+  top: 9px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 20px);
+  padding: 8px 12px;
+  border: 1px solid #e4d4c5;
+  border-radius: 16px;
+  background: #fffffff2;
+  text-align: center;
+  font-size: clamp(11px, 3vw, 13px);
+  line-height: 1.45;
+  pointer-events: none;
+}
+
+.pet {
+  position: absolute;
+  z-index: 3;
+  width: min(53%, 235px);
+  height: 70%;
+  max-height: 285px;
+  bottom: 9%;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: left 2s ease-in-out;
+  cursor: pointer;
+  touch-action: none;
+}
+
+.shadow {
+  position: absolute;
+  bottom: -2px;
+  left: 20%;
+  width: 60%;
+  height: 7%;
+  border-radius: 50%;
+  background: #765b3b38;
+}
+
+.aura {
+  position: absolute;
+  inset: 15% -8% -4%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, var(--aura, #ffd0b3), transparent 67%);
+  opacity: .75;
+}
+
+.pet-body { position: absolute; inset: 0; }
+
+.visual {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  transform-origin: 50% 90%;
+  animation: breathe 2.8s ease-in-out infinite;
+}
+
+#petImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  image-rendering: pixelated;
+  pointer-events: none;
+  filter: drop-shadow(0 3px 0 #00000015);
+}
+
+#fallback {
+  font-size: clamp(55px, 22vw, 120px);
+  line-height: 1.15;
+}
+
+#badge {
+  position: absolute;
+  right: -2%;
+  top: 20%;
+  font-size: clamp(23px, 7vw, 35px);
+  filter: drop-shadow(0 2px 0 white);
+  pointer-events: none;
+}
+
+.pet.jump .pet-body { animation: jump .65s ease; }
+.pet.happy .visual { animation: happy .45s ease 2; }
+.pet.evolve .pet-body { animation: evolve 1.3s ease; }
+
+@keyframes breathe {
+  50% { transform: translateY(-3px) scaleY(1.02); }
+}
+@keyframes jump {
+  40% { transform: translateY(-40px) rotate(-6deg); }
+  75% { transform: scaleY(.92); }
+}
+@keyframes happy {
+  25% { transform: rotate(-6deg); }
+  75% { transform: rotate(6deg); }
+}
+@keyframes evolve {
+  35% { transform: scale(.85); filter: brightness(4); }
+  70% { transform: scale(1.12); filter: brightness(2); }
+}
+
+.poop {
+  position: absolute;
+  z-index: 5;
+  bottom: 2%;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  font-size: 30px;
+}
+
+.particle {
+  position: absolute;
+  z-index: 7;
+  font-size: 27px;
+  pointer-events: none;
+  animation: float 1s ease-out forwards;
+}
+
+@keyframes float {
+  to { transform: translateY(-75px) rotate(15deg); opacity: 0; }
+}
+
+.room-label {
+  position: absolute;
+  left: 10px;
+  bottom: 7px;
+  color: #927555;
+  font-size: 10px;
+  pointer-events: none;
+}
+
+.status {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 7px;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: var(--paper);
+}
+
+.stat-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 2px;
+  font-size: 10px;
+  margin-bottom: 5px;
+  white-space: nowrap;
+}
+
+.stat-track {
+  height: 6px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #eadfe1;
+}
+
+.stat-fill {
+  height: 100%;
+  background: var(--bar, #f0ac7d);
+  transition: width .3s;
+}
+
+.commands {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 7px;
+}
+
+.command {
+  min-width: 0;
+  min-height: 66px;
+  padding: 7px 2px;
+  border: 1px solid #dfc9b9;
+  border-bottom-width: 4px;
+  border-radius: 17px;
+  background: var(--paper);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.command span {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 25px;
+  line-height: 1.15;
+}
+
+.command.primary {
+  background: #ffe5ee;
+  border-color: #e6b1c3;
+}
+
+.command.alert {
+  background: #e5f4ff;
+  border-color: #98c8e2;
+}
+
+.bottom-line {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 9px;
+  color: var(--muted);
+  min-height: 12px;
+}
+
+/* 選択肢は部屋の中に表示 */
+.event-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: #3d2d3e60;
+  display: flex;
+  align-items: flex-end;
+  padding: 9px;
+}
+
+.event-card {
+  width: 100%;
+  max-height: 100%;
+  padding: 12px;
+  border: 2px solid #ecc0d1;
+  border-radius: 19px;
+  background: #fff8f9;
+  box-shadow: 0 7px 25px #47313b25;
+}
+
+.event-title { margin: 0 0 5px; font-size: 16px; }
+.event-text { margin: 0 0 9px; font-size: 12px; line-height: 1.5; }
+
+.choices { display: grid; gap: 6px; }
+
+.choice {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid #e5c6d2;
+  border-radius: 12px;
+  background: white;
+  text-align: left;
+  font-size: 12px;
+}
+
+/* 設定と図鑑も別ページに移動せず重ねて表示 */
+dialog {
+  width: min(94vw, 470px);
+  max-height: 90vh;
+  max-height: 90dvh;
+  overflow: hidden;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: var(--paper);
+  color: var(--ink);
+}
+
+dialog::backdrop { background: #352c3b85; }
+
+.dialog-inner {
+  padding: 17px;
+  max-height: 88vh;
+  max-height: 88dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.dialog-header h2 { margin: 0; font-size: 19px; }
+
+.close {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: white;
+}
+
+.tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+
+.tab {
+  flex: 1;
+  padding: 9px 4px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: white;
+  font-size: 12px;
+}
+
+.tab.active { background: #ffe5ee; border-color: #e5b6c9; }
+
+.note { font-size: 12px; line-height: 1.6; color: #84727a; }
+
+.image-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin: 12px 0;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: white;
+}
+
+.preview {
+  width: 70px;
+  height: 76px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 10px;
+  background:
+    conic-gradient(#e9e2dc 25%, #faf7f4 0 50%, #e9e2dc 0 75%, #faf7f4 0)
+    0 0 / 14px 14px;
+  font-size: 35px;
+}
+
+.preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.image-details { flex: 1; min-width: 0; }
+.image-details strong { font-size: 13px; }
+
+.file-label {
+  display: block;
+  position: relative;
+  margin-top: 7px;
+  padding: 9px;
+  text-align: center;
+  font-size: 12px;
+  border: 1px solid #e5b6c9;
+  border-radius: 10px;
+  background: #ffeaf1;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.file-label input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  margin: 12px 0;
+}
+
+#imageMessage {
+  min-height: 2.5em;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.wide {
+  width: 100%;
+  min-height: 43px;
+  padding: 10px;
+  margin-top: 8px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: white;
+  font-size: 13px;
+}
+
+.danger { color: #b14f6b; }
+
+.book-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+}
+
+.book-item {
+  min-height: 57px;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: white;
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+}
+
+.book-item.found { background: #ffebf3; }
+
+.book-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 13px;
+  font-size: 12px;
+}
+
+.book-nav button {
+  min-width: 64px;
+  min-height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: white;
+}
+
+#diary {
+  padding-left: 20px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+#diary li { margin-bottom: 8px; }
+
+@media (max-height: 650px) {
+  .app { gap: 5px; }
+  .header .icon-button { width: 38px; height: 38px; }
+  .brand { font-size: 16px; }
+  .subtitle { display: none; }
+  .profile { padding: 7px 10px; }
+  .status { padding: 7px; }
+  .command { min-height: 57px; font-size: 11px; }
+  .command span { font-size: 22px; }
+  .event-card { padding: 9px; }
+  .event-title { font-size: 14px; }
+  .event-text { font-size: 11px; margin-bottom: 5px; }
+  .choices { gap: 4px; }
+  .choice { min-height: 35px; padding: 6px 8px; font-size: 11px; }
+}
+
+/* 横向きなど、高さが非常に小さいとき */
+@media (max-height: 480px) {
+  .app {
+    max-width: 850px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 210px;
+    grid-template-rows: auto auto 1fr auto;
+    gap: 6px;
+  }
+  .header { grid-column: 1 / 3; }
+  .profile { grid-column: 2; grid-row: 2; }
+  .room { grid-column: 1; grid-row: 2 / 5; min-height: 0; }
+  .status {
+    grid-column: 2;
+    grid-row: 3;
+    grid-template-columns: 1fr 1fr;
+    align-content: center;
+  }
+  .commands {
+    grid-column: 2;
+    grid-row: 4;
+    grid-template-columns: 1fr 1fr;
+  }
+  .bottom-line { display: none; }
+  .command { min-height: 47px; padding: 4px; }
+  .command span { display: inline; font-size: 19px; }
+  .event-text { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+</style>
+</head>
+
+<body>
+<main class="app">
+  <header class="header">
+    <div>
+      <div class="brand">🌱 むいぴーのおへや</div>
+      <div class="subtitle">なでて、あそんで、ちょっと変になる。</div>
+    </div>
+    <div class="header-buttons">
+      <button class="icon-button" id="bookButton" aria-label="進化図鑑">📚</button>
+      <button class="icon-button" id="settingsButton" aria-label="設定">⚙️</button>
+    </div>
+  </header>
+
+  <section class="profile">
+    <div class="profile-line">
+      <div id="petName">ちびむいぴー</div>
+      <div id="stageText">ちび期</div>
+    </div>
+    <div class="growth"><div id="growthFill"></div></div>
+    <div id="growthText"></div>
+  </section>
+
+  <section class="room" id="room" aria-label="ゲーム画面">
+    <div class="window">☀️</div>
+    <div class="frame">🍬</div>
+    <div class="rug"></div>
+
+    <div class="bubble" id="bubble" aria-live="polite">なでてくれる？</div>
+
+    <div class="pet" id="pet" role="button" tabindex="0" aria-label="むいぴーをなでる">
+      <div class="shadow"></div>
+      <div class="aura" id="aura"></div>
+      <div class="pet-body">
+        <div class="visual">
+          <img id="petImage" alt="むいぴー" draggable="false" hidden>
+          <div id="fallback">🧑🏻‍🚀</div>
+        </div>
+        <div id="badge">🌱</div>
+      </div>
+    </div>
+
+    <div id="poops"></div>
+    <div class="room-label">MUIPI ROOM</div>
+
+    <div class="event-layer" id="eventLayer" hidden>
+      <section class="event-card" aria-labelledby="eventTitle">
+        <h2 class="event-title" id="eventTitle"></h2>
+        <p class="event-text" id="eventText"></p>
+        <div class="choices" id="choices"></div>
+      </section>
+    </div>
+  </section>
+
+  <section class="status" id="status" aria-label="ステータス"></section>
+
+  <nav class="commands" aria-label="ゲームのコマンド">
+    <button class="command primary" data-command="gummy">
+      <span>🍬</span>グミ
+    </button>
+    <button class="command" data-command="play">
+      <span>🎮</span>あそぶ
+    </button>
+    <button class="command" data-command="pet">
+      <span>💖</span>なでる
+    </button>
+    <button class="command" data-command="toilet" id="toiletButton">
+      <span>🚽</span>トイレ
+    </button>
+  </nav>
+
+  <div class="bottom-line">
+    <span id="hint">キャラを指でなでてもOK</span>
+    <span id="saveText">自動セーブ</span>
+  </div>
+</main>
+
+<dialog id="settingsDialog">
+  <div class="dialog-inner">
+    <div class="dialog-header">
+      <h2>⚙️ 設定</h2>
+      <button class="close" data-close="settingsDialog" aria-label="閉じる">✕</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" data-tab="images">キャラ画像</button>
+      <button class="tab" data-tab="data">データ</button>
+      <button class="tab" data-tab="diary">日記</button>
+    </div>
+
+    <section id="tab-images">
+      <p class="note">
+        端末に保存した画像を選んでください。画像は外部に送信しません。
+        PNG・JPEG・WebP推奨です。
+      </p>
+
+      <label class="check-row">
+        <input type="checkbox" id="removeBlack" checked>
+        読み込み時、外側につながる黒背景を透過
+      </label>
+
+      <div class="image-row">
+        <div class="preview" id="normalPreview">🧑🏻‍🚀</div>
+        <div class="image-details">
+          <strong>通常のむいぴー</strong>
+          <label class="file-label">
+            画像を選ぶ
+            <input type="file" id="normalFile" accept="image/*">
+          </label>
+        </div>
+      </div>
+
+      <div class="image-row">
+        <div class="preview" id="happyPreview">💖</div>
+        <div class="image-details">
+          <strong>うれしいむいぴー</strong>
+          <label class="file-label">
+            画像を選ぶ
+            <input type="file" id="happyFile" accept="image/*">
+          </label>
+        </div>
+      </div>
+
+      <div id="imageMessage" role="status">
+        まずは通常画像を選んでね。1枚だけでも遊べます。
+      </div>
+
+      <button class="wide" id="testHappy">うれしい表情を試す</button>
+      <button class="wide danger" id="clearImages">登録画像を解除</button>
+
+      <p class="note">
+        黒背景透過で輪郭も消える場合は、チェックを外して読み込み直してください。
+        HEICなどを読み込めない場合は、PNGかJPEGに変換してください。
+      </p>
+    </section>
+
+    <section id="tab-data" hidden>
+      <p class="note">
+        育成と画像はこのブラウザーに保存します。
+        サイトデータの削除に備えてバックアップできます。
+      </p>
+
+      <button class="wide" id="exportButton">💾 バックアップを書き出す</button>
+
+      <label class="file-label">
+        バックアップを読み込む
+        <input type="file" id="importFile" accept=".json,application/json">
+      </label>
+
+      <button class="wide danger" id="restartButton">🥚 図鑑を残して育て直す</button>
+
+      <p class="note">
+        進化は3回。最終形態は5系統×4タイプ×5個性の100種類。
+        今回は共通画像に名前・色・飾りを付ける試作品です。
+      </p>
+    </section>
+
+    <section id="tab-diary" hidden>
+      <ul id="diary"></ul>
+    </section>
+  </div>
+</dialog>
+
+<dialog id="bookDialog">
+  <div class="dialog-inner">
+    <div class="dialog-header">
+      <h2>📚 進化図鑑</h2>
+      <button class="close" data-close="bookDialog" aria-label="閉じる">✕</button>
+    </div>
+    <p class="note" id="bookSummary"></p>
+    <div class="book-grid" id="bookGrid"></div>
+    <div class="book-nav">
+      <button id="prevPage">← 前</button>
+      <span id="pageText"></span>
+      <button id="nextPage">次 →</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+"use strict";
+
+const $ = id => document.getElementById(id);
+const clamp = (n, min = 0, max = 100) => Math.max(min, Math.min(max, n));
+const pick = list => list[Math.floor(Math.random() * list.length)];
+
+const SAVE_KEY = "muipi-screen-v2";
+const OLD_SAVE_KEY = "muipi-prototype-v1";
+const OLD_IMAGE_KEY = "muipi-prototype-images-v1";
+const IMAGE_FALLBACK_KEY = "muipi-screen-images-v2";
+
+const thresholds = [0, 12, 30, 55];
+
+const families = [
+  { name: "もちもち", icon: "🍬", color: "#ffabd0" },
+  { name: "なかよし", icon: "💖", color: "#ffb4b9" },
+  { name: "のんびり", icon: "☁️", color: "#b6dcff" },
+  { name: "はいしん", icon: "🎮", color: "#c7baff" },
+  { name: "ふしぎ", icon: "🪐", color: "#b3ead7" }
+];
+
+const branches = [
+  ["グミ", "プリン", "おもち", "ゼリー"],
+  ["アイドル", "おうじ", "応援団", "お世話係"],
+  ["おふとん", "ゆめ", "ひなた", "くも"],
+  ["ゲーマー", "回線", "司会者", "分身"],
+  ["宇宙", "きのこ", "妖精", "未確認生命体"]
+];
+
+const traits = [
+  { name: "甘えんぼ", icon: "💕" },
+  { name: "わんぱく", icon: "⚡" },
+  { name: "おっとり", icon: "🌙" },
+  { name: "きれい好き", icon: "✨" },
+  { name: "伝説の", icon: "👑" }
+];
+
+const events = [
+  {
+    title: "🎮 指示が飛んできた！",
+    text: "「右！ 左！ ジャンプ！」いまグミを食べてるだけなのに。",
+    choices: [
+      {
+        text: "自分のペースで食べる",
+        f: [0,2,2,0,0], b: [0,0,3,0], t: [0,0,3,1,0],
+        result: "のんびりもぐもぐ。これが自分のペース。"
+      },
+      {
+        text: "全部同時にやる",
+        f: [0,0,0,4,2], b: [0,0,0,4], t: [0,3,0,0,1],
+        result: "一瞬、むいぴーが2人に見えた。"
+      },
+      {
+        text: "グミに返事を任せる",
+        f: [4,0,0,0,3], b: [3,0,0,0], t: [1,0,0,0,3],
+        result: "グミ「まず落ち着いてください」"
+      }
+    ]
+  },
+  {
+    title: "💩 うんちがしゃべった！",
+    text: "「片づける前に、ひとつだけ聞いてほしい」",
+    choices: [
+      {
+        text: "お話を聞く",
+        f: [0,3,0,0,2], b: [0,0,0,3], t: [3,0,2,0,0],
+        result: "夢はソフトクリームになることらしい。"
+      },
+      {
+        text: "丁寧にお別れする",
+        f: [0,2,2,0,0], b: [0,0,3,0], t: [0,0,1,4,0],
+        result: "「ありがとう」と、きらりと光った。"
+      },
+      {
+        text: "配信デビューさせる",
+        f: [0,0,0,4,3], b: [0,0,4,0], t: [0,2,0,0,3],
+        result: "コメント欄が「運がつく」で埋まった。"
+      }
+    ]
+  },
+  {
+    title: "🍬 最後のグミと目が合った",
+    text: "袋の中から、じっとこちらを見つめている。",
+    choices: [
+      {
+        text: "おいしく食べる",
+        f: [5,0,0,0,0], b: [4,0,0,0], t: [0,3,0,0,0],
+        result: "いつもより、もちもちしてきた。"
+      },
+      {
+        text: "グミぴーと名づける",
+        f: [0,4,0,0,3], b: [0,0,0,4], t: [4,0,0,0,1],
+        result: "グミぴーが仲間になった。気がする。"
+      },
+      {
+        text: "一緒に日なたぼっこ",
+        f: [1,0,5,0,1], b: [0,1,4,0], t: [0,0,4,0,0],
+        result: "ぽかぽか。ちょっと溶けそう。"
+      }
+    ]
+  },
+  {
+    title: "🛜 頭から電波が出ている",
+    text: "むいぴーの近くに行くと、通信が速い。",
+    choices: [
+      {
+        text: "配信を始める",
+        f: [0,0,0,5,0], b: [0,5,0,0], t: [0,2,0,0,3],
+        result: "本日の配信は、本人が回線です。"
+      },
+      {
+        text: "宇宙に話しかける",
+        f: [0,0,0,1,5], b: [4,0,0,0], t: [0,0,0,0,4],
+        result: "宇宙「グミありますか？」"
+      },
+      {
+        text: "そっと見守る",
+        f: [0,2,4,0,0], b: [0,3,0,0], t: [2,0,4,0,0],
+        result: "電波も、のんびりになった。"
+      }
+    ]
+  },
+  {
+    title: "🌱 頭に芽が生えた",
+    text: "水をあげるか、グミをあげるか。それが問題だ。",
+    choices: [
+      {
+        text: "水をあげる",
+        f: [0,2,3,0,2], b: [0,0,0,4], t: [0,0,2,3,0],
+        result: "小さな葉っぱが、ぴょこん。"
+      },
+      {
+        text: "グミをあげる",
+        f: [5,0,0,0,2], b: [0,3,0,0], t: [0,2,0,0,3],
+        result: "グミのなる木を目指し始めた。"
+      },
+      {
+        text: "観察配信をする",
+        f: [0,0,0,5,1], b: [0,0,4,0], t: [2,1,0,0,1],
+        result: "視聴者3人。全員、植物だった。"
+      }
+    ]
+  }
+];
+
+function fresh(book = []) {
+  return {
+    version: 2,
+    updated: Date.now(),
+    stage: 0,
+    xp: 0,
+    family: -1,
+    branch: -1,
+    trait: -1,
+    f: [0,0,0,0,0],
+    b: [0,0,0,0],
+    t: [0,0,0,0,0],
+    hunger: 70,
+    mood: 75,
+    bond: 15,
+    bowel: 20,
+    poops: [],
+    book: [...book],
+    logs: ["ちびむいぴーがやってきた！"],
+    acts: 0,
+    event: null,
+    lastEvent: Date.now(),
+    lastXP: 0
+  };
+}
+
+function normalize(raw) {
+  if (!raw || typeof raw !== "object") throw Error("データ形式が違います");
+  const out = fresh();
+
+  for (const key of ["updated","xp","acts","lastEvent","lastXP"]) {
+    if (typeof raw[key] !== "number" || !Number.isFinite(raw[key]) ||
+        raw[key] < 0 || raw[key] > 1e15) {
+      throw Error("数値が不正です");
+    }
+    out[key] = raw[key];
+  }
+
+  if (!Number.isInteger(raw.stage) || raw.stage < 0 || raw.stage > 3)
+    throw Error("進化段階が不正です");
+  out.stage = raw.stage;
+
+  for (const [key, max, required] of [
+    ["family",4,1], ["branch",3,2], ["trait",4,3]
+  ]) {
+    const n = raw[key];
+    if (!Number.isInteger(n) || n < -1 || n > max ||
+        (out.stage >= required && n < 0))
+      throw Error("進化情報が不正です");
+    out[key] = n;
+  }
+
+  for (const [key, size] of [["f",5],["b",4],["t",5]]) {
+    const a = raw[key];
+    if (!Array.isArray(a) || a.length !== size ||
+        a.some(n => typeof n !== "number" || !Number.isFinite(n) ||
+          n < 0 || n > 1e9)) throw Error("育成値が不正です");
+    out[key] = [...a];
+  }
+
+  for (const key of ["hunger","mood","bond","bowel"]) {
+    if (typeof raw[key] !== "number" || !Number.isFinite(raw[key]))
+      throw Error("状態が不正です");
+    out[key] = clamp(raw[key]);
+  }
+
+  if (!Array.isArray(raw.book) ||
+      raw.book.length > 100 ||
+      raw.book.some(n => !Number.isInteger(n) || n < 0 || n > 99))
+    throw Error("図鑑が不正です");
+  out.book = [...new Set(raw.book)];
+
+  out.poops = Array.isArray(raw.poops)
+    ? raw.poops.filter(n => typeof n === "number" &&
+        Number.isFinite(n) && n >= 5 && n <= 85).slice(0,4)
+    : [];
+
+  out.logs = Array.isArray(raw.logs)
+    ? raw.logs.filter(s => typeof s === "string").slice(0,12).map(s => s.slice(0,250))
+    : [];
+
+  if (raw.version === 2 && Number.isInteger(raw.event) &&
+      raw.event >= 0 && raw.event < events.length) out.event = raw.event;
+
+  return out;
+}
+
+let state = fresh();
+let loadNotice = "";
+
+try {
+  const raw = localStorage.getItem(SAVE_KEY);
+  const old = raw ? null : localStorage.getItem(OLD_SAVE_KEY);
+  if (raw || old) {
+    state = normalize(JSON.parse(raw || old));
+    if (old) loadNotice = "前の育成データを引き継いだよ！";
+  }
+} catch {
+  loadNotice = "保存データを読み込めませんでした。設定から復元できます。";
+}
+
+let images = { normal: "", happy: "" };
+let shownImage = "";
+const failedImages = new Set();
+let happyUntil = 0;
+let lastAction = 0;
+let pointer = null;
+let lastStroke = null;
+let eventSignature = "";
+let poopSignature = "";
+let bookPage = 0;
+let animationTimers = {};
+let imageBusy = false;
+let imagesReady = false;
+let imageWriteQueue = Promise.resolve();
+let saveOK = true;
+
+function say(text) { $("bubble").textContent = text; }
+
+function log(text) {
+  state.logs.unshift(text);
+  state.logs = state.logs.slice(0,12);
+}
+
+function score(f, b, t) {
+  f.forEach((n,i) => state.f[i] += n);
+  b.forEach((n,i) => state.b[i] += n);
+  t.forEach((n,i) => state.t[i] += n);
+}
+
+function best(list) {
+  return list.indexOf(Math.max(...list));
+}
+
+function petName() {
+  if (state.stage === 0) return "ちびむいぴー";
+  if (state.stage === 1) return families[state.family].name + "むいぴー";
+  const base = branches[state.family][state.branch] + "むいぴー";
+  return state.stage === 2 ? base : traits[state.trait].name + base;
+}
+
+function fullName(id) {
+  const f = Math.floor(id / 20);
+  const b = Math.floor(id % 20 / 5);
+  const t = id % 5;
+  return traits[t].name + branches[f][b] + "むいぴー";
+}
+
+function animate(name) {
+  const pet = $("pet");
+  clearTimeout(animationTimers[name]);
+  pet.classList.remove(name);
+  void pet.offsetWidth;
+  pet.classList.add(name);
+  animationTimers[name] = setTimeout(
+    () => pet.classList.remove(name),
+    name === "evolve" ? 1400 : 950
+  );
+}
+
+function particle(symbol) {
+  if ($("room").querySelectorAll(".particle").length >= 10) return;
+  const room = $("room").getBoundingClientRect();
+  const pet = $("pet").getBoundingClientRect();
+  const el = document.createElement("span");
+  el.className = "particle";
+  el.textContent = symbol;
+  el.style.left = (pet.left - room.left + pet.width * (.3 + Math.random() * .4)) + "px";
+  el.style.top = (pet.top - room.top + pet.height * .3) + "px";
+  $("room").append(el);
+  setTimeout(() => el.remove(), 1100);
+}
+
+function happy(symbol = "💖") {
+  happyUntil = Date.now() + 1800;
+  particle(symbol);
+  animate("happy");
+}
+
+function gainXP(amount = 1) {
+  const now = Date.now();
+  if (now - state.lastXP < 4000 || state.stage >= 3) return;
+  state.lastXP = now;
+  state.xp += amount;
+
+  if (state.xp >= thresholds[state.stage + 1]) {
+    state.stage++;
+    if (state.stage === 1) state.family = best(state.f);
+    if (state.stage === 2) state.branch = best(state.b);
+    if (state.stage === 3) {
+      state.trait = best(state.t);
+      const id = state.family * 20 + state.branch * 5 + state.trait;
+      if (!state.book.includes(id)) state.book.push(id);
+    }
+    const text = "✨ " + petName() + "に進化した！";
+    log(text);
+    say(text);
+    happyUntil = Date.now() + 2200;
+    animate("evolve");
+    particle("✨");
+  }
+}
+
+function maybeEvent() {
+  if (state.event !== null || state.acts < 5) return;
+  const elapsed = Date.now() - state.lastEvent;
+  if (elapsed < 45000) return;
+
+  if (Math.random() < .28 || elapsed > 110000) {
+    state.event = Math.floor(Math.random() * events.length);
+    state.lastEvent = Date.now();
+    log("📮 ちょっと変な出来事が起きた！");
+  }
+}
+
+function canAct() {
+  if (state.event !== null) return false;
+  const now = Date.now();
+  if (now - lastAction < 850) return false;
+  lastAction = now;
+  return true;
+}
+
+function finishAction() {
+  for (const key of ["hunger","mood","bond","bowel"])
+    state[key] = clamp(state[key]);
+  state.acts++;
+  gainXP();
+  maybeEvent();
+  save();
+  render();
+}
+
+function command(type) {
+  tick();
+  if (!canAct()) return;
+
+  if (type === "pet") {
+    state.bond += 3;
+    state.mood += 4;
+    score([0,3,1,0,0], [0,0,0,2], [3,0,1,0,0]);
+    say(pick(["えへへ、もっとなでて！","そこそこ〜！","いま、しあわせ。"]));
+    happy();
+  }
+
+  if (type === "gummy") {
+    if (state.hunger >= 96) {
+      say("おなかいっぱい！ あとで食べよう");
+      return;
+    }
+    state.hunger += 18;
+    state.mood += 8;
+    state.bowel += 17;
+    score([4,0,0,0,0], [3,1,0,0], [1,2,0,0,0]);
+    say("グミ！ もちもち、おいしい！");
+    happy("🍬");
+    log("🍬 グミを食べた。ちょっと弾力が増した。");
+  }
+
+  if (type === "play") {
+    state.hunger -= 7;
+    state.mood += 11;
+    state.bond += 2;
+    state.bowel += 4;
+    score([0,1,0,4,0], [0,2,1,1], [0,4,0,0,0]);
+    say(pick(["ジャンプ！","いまの見てた！？","次は一緒に配信しよう！"]));
+    animate("jump");
+    particle("⭐");
+    happyUntil = Date.now() + 1600;
+    log("🎮 一緒に遊んだ！");
+  }
+
+  if (type === "toilet") {
+    if (state.bowel < 60) {
+      say("まだトイレは大丈夫みたい");
+      return;
+    }
+    state.bowel = 0;
+    state.mood += 6;
+    score([0,2,1,0,0], [0,0,4,0], [0,0,0,4,0]);
+    say("トイレ成功！ すっきり！");
+    happy("✨");
+    log("🚽 トイレに間に合った！");
+  }
+
+  finishAction();
+}
+
+function cleanPoop(index) {
+  tick();
+  if (!canAct() || index >= state.poops.length) return;
+  state.poops.splice(index,1);
+  state.mood = clamp(state.mood + 3);
+  score([0,1,0,0,0], [0,0,1,0], [0,0,0,2,0]);
+  say("片づけてくれて、ありがとう！");
+  particle("🫧");
+  log("💩 うんちをタップで片づけた。");
+  finishAction();
+}
+
+function choose(index) {
+  if (state.event === null) return;
+  const choice = events[state.event].choices[index];
+  if (!choice) return;
+
+  state.event = null;
+  state.lastEvent = Date.now();
+  score(choice.f, choice.b, choice.t);
+  state.mood = clamp(state.mood + 6);
+  say(choice.result);
+  log(choice.result);
+  happy("✨");
+  gainXP(2);
+  save();
+  render();
+}
+
+function simulate(seconds) {
+  const dt = clamp(seconds, 0, 1800);
+  if (!dt) return;
+
+  state.hunger = clamp(state.hunger - dt * .028);
+  state.mood = clamp(state.mood - dt * (.008 + state.poops.length * .006));
+  state.bowel += dt * .13;
+
+  while (state.bowel >= 100) {
+    state.bowel -= 100;
+    if (state.poops.length < 4) {
+      state.poops.push(6 + Math.random() * 73);
+      log("💩 うんちが出た。タップで片づけてね！");
+      if (seconds < 10 && state.event === null) say("……でちゃった！");
+    }
+  }
+}
+
+function tick() {
+  const now = Date.now();
+  simulate((now - state.updated) / 1000);
+  state.updated = now;
+}
+
+function save() {
+  try {
+    localStorage.setItem(SAVE_KEY, JSON.stringify(state));
+    saveOK = true;
+  } catch {
+    saveOK = false;
+  }
+  $("saveText").textContent = saveOK ? "✓ 自動セーブ" : "⚠ 保存不可・設定から書き出し";
+}
+
+/* ---------- キャラ画像の保存 ----------
+   IndexedDBを優先。使えない場合のみlocalStorage。
+   保存に失敗しても、現在のゲーム画面では表示を続ける。
+-------------------------------------- */
+
+let dbPromise = null;
+
+function openDB() {
+  if (dbPromise) return dbPromise;
+
+  dbPromise = new Promise((resolve, reject) => {
+    if (!window.indexedDB) {
+      reject(Error("IndexedDB非対応"));
+      return;
+    }
+
+    const req = indexedDB.open("muipi-image-store", 1);
+    const timer = setTimeout(() => reject(Error("画像保存の応答待ち")), 4500);
+
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      if (!db.objectStoreNames.contains("assets")) db.createObjectStore("assets");
+    };
+
+    req.onsuccess = () => {
+      clearTimeout(timer);
+      resolve(req.result);
+    };
+
+    req.onerror = () => {
+      clearTimeout(timer);
+      reject(req.error);
+    };
+
+    req.onblocked = () => {
+      clearTimeout(timer);
+      reject(Error("画像保存がブロックされています"));
+    };
+  });
+
+  return dbPromise;
+}
+
+async function dbRead() {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction("assets", "readonly");
+    const req = tx.objectStore("assets").get("characters");
+    const timer = setTimeout(() => reject(Error("読込タイムアウト")), 4500);
+    let result;
+
+    req.onsuccess = () => { result = req.result; };
+    tx.oncomplete = () => { clearTimeout(timer); resolve(result); };
+    tx.onabort = tx.onerror = () => {
+      clearTimeout(timer);
+      reject(tx.error || Error("画像読込失敗"));
+    };
+  });
+}
+
+async function dbWrite(record) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction("assets", "readwrite");
+    tx.objectStore("assets").put(record, "characters");
+    const timer = setTimeout(() => {
+      try { tx.abort(); } catch {}
+      reject(Error("保存タイムアウト"));
+    }, 4500);
+
+    tx.oncomplete = () => { clearTimeout(timer); resolve(); };
+    tx.onabort = tx.onerror = () => {
+      clearTimeout(timer);
+      reject(tx.error || Error("画像保存失敗"));
+    };
+  });
+}
+
+function validateImages(raw) {
+  if (!raw || typeof raw !== "object") throw Error("画像データがありません");
+  const out = { normal: "", happy: "" };
+
+  for (const key of ["normal","happy"]) {
+    const v = raw[key] || "";
+    if (typeof v !== "string" || v.length > 2500000 ||
+        (v && !/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=\r\n]+$/.test(v))) {
+      throw Error("対応していない画像データです");
+    }
+    out[key] = v;
+  }
+  return out;
+}
+
+async function restoreImages() {
+  const records = [];
+
+  try {
+    const record = await dbRead();
+    if (record) records.push(record);
+  } catch {}
+
+  try {
+    const raw = localStorage.getItem(IMAGE_FALLBACK_KEY);
+    if (raw) records.push(JSON.parse(raw));
+  } catch {}
+
+  records.sort((a,b) => (b.at || 0) - (a.at || 0));
+
+  let restored = false;
+
+  for (const record of records) {
+    try {
+      images = validateImages(record.images);
+      restored = true;
+      break;
+    } catch {}
+  }
+
+  if (!restored) {
+    try {
+      const old = localStorage.getItem(OLD_IMAGE_KEY);
+      if (old) images = validateImages(JSON.parse(old));
+    } catch {}
+  }
+
+  imagesReady = true;
+  updateImageControls();
+  updatePreviews();
+  renderImage();
+}
+
+function persistImages() {
+  const record = {
+    at: Date.now(),
+    images: { ...images }
+  };
+
+  const job = imageWriteQueue.then(async () => {
+    try {
+      await dbWrite(record);
+      try { localStorage.removeItem(IMAGE_FALLBACK_KEY); } catch {}
+      return true;
+    } catch {
+      try {
+        localStorage.setItem(IMAGE_FALLBACK_KEY, JSON.stringify(record));
+        return true;
+      } catch {
+        return false;
+      }
+    }
+  });
+
+  imageWriteQueue = job.catch(() => {});
+  return job;
+}
+
+function updateImageControls() {
+  const disabled = imageBusy || !imagesReady;
+  $("normalFile").disabled = disabled;
+  $("happyFile").disabled = disabled;
+  $("clearImages").disabled = disabled;
+  $("importFile").disabled = disabled;
+  $("exportButton").disabled = disabled;
+}
+
+function readAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(Error("画像ファイルを読み取れませんでした"));
+    reader.onabort = () => reject(Error("読み込みが中止されました"));
+    reader.readAsDataURL(file);
+  });
+}
+
+function decodeImage(src) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    const timer = setTimeout(() => {
+      image.onload = image.onerror = null;
+      reject(Error("画像の読み込みに時間がかかっています。小さいPNG/JPEGで試してください"));
+    }, 15000);
+
+    image.onload = () => {
+      clearTimeout(timer);
+      if (!image.naturalWidth) {
+        reject(Error("画像のサイズを取得できません"));
+        return;
+      }
+      resolve(image);
+    };
+
+    image.onerror = () => {
+      clearTimeout(timer);
+      reject(Error("この画像形式を表示できません。PNGかJPEGで試してください"));
+    };
+
+    image.src = src;
+  });
+}
+
+/* 外周からつながっている黒いピクセルだけを透過。
+   内部の目・口など、背景とつながっていない黒は残す。 */
+function removeConnectedBlack(ctx, width, height) {
+  const frame = ctx.getImageData(0,0,width,height);
+  const p = frame.data;
+  const count = width * height;
+  const visited = new Uint8Array(count);
+  const queue = new Int32Array(count);
+  let head = 0;
+  let tail = 0;
+
+  function offer(index) {
+    if (visited[index]) return;
+    visited[index] = 1;
+    const i = index * 4;
+    const isDark = p[i] < 32 && p[i+1] < 32 && p[i+2] < 32;
+    if (isDark || p[i+3] < 20) queue[tail++] = index;
+  }
+
+  for (let x = 0; x < width; x++) {
+    offer(x);
+    offer((height-1) * width + x);
+  }
+  for (let y = 0; y < height; y++) {
+    offer(y * width);
+    offer(y * width + width - 1);
+  }
+
+  while (head < tail) {
+    const index = queue[head++];
+    p[index * 4 + 3] = 0;
+    const x = index % width;
+    const y = Math.floor(index / width);
+    if (x > 0) offer(index-1);
+    if (x < width-1) offer(index+1);
+    if (y > 0) offer(index-width);
+    if (y < height-1) offer(index+width);
+  }
+
+  ctx.putImageData(frame,0,0);
+}
+
+function cropTransparent(canvas) {
+  const ctx = canvas.getContext("2d");
+  const w = canvas.width;
+  const h = canvas.height;
+  const pixels = ctx.getImageData(0,0,w,h).data;
+  let minX = w, minY = h, maxX = -1, maxY = -1;
+
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      if (pixels[(y*w+x)*4+3] > 20) {
+        minX = Math.min(minX,x);
+        minY = Math.min(minY,y);
+        maxX = Math.max(maxX,x);
+        maxY = Math.max(maxY,y);
+      }
+    }
+  }
+
+  if (maxX < 0) throw Error("透過で画像が消えました。黒背景透過をオフにしてください");
+
+  minX = Math.max(0,minX-3);
+  minY = Math.max(0,minY-3);
+  maxX = Math.min(w-1,maxX+3);
+  maxY = Math.min(h-1,maxY+3);
+
+  const out = document.createElement("canvas");
+  out.width = maxX-minX+1;
+  out.height = maxY-minY+1;
+  out.getContext("2d").drawImage(
+    canvas,
+    minX,minY,out.width,out.height,
+    0,0,out.width,out.height
+  );
+  return out;
+}
+
+async function uploadImage(file, key) {
+  if (!file || imageBusy || !imagesReady) return;
+
+  if (file.size > 20 * 1024 * 1024) {
+    $("imageMessage").textContent = "画像は20MB以下にしてください。";
+    return;
+  }
+
+  imageBusy = true;
+  updateImageControls();
+  $("imageMessage").textContent = "画像を読み込み中…";
+
+  try {
+    const src = await readAsDataURL(file);
+    const img = await decodeImage(src);
+    const scale = Math.min(1, 600 / Math.max(img.naturalWidth,img.naturalHeight));
+
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.max(1,Math.round(img.naturalWidth*scale));
+    canvas.height = Math.max(1,Math.round(img.naturalHeight*scale));
+
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+    if (!ctx) throw Error("画像処理を開始できませんでした");
+    ctx.drawImage(img,0,0,canvas.width,canvas.height);
+
+    if ($("removeBlack").checked)
+      removeConnectedBlack(ctx,canvas.width,canvas.height);
+
+    const processed = cropTransparent(canvas).toDataURL("image/png");
+    await decodeImage(processed);
+
+    /* 保存より先に画面へ反映する */
+    images[key] = processed;
+    failedImages.delete(processed);
+    shownImage = "";
+    if (key === "happy") happyUntil = Date.now()+2500;
+    updatePreviews();
+    renderImage();
+    say("新しい姿になったよ！");
+    $("imageMessage").textContent = "表示できました。端末に保存中…";
+
+    const saved = await persistImages();
+    $("imageMessage").textContent = saved
+      ? "✓ 画像を表示・保存しました！"
+      : "表示はできましたが保存できません。データタブからバックアップしてください。";
+  } catch (error) {
+    $("imageMessage").textContent = "⚠ " + error.message;
+  } finally {
+    imageBusy = false;
+    updateImageControls();
+  }
+}
+
+function updatePreviews() {
+  for (const key of ["normal","happy"]) {
+    const box = $(key+"Preview");
+    box.replaceChildren();
+
+    if (images[key]) {
+      const img = document.createElement("img");
+      img.src = images[key];
+      img.alt = key === "normal" ? "通常画像" : "うれしい画像";
+      box.append(img);
+    } else {
+      box.textContent = key === "normal" ? "🧑🏻‍🚀" : "💖";
+    }
+  }
+}
+
+function renderImage() {
+  const preferred = Date.now() < happyUntil
+    ? images.happy || images.normal
+    : images.normal || images.happy;
+
+  const src = preferred && !failedImages.has(preferred) ? preferred : "";
+
+  if (src !== shownImage) {
+    shownImage = src;
+    if (src) $("petImage").src = src;
+    else $("petImage").removeAttribute("src");
+  }
+
+  $("petImage").hidden = !src;
+  $("fallback").hidden = !!src;
+}
+
+$("petImage").addEventListener("error", () => {
+  if (shownImage) failedImages.add(shownImage);
+  $("imageMessage").textContent = "画像を表示できません。画像を選び直してください。";
+  renderImage();
+});
+
+/* ---------- UI ---------- */
+
+const statDefinitions = [
+  ["hunger","🍬 おなか","#efa776"],
+  ["mood","😊 ごきげん","#ed94b3"],
+  ["bond","💖 なかよし","#c095d8"],
+  ["bowel","🚽 トイレ","#8cc4d9"]
+];
+
+for (const [key,title,color] of statDefinitions) {
+  const box = document.createElement("div");
+  box.innerHTML = `
+    <div class="stat-title">
+      <span>${title}</span><span id="${key}Value"></span>
+    </div>
+    <div class="stat-track">
+      <div class="stat-fill" id="${key}Fill" style="--bar:${color}"></div>
+    </div>`;
+  $("status").append(box);
+}
+
+function renderPoops() {
+  const signature = state.poops.join(",");
+  if (signature === poopSignature) return;
+  poopSignature = signature;
+  $("poops").replaceChildren();
+
+  state.poops.forEach((x,index) => {
+    const button = document.createElement("button");
+    button.className = "poop";
+    button.textContent = "💩";
+    button.style.left = x+"%";
+    button.setAttribute("aria-label","うんちを片づける");
+    button.onclick = () => cleanPoop(index);
+    $("poops").append(button);
+  });
+}
+
+function renderEvent() {
+  const active = state.event !== null;
+  const signature = String(state.event);
+
+  $("eventLayer").hidden = !active;
+  $("pet").tabIndex = active ? -1 : 0;
+  $("pet").setAttribute("aria-disabled", String(active));
+
+  document.querySelectorAll("[data-command]").forEach(button => {
+    button.disabled = active;
+  });
+
+  document.querySelectorAll(".poop").forEach(button => {
+    button.disabled = active;
+  });
+
+  if (signature === eventSignature) return;
+  eventSignature = signature;
+  $("choices").replaceChildren();
+  if (!active) return;
+
+  const event = events[state.event];
+  $("eventTitle").textContent = event.title;
+  $("eventText").textContent = event.text;
+
+  event.choices.forEach((choice,index) => {
+    const button = document.createElement("button");
+    button.className = "choice";
+    button.textContent = choice.text;
+    button.onclick = () => choose(index);
+    $("choices").append(button);
+  });
+}
+
+function render() {
+  $("petName").textContent = petName();
+  $("stageText").textContent = ["ちび期","進化 1 / 3","進化 2 / 3","最終形態"][state.stage];
+
+  const start = thresholds[state.stage];
+  const next = thresholds[state.stage+1];
+  const progress = state.stage === 3
+    ? 100 : clamp((state.xp-start)/(next-start)*100);
+
+  $("growthFill").style.width = progress+"%";
+  $("growthText").textContent = state.stage === 3
+    ? "最終進化！ 発見 " + state.book.length + " / 100種類"
+    : "次の進化まで " + Math.max(0,next-state.xp) + " ポイント";
+
+  for (const [key] of statDefinitions) {
+    $(key+"Value").textContent = Math.round(state[key]);
+    $(key+"Fill").style.width = clamp(state[key])+"%";
+  }
+
+  const family = state.family >= 0 ? families[state.family] : null;
+  $("aura").style.setProperty("--aura",family ? family.color : "#ffd3b5");
+  $("badge").textContent = state.stage === 3
+    ? traits[state.trait].icon
+    : family ? family.icon : "🌱";
+
+  $("toiletButton").classList.toggle("alert",state.bowel >= 60);
+
+  $("hint").textContent = state.event !== null
+    ? "画面の選択肢を選んでね"
+    : state.bowel >= 60
+      ? "🚽 もじもじ…トイレのタイミング！"
+      : state.poops.length
+        ? "💩 うんちはタップで片づけられるよ"
+        : "キャラを指でなでてもOK";
+
+  renderImage();
+  renderPoops();
+  renderEvent();
+}
+
+function renderDiary() {
+  $("diary").replaceChildren();
+  state.logs.forEach(text => {
+    const li = document.createElement("li");
+    li.textContent = text;
+    $("diary").append(li);
+  });
+}
+
+function renderBook() {
+  $("bookSummary").textContent = state.book.length+" / 100種類を発見";
+  $("bookGrid").replaceChildren();
+
+  for (let id = bookPage*8; id < Math.min(100,bookPage*8+8); id++) {
+    const found = state.book.includes(id);
+    const box = document.createElement("div");
+    box.className = "book-item" + (found ? " found" : "");
+    box.textContent = String(id+1).padStart(3,"0")+" "+
+      (found ? families[Math.floor(id/20)].icon+" "+fullName(id) : "❔ 未発見");
+    $("bookGrid").append(box);
+  }
+
+  $("pageText").textContent = (bookPage+1)+" / 13";
+  $("prevPage").disabled = bookPage === 0;
+  $("nextPage").disabled = bookPage === 12;
+}
+
+function selectTab(name) {
+  for (const tab of ["images","data","diary"])
+    $("tab-"+tab).hidden = tab !== name;
+
+  document.querySelectorAll("[data-tab]").forEach(button => {
+    button.classList.toggle("active",button.dataset.tab === name);
+  });
+
+  if (name === "diary") renderDiary();
+}
+
+document.querySelectorAll("[data-tab]").forEach(button => {
+  button.onclick = () => selectTab(button.dataset.tab);
+});
+
+document.querySelectorAll("[data-command]").forEach(button => {
+  button.onclick = () => command(button.dataset.command);
+});
+
+document.querySelectorAll("[data-close]").forEach(button => {
+  button.onclick = () => $(button.dataset.close).close();
+});
+
+$("settingsButton").onclick = () => {
+  selectTab("images");
+  $("settingsDialog").showModal();
+};
+
+$("bookButton").onclick = () => {
+  renderBook();
+  $("bookDialog").showModal();
+};
+
+$("prevPage").onclick = () => { bookPage--; renderBook(); };
+$("nextPage").onclick = () => { bookPage++; renderBook(); };
+
+$("pet").addEventListener("pointerdown", event => {
+  if (event.pointerType === "mouse" && event.button !== 0) return;
+  if (state.event !== null) return;
+  event.preventDefault();
+  pointer = event.pointerId;
+  lastStroke = { x:event.clientX, y:event.clientY };
+  $("pet").setPointerCapture(event.pointerId);
+  command("pet");
+});
+
+$("pet").addEventListener("pointermove", event => {
+  if (pointer !== event.pointerId || !lastStroke) return;
+  const distance = Math.hypot(
+    event.clientX-lastStroke.x,
+    event.clientY-lastStroke.y
+  );
+  if (distance >= 15) {
+    lastStroke = { x:event.clientX, y:event.clientY };
+    command("pet");
+  }
+});
+
+function releasePointer() {
+  pointer = null;
+  lastStroke = null;
+}
+
+$("pet").addEventListener("pointerup",releasePointer);
+$("pet").addEventListener("pointercancel",releasePointer);
+$("pet").addEventListener("lostpointercapture",releasePointer);
+
+$("pet").addEventListener("keydown", event => {
+  if (event.key === "Enter" || event.key === " ") {
+    event.preventDefault();
+    command("pet");
+  }
+});
+
+for (const key of ["normal","happy"]) {
+  $(key+"File").addEventListener("change", async event => {
+    const file = event.target.files[0];
+    await uploadImage(file,key);
+    event.target.value = "";
+  });
+}
+
+$("testHappy").onclick = () => {
+  happyUntil = Date.now()+3500;
+  $("settingsDialog").close();
+  say("えへへ！");
+  animate("happy");
+  particle("💖");
+  renderImage();
+};
+
+$("clearImages").onclick = async () => {
+  if (imageBusy || !imagesReady) return;
+  if (!confirm("登録した画像を解除しますか？")) return;
+
+  imageBusy = true;
+  updateImageControls();
+  images = { normal:"", happy:"" };
+  failedImages.clear();
+  shownImage = "";
+  updatePreviews();
+  renderImage();
+
+  const ok = await persistImages();
+  $("imageMessage").textContent = ok
+    ? "画像を解除しました。"
+    : "画面から解除しましたが、保存できませんでした。";
+
+  imageBusy = false;
+  updateImageControls();
+};
+
+/* ---------- バックアップ ---------- */
+
+$("exportButton").onclick = () => {
+  tick();
+  save();
+
+  const payload = {
+    format: "muipi-screen-backup-2",
+    state,
+    images
+  };
+
+  const blob = new Blob([JSON.stringify(payload)],{ type:"application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "muipi-"+new Date().toISOString().slice(0,10)+".json";
+  document.body.append(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url),10000);
+};
+
+$("importFile").onchange = async event => {
+  const file = event.target.files[0];
+  if (!file || imageBusy || !imagesReady) return;
+
+  imageBusy = true;
+  updateImageControls();
+
+  try {
+    if (file.size > 8*1024*1024) throw Error("ファイルが大きすぎます");
+
+    const data = JSON.parse(await file.text());
+
+    if (!["muipi-screen-backup-2","muipi-backup-1"].includes(data.format))
+      throw Error("対応していないバックアップです");
+
+    const nextState = normalize(data.state);
+    const nextImages = validateImages(data.images || {});
+
+    for (const src of Object.values(nextImages))
+      if (src) await decodeImage(src);
+
+    if (!confirm("現在の育成データと画像を置き換えますか？")) return;
+
+    state = nextState;
+    state.updated = Date.now();
+    images = nextImages;
+    failedImages.clear();
+    shownImage = "";
+    eventSignature = "";
+    poopSignature = "reset";
+    happyUntil = 0;
+
+    updatePreviews();
+    render();
+    save();
+    say("おかえり！ データを読み込んだよ");
+
+    const ok = await persistImages();
+    if (!ok || !saveOK)
+      alert("読み込みは完了しましたが、端末への保存に失敗しました。バックアップを保管してください。");
+
+    $("settingsDialog").close();
+  } catch (error) {
+    alert("読み込めませんでした："+error.message);
+  } finally {
+    imageBusy = false;
+    updateImageControls();
+    event.target.value = "";
+  }
+};
+
+$("restartButton").onclick = () => {
+  if (!confirm("今の育成を終了して、新しい子を育てますか？ 図鑑と画像は残ります。")) return;
+  state = fresh(state.book);
+  happyUntil = 0;
+  eventSignature = "";
+  poopSignature = "reset";
+  $("pet").style.left = "50%";
+  say("はじめまして！ なでてくれる？");
+  save();
+  render();
+  $("settingsDialog").close();
+};
+
+/* ---------- ゲームループ ---------- */
+
+tick();
+render();
+save();
+
+if (loadNotice) say(loadNotice);
+
+updateImageControls();
+restoreImages();
+
+setInterval(() => {
+  if (document.hidden) return;
+  tick();
+  render();
+}, 500);
+
+setInterval(() => {
+  if (document.hidden) return;
+  tick();
+  save();
+}, 5000);
+
+setInterval(() => {
+  if (document.hidden ||
+      state.event !== null ||
+      pointer !== null ||
+      $("settingsDialog").open ||
+      $("bookDialog").open) return;
+
+  $("pet").style.left = (36+Math.random()*28)+"%";
+}, 5500);
+
+document.addEventListener("visibilitychange", () => {
+  tick();
+  save();
+  if (!document.hidden) render();
+});
+
+window.addEventListener("pagehide", () => {
+  tick();
+  save();
+});
+</script>
+</body>
+</html>
